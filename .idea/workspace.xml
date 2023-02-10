@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="54103d4b-0d3c-41f7-a65d-2bab59b290dd" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/cee90a4d-230f-4277-a4e8-7d29cd2574c0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/cee90a4d-230f-4277-a4e8-7d29cd2574c0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/env/schema.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/src/env/schema.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/auth.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,6 +14,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -49,6 +51,9 @@
       <workItem from="1674991519744" duration="532000" />
       <workItem from="1675088369576" duration="760000" />
       <workItem from="1675091996556" duration="1006000" />
+      <workItem from="1675247498185" duration="15000" />
+      <workItem from="1675958354348" duration="2097000" />
+      <workItem from="1676034436117" duration="1192000" />
     </task>
     <servers />
   </component>
