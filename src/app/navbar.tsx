@@ -22,7 +22,9 @@ export default function Navbar() {
         </clipPath>
       </defs>
     </svg>
-    <input className="bg-gray-300 p-2 w-1/2 rounded-lg mx-auto" type="text" placeholder=" Search..."/>
+    <form className="w-1/2 mx-auto">
+      <input className="bg-gray-300 p-2 w-full rounded-lg" type="text" placeholder=" Search..."/>
+    </form>
     <div className="w-[160px] mx-3"></div>
   </nav>;
 }
