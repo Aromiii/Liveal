@@ -72,7 +72,8 @@
       <workItem from="1675958354348" duration="2097000" />
       <workItem from="1676034436117" duration="1510000" />
       <workItem from="1676036097045" duration="4081000" />
-      <workItem from="1676053993028" duration="6014000" />
+      <workItem from="1676053993028" duration="6401000" />
+      <workItem from="1676147574175" duration="840000" />
     </task>
     <servers />
   </component>
@@ -84,10 +85,34 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/feed" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/app/navbar.tsx</url>
+          <line>3</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
