@@ -1,5 +1,4 @@
 import '../styles/globals.css'
-import Navbar from "./navbar";
 
 export default function RootLayout({
   children,
@@ -10,7 +9,6 @@ export default function RootLayout({
     <html>
       <head />
       <body className="bg-gray-200 min-h-screen p-5">
-        <Navbar />
         {children}
       </body>
     </html>
