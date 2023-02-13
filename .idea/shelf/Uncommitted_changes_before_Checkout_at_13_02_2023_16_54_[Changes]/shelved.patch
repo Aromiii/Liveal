@@ -1,0 +1,13 @@
+Index: src/app/feed/page.tsx
+===================================================================
+diff --git a/src/app/feed/page.tsx b/src/app/feed/page.tsx
+--- a/src/app/feed/page.tsx	
++++ b/src/app/feed/page.tsx	
+@@ -19,7 +19,6 @@
+           </div>
+         </aside>
+         <main className="w-1/2 mx-auto">
+-
+         </main>
+         <aside className="w-1/6 h-fit bg-white rounded-lg p-1">
+           <h1>
