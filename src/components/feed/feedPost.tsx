@@ -9,7 +9,7 @@ export default async function FeedPost(props: { profileImage: string, postImage:
 
   return <section className="bg-white rounded-lg mb-2 p-2">
     <div className="flex place-items-center gap-2">
-      <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src="src/app/feed/feedPost?u=https%3A%2F%2Fwww.naso.org%2Fwp-content%2Fuploads%2F2016%2F12%2Fperson-pointing.jpg&f=1&nofb=1&ipt=4ec920cdb2e204f2ef7432a17fe62fc3e0488579b2c41781e01150491edc3bda&ipo=images"/>
+      <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src="src/components/feed/feedPost?u=https%3A%2F%2Fwww.naso.org%2Fwp-content%2Fuploads%2F2016%2F12%2Fperson-pointing.jpg&f=1&nofb=1&ipt=4ec920cdb2e204f2ef7432a17fe62fc3e0488579b2c41781e01150491edc3bda&ipo=images"/>
       <div>
         <h1 className="font-semibold text-lg">Kissa koira</h1>
         <h2 className="font-extralight">17.32 21.4.2022</h2>
