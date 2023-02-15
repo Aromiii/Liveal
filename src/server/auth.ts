@@ -43,12 +43,6 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async signIn({ account, profile }) {
-      if (account.provider === "google") {
-        return profile.email_verified && profile.email.endsWith("@example.com")
-      }
-      return true // Do different verification for other providers that don't have `email_verified`
-    },
   },
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -65,7 +59,12 @@ export const authOptions: NextAuthOptions = {
      * NextAuth.js docs for the provider you want to use. Example:
      * @see https://next-auth.js.org/providers/github
      **/
-  ]
+  ],
+  pages: {
+    signIn: '/auth/signin',
+    signOut: '/auth/signout',
+    newUser: '/auth/signup' // New users will be directed here on first sign in (leave the property out if not of interest)
+  }
 };
 
 /**

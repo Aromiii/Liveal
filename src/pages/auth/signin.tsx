@@ -1,4 +1,5 @@
 import GoogleSignInSvg from "../../components/auth/googleSignInSvg";
+import { signIn } from "next-auth/react";
 
 const Signin = () => {
   return <>
@@ -27,7 +28,7 @@ const Signin = () => {
           <button className="w-[220px] bg-red-500 text-white p-2 rounded-lg" type="submit">Sign in</button>
         </form>
         <p>Or</p>
-        <button>
+        <button onClick={() => signIn("google")}>
           <GoogleSignInSvg/>
         </button>
       </main>

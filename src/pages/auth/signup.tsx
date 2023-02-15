@@ -1,6 +1,10 @@
 import GoogleSignInSvg from "../../components/auth/googleSignInSvg";
+import { signIn, useSession } from "next-auth/react";
 
 const Signup = () => {
+  const { data: session } = useSession()
+  console.log(session)
+
   return <>
     <svg className="absolute" width="201" height="83" viewBox="0 0 201 83" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clip-path="url(#clip0_14_16)">
@@ -28,7 +32,7 @@ const Signup = () => {
           <button className="w-[220px] bg-red-500 text-white p-2 rounded-lg" type="submit">Sign in</button>
         </form>
         <p>Or</p>
-        <button>
+        <button onClick={() => signIn("google")}>
           <GoogleSignInSvg/>
         </button>
       </main>
