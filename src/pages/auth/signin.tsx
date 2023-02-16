@@ -1,5 +1,6 @@
 import GoogleSignInSvg from "../../components/auth/googleSignInSvg";
 import { signIn } from "next-auth/react";
+import GithubSignInSvg from "../../components/auth/githubSignInSvg";
 
 const Signin = () => {
   return <>
@@ -30,6 +31,9 @@ const Signin = () => {
         <p>Or</p>
         <button onClick={() => signIn("google")}>
           <GoogleSignInSvg/>
+        </button>
+        <button onClick={() => signIn("github")}>
+          <GithubSignInSvg/>
         </button>
       </main>
     </div>
