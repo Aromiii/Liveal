@@ -5,9 +5,11 @@ import {
   type DefaultSession
 } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import GitHubProvider from "next-auth/providers/github"
+import GitHubProvider from "next-auth/providers/github";
+import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "./db";
+import { createTransport } from "nodemailer";
 
 /**
  * Module augmentation for `next-auth` types
@@ -43,7 +45,7 @@ export const authOptions: NextAuthOptions = {
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
-    },
+    }
   },
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -54,7 +56,7 @@ export const authOptions: NextAuthOptions = {
     GitHubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET
-    })
+    }),
     /**
      * ...add more providers here
      *
@@ -66,9 +68,7 @@ export const authOptions: NextAuthOptions = {
      **/
   ],
   pages: {
-    signIn: '/auth/signin',
-    signOut: '/auth/signout',
-    newUser: '/auth/signup' // New users will be directed here on first sign in (leave the property out if not of interest)
+    signIn: "/auth/signin",
   }
 };
 
