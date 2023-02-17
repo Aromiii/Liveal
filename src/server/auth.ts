@@ -5,8 +5,11 @@ import {
   type DefaultSession
 } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
+import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "./db";
+import { createTransport } from "nodemailer";
 
 /**
  * Module augmentation for `next-auth` types
@@ -49,7 +52,11 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET
-    })
+    }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET
+    }),
     /**
      * ...add more providers here
      *
@@ -59,7 +66,10 @@ export const authOptions: NextAuthOptions = {
      * NextAuth.js docs for the provider you want to use. Example:
      * @see https://next-auth.js.org/providers/github
      **/
-  ]
+  ],
+  pages: {
+    signIn: "/auth/signin",
+  }
 };
 
 /**
