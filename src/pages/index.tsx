@@ -1,15 +1,15 @@
 import { type GetServerSidePropsContext, InferGetServerSidePropsType, type NextPage } from "next";
 import Navbar from "../components/navs/navbar";
-import { getServerSession } from "next-auth/next"
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "../server/auth";
-import { useSession } from "next-auth/react"
+import { useSession } from "next-auth/react";
 import ChatsNav from "../components/navs/chatsNav";
 import FriendsNav from "../components/navs/friendsNav";
 import Link from "next/link";
 import FeedPost from "../components/feed/feedPost";
 
 const Home: NextPage = ({ posts, images }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const { status } = useSession()
+  const { status } = useSession();
 
   if (status == "authenticated") {
     return (
@@ -18,14 +18,19 @@ const Home: NextPage = ({ posts, images }: InferGetServerSidePropsType<typeof ge
         <div className="flex mt-5 gap-5">
           <FriendsNav />
           <main className="w-[90vw] mx-auto md:w-1/2">
-              {
-                posts.map((post) => <FeedPost postAuthor={post.title} postText={post.body} image={images[post.id - 1]}/>)
-              }
+            {
+              posts.map((post) => <FeedPost postAuthor={post.title} postText={post.body} image={images[post.id - 1]} />)
+            }
+            <Link href="/post/new">
+              <svg className="bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]" xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="48">
+                <path d="M450 856V606H200v-60h250V296h60v250h250v60H510v250h-60Z" />
+              </svg>
+            </Link>
           </main>
           <ChatsNav />
         </div>
       </>
-    )
+    );
   }
 
   return (
@@ -34,7 +39,7 @@ const Home: NextPage = ({ posts, images }: InferGetServerSidePropsType<typeof ge
       <div className="flex mt-5 gap-5">
         <main className="w-[90vw] mx-auto md:w-1/2">
           {
-            posts.map((post) => <FeedPost postAuthor={post.title} postText={post.body} image={images[post.id - 1]}/>)
+            posts.map((post) => <FeedPost postAuthor={post.title} postText={post.body} image={images[post.id - 1]} />)
           }
         </main>
       </div>
@@ -47,21 +52,21 @@ const Home: NextPage = ({ posts, images }: InferGetServerSidePropsType<typeof ge
         </Link>
       </footer>
     </>
-  )
+  );
 };
 
 export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const images = []
+  const images = [];
   for (let i = 0; i < 10; i++) {
-    let image = await fetch('https://dog.ceo/api/breeds/image/random')
-    image = await image.json()
-    images.push(image.message)
+    let image = await fetch("https://dog.ceo/api/breeds/image/random");
+    image = await image.json();
+    images.push(image.message);
   }
 
-  const result = await fetch("https://jsonplaceholder.typicode.com/posts?_limit=10")
-  const data = await result.json()
+  const result = await fetch("https://jsonplaceholder.typicode.com/posts?_limit=10");
+  const data = await result.json();
 
   return {
     props: {
@@ -72,6 +77,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       ),
       posts: data,
       images: images
-    },
-  }
+    }
+  };
 }
