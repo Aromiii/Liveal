@@ -6,8 +6,8 @@ const ChatsNav = () => {
       </h1>
       <ul>
       </ul>
-    </aside>;
-  </>;
+    </aside>
+  </>
 };
 
 export default ChatsNav;
