@@ -1,4 +1,4 @@
-import { type GetServerSidePropsContext, type NextPage } from "next";
+import { type GetServerSidePropsContext, InferGetServerSidePropsType, type NextPage } from "next";
 import Navbar from "../components/navs/navbar";
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "../server/auth";
@@ -6,8 +6,9 @@ import { useSession } from "next-auth/react"
 import ChatsNav from "../components/navs/chatsNav";
 import FriendsNav from "../components/navs/friendsNav";
 import Link from "next/link";
+import FeedPost from "../components/feed/feedPost";
 
-const Feed: NextPage = () => {
+const Home: NextPage = ({ posts, images }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { status } = useSession()
 
   if (status == "authenticated") {
@@ -17,7 +18,9 @@ const Feed: NextPage = () => {
         <div className="flex mt-5 gap-5">
           <FriendsNav />
           <main className="w-1/2 mx-auto">
-
+            {
+              posts.map((post) => <FeedPost postAuthor={post.title} postText={post.body} image={images[post.id - 1]}/>)
+            }
           </main>
           <ChatsNav />
         </div>
@@ -30,14 +33,16 @@ const Feed: NextPage = () => {
       <Navbar />
       <div className="flex mt-5 gap-5">
         <main className="w-1/2 mx-auto">
-
+          {
+            posts.map((post) => <FeedPost postAuthor={post.title} postText={post.body} image={images[post.id - 1]}/>)
+          }
         </main>
       </div>
-      <footer className="absolute h-20 w-screen bottom-0 left-0 bg-red-500 flex place-items-center">
+      <footer className="fixed h-20 w-screen bottom-0 left-0 bg-red-500 flex place-items-center">
         <h1 className="text-white text-4xl p-5 mr-auto">
           Don't be left alone - Be conneted to your community
         </h1>
-        <Link href="/auth/signin" className="text-white text-2xl m-5 p-2 px-5 rounded-lg bg-white text-black">
+        <Link href="/auth/signin" className="text-white text-2xl m-10 p-2 px-5 rounded-lg bg-white text-black">
           Sing in
         </Link>
       </footer>
@@ -45,9 +50,19 @@ const Feed: NextPage = () => {
   )
 };
 
-export default Feed;
+export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const images = []
+  for (let i = 0; i < 10; i++) {
+    let kissa = await fetch('https://dog.ceo/api/breeds/image/random')
+    kissa = await kissa.json()
+    images.push(kissa.message)
+  }
+
+  const result = await fetch("https://jsonplaceholder.typicode.com/posts?_limit=10")
+  const data = await result.json()
+
   return {
     props: {
       session: await getServerSession(
@@ -55,6 +70,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         context.res,
         authOptions
       ),
+      posts: data,
+      images: images
     },
   }
 }
