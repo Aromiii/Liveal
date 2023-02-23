@@ -11,7 +11,7 @@ import { prisma } from "../server/db";
 
 const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { status } = useSession();
-  console.log(posts)
+
   if (status == "authenticated") {
     return (
       <>
@@ -20,7 +20,9 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
           <FriendsNav />
           <main className="w-[90vw] mx-auto md:w-1/2">
             {
-              posts.map((post) => <FeedPost postAuthor={post.author.name} postText={post.content} image={image} />)
+              posts.map((post) => <FeedPost authorName={post.author.name} authorId={post.author.id}
+                                            authorImage={post.author.image} text={post.content} image={image}
+                                            createdAt={post.createdAt} />)
             }
             <Link href="/post/new">
               <svg className="bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"
@@ -41,7 +43,9 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
       <div className="flex mt-5 gap-5">
         <main className="w-[90vw] mx-auto md:w-1/2">
           {
-            posts.map((post) => <FeedPost postAuthor={post.author.name} postText={post.content} image={image} />)
+            posts.map((post) => <FeedPost authorName={post.author.name} authorId={post.author.id}
+                                          authorImage={post.author.image} text={post.content} image={image}
+                                          createdAt={post.createdAt} />)
           }
         </main>
       </div>
@@ -61,20 +65,29 @@ export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const response = await fetch("https://dog.ceo/api/breeds/image/random");
-  const data = await response.json()
+  const data = await response.json();
 
   const posts = await prisma.post.findMany({
     select: {
       content: true,
+      createdAt: true,
       author: {
         select: {
-          name: true
+          id: true,
+          name: true,
+          image: true
         }
       }
     }
   });
 
-  console.log(posts);
+  const formattedPosts = posts.map(post => {
+    return {
+      content: post.content,
+      createdAt: post.createdAt.toString(),
+      author: post.author// convert the timestamp to a string
+    }
+  })
 
   return {
     props: {
@@ -83,7 +96,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         context.res,
         authOptions
       ),
-      posts: posts,
+      posts: formattedPosts,
       image: data.message
     }
   };
