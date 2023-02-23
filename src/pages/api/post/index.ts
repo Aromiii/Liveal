@@ -40,6 +40,54 @@ const handler = async (req: NextRequest, res: NextResponse) => {
     }
   }
 
+  if (req.method == "PUT") {
+    try {
+      const schema = z.object({
+        postText: z.string().min(1).max(5000),
+        postId: z.string()
+      });
+
+      const body = schema.parse(JSON.parse(req.body));
+
+      const result = await prisma.post.findFirst({
+        select: {
+          author: {
+            select: {
+              id: true
+            }
+          }
+        },
+        where: {
+          id: body.postId
+        }
+      });
+
+      if (session.user.id != result.author.id) {
+        res.status(403).json({ message: "your not the author of the post" });
+        return;
+      }
+
+      const post = await prisma.post.update({
+        where: {
+          id: body.postId
+        },
+        data: {
+          content: body.postText
+        }
+      });
+
+      console.log(post);
+
+      res.status(201).json({ message: "Post updated" });
+      return;
+
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({ message: "Bad request" });
+      return;
+    }
+  }
+
   res.status(405).json({ message: "method not allowed" });
   return;
 };
