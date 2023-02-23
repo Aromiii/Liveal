@@ -1,6 +1,6 @@
-import GoogleSignInSvg from "../../components/auth/googleSignInSvg";
+import GoogleSignInSvg from "../components/auth/googleSignInSvg";
 import { signIn, useSession } from "next-auth/react";
-import GithubSignInSvg from "../../components/auth/githubSignInSvg";
+import GithubSignInSvg from "../components/auth/githubSignInSvg";
 
 const Signin = () => {
   const { status } = useSession()

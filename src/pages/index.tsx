@@ -10,14 +10,22 @@ import FeedPost from "../components/feed/feedPost";
 import { prisma } from "../server/db";
 
 const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
 
   if (status == "authenticated") {
     return (
       <>
         <Navbar />
         <div className="flex mt-5 gap-5">
-          <FriendsNav />
+          <div className="w-1/6">
+            <Link href={`/profile/${session?.user.id}`}>
+              <div className="h-36 bg-white rounded-lg flex place-items-center flex-col">
+                <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture" src={session.user.image} />
+                <h1 className="font-bold text-lg">{session?.user?.name}</h1>
+              </div>
+            </Link>
+            <FriendsNav />
+          </div>
           <main className="w-[90vw] mx-auto md:w-1/2">
             {
               posts.map((post) => <FeedPost authorName={post.author.name} authorId={post.author.id}
@@ -31,7 +39,9 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
               </svg>
             </Link>
           </main>
-          <ChatsNav />
+          <div className="w-1/6">
+            <ChatsNav />
+          </div>
         </div>
       </>
     );
@@ -53,7 +63,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
         <h1 className="text-white text-xl p-5 mr-auto hidden md:block">
           Don't be left alone - Be conneted to your community
         </h1>
-        <Link href="/auth/signin" className="text-white text-[120%] w-fit m-10 p-2 px-5 rounded-lg bg-white text-black">
+        <Link href="/signin" className="text-white text-[120%] w-fit m-10 p-2 px-5 rounded-lg bg-white text-black">
           Sing in
         </Link>
       </footer>
@@ -86,8 +96,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       content: post.content,
       createdAt: post.createdAt.toString(),
       author: post.author// convert the timestamp to a string
-    }
-  })
+    };
+  });
 
   return {
     props: {

@@ -1,6 +1,6 @@
 const ChatsNav = () => {
   return <>
-    <aside className="w-1/6 h-fit bg-white rounded-lg p-1 hidden md:block">
+    <aside className="h-fit bg-white rounded-lg p-1 hidden md:block">
       <h1>
         Chats
       </h1>
