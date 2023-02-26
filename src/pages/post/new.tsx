@@ -55,7 +55,7 @@ const New = () => {
         </defs>
       </svg>
       <div className="h-[calc(100vh-2.5rem)] flex place-content-center place-items-center">
-        <main className="w-1/2 bg-white rounded-lg p-5 ">
+        <main className="md:w-1/2 w-full bg-white rounded-lg p-5 ">
           <div className="flex place-items-center gap-2">
             <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={session?.user?.image} />
             <div>
