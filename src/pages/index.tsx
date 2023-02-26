@@ -1,4 +1,4 @@
-import { type GetServerSidePropsContext, InferGetServerSidePropsType, type NextPage } from "next";
+import type { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import Navbar from "../components/navs/navbar";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../server/auth";
@@ -17,7 +17,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
       <>
         <Navbar />
         <div className="flex mt-5 gap-5">
-          <div className="w-1/6">
+          <div className="w-1/6 md:block hidden">
             <Link href={`/profile/${session?.user.id}`}>
               <div className="h-36 bg-white rounded-lg flex place-items-center flex-col">
                 <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture" src={session.user.image} />
@@ -26,7 +26,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
             </Link>
             <FriendsNav />
           </div>
-          <main className="w-[90vw] mx-auto md:w-1/2">
+          <main className="mx-auto md:w-1/2 w-full">
             {
               posts.map((post) => <FeedPost authorName={post.author.name} authorId={post.author.id}
                                             authorImage={post.author.image} text={post.content} image={image}
@@ -39,7 +39,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
               </svg>
             </Link>
           </main>
-          <div className="w-1/6">
+          <div className="w-1/6 md:block hidden">
             <ChatsNav />
           </div>
         </div>
