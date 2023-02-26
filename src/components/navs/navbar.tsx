@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Navbar() {
   return <nav className="bg-white rounded-lg h-[80px] flex place-items-center justify-center">
     <svg className="mx-3 hidden md:block" width={160} viewBox="0 0 201 83" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,20 +24,11 @@ export default function Navbar() {
         </clipPath>
       </defs>
     </svg>
-    <svg className="block md:hidden mx-3" width={50} viewBox="0 0 60 75" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g clip-path="url(#clip0_15_38)">
-        <path d="M0 25H24.5C38.031 25 49 35.969 49 49.5V61C49 68.732 42.732 75 35 75H24.5C10.969 75 0 64.031 0 50.5V25Z" fill="#FF4A4A"/>
-        <circle cx="25" cy="25" r="25" transform="rotate(-90 25 25)" fill="#FF4A4A"/>
-        <circle cx="25" cy="25" r="18" transform="rotate(-90 25 25)" fill="white"/>
-        <circle cx="35" cy="50" r="25" transform="rotate(-90 35 50)" fill="black"/>
-        <circle cx="35" cy="50" r="18" transform="rotate(-90 35 50)" fill="white"/>
-      </g>
-      <defs>
-        <clipPath id="clip0_15_38">
-          <rect width="60" height="75" fill="white"/>
-        </clipPath>
-      </defs>
-    </svg>
+    <div className="w-[60px] flex place-content-center mx-3">
+      <Link href="/profile/sdkfjkö">
+        <img className="rounded-full" src="https://lh3.googleusercontent.com/a/AEdFTp62W3NU-GKigTcW7l89MoKlITD2jFnbvkgr6WZbIg=s96-c"/>
+      </Link>
+    </div>
     <form className="w-1/2 mx-auto">
       <input className="bg-gray-300 p-2 w-full rounded-lg" type="text" placeholder=" Search..."/>
     </form>
