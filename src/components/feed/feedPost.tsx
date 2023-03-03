@@ -1,25 +1,28 @@
-const getDogImage = async () => {
-  const result = await fetch("https://dog.ceo/api/breeds/image/random")
-  const data = await result.json()
-  return data.message
-}
+import Link from "next/link";
 
-export default async function FeedPost(props: { profileImage: string, postImage: string, postText: string }) {
-  const dogImage = await getDogImage()
-
+export default function FeedPost(props: { authorName: string, authorId: string, authorImage: string, text: string, image: string, createdAt: string }) {
   return <section className="bg-white rounded-lg mb-2 p-2">
     <div className="flex place-items-center gap-2">
-      <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src="src/components/feed/feedPost?u=https%3A%2F%2Fwww.naso.org%2Fwp-content%2Fuploads%2F2016%2F12%2Fperson-pointing.jpg&f=1&nofb=1&ipt=4ec920cdb2e204f2ef7432a17fe62fc3e0488579b2c41781e01150491edc3bda&ipo=images"/>
+      <Link href={`/profile/${props.authorId}`}>
+        <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={props.authorImage} />
+      </Link>
       <div>
-        <h1 className="font-semibold text-lg">Kissa koira</h1>
-        <h2 className="font-extralight">17.32 21.4.2022</h2>
+        <h1 className="font-semibold text-lg">{props.authorName}</h1>
+        <h2 className="font-extralight">{props.createdAt}</h2>
       </div>
     </div>
-    <img className="p-2 w-full rounded-2xl" src={dogImage}/>
+    <img className="p-2 w-full max-h-[70vh] object-cover rounded-2xl" src={props.image} />
     <p className="p-2">
-      Exercitationem nobis velit natus minus. Beatae voluptatum modi quis. Possimus fugit dolorem et dolor autem quia unde cumque. Assumenda sit nihil vero totam dolorem est omnis iusto. Perspiciatis dolor magnam repudiandae eaque nostrum iure minus cupiditate.
-
-      Ipsum totam qui blanditiis consequatur labore impedit. Eligendi animi accusantium voluptatem dicta sunt consequatur nihil sequi. Numquam voluptas fugiat vitae et aut est. Quam error inventore voluptatem odit. Accusantium recusandae ipsum aut quia. Et enim ad labore aut eum dolorem consequatur.
+      {props.text}
     </p>
+    <div className="mx-2 mb-1 w-full flex place-items-center">
+      <button>
+        <svg className="h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960"><path d="M716 936H272V424l278-288 39 31q6 5 9 14t3 22v10l-45 211h299q24 0 42 18t18 42v81.839q0 7.161 1.5 14.661T915 595L789 885q-8.878 21.25-29.595 36.125Q738.689 936 716 936Zm-384-60h397l126-299v-93H482l53-249-203 214v427Zm0-427v427-427Zm-60-25v60H139v392h133v60H79V424h193Z"/></svg>
+      </button>
+      <form className="ml-auto mr-4 w-2/3 flex">
+        <input type="text" className="bg-gray-200 rounded-l-lg p-2 w-full" placeholder=" Comment..."/>
+        <button className="bg-red-500 rounded-r-lg p-2 px-5 text-white text-l right-0">Send</button>
+      </form>
+    </div>
   </section>;
 }
