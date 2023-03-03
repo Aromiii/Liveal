@@ -18,7 +18,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
         <Navbar />
         <aside className="flex mt-5 gap-5">
           <div className="w-1/6 md:block hidden">
-            <Link href={`/profile/${session?.user.id}`}>
+            <Link href={`/user/${session?.user.id}`}>
               <div className="h-36 bg-white rounded-lg flex place-items-center flex-col">
                 <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture" src={session.user.image} />
                 <h1 className="font-bold text-lg">{session?.user?.name}</h1>
