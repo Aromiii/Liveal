@@ -12,7 +12,7 @@ export default function FeedPost(props: { authorName: string, authorId: string, 
       </div>
     </div>
     <img className="p-2 w-full max-h-[70vh] object-cover rounded-2xl" src={props.image} />
-    <p className="p-2">
+    <p className="p-2 break-words whitespace-pre-line">
       {props.text}
     </p>
     <div className="mx-2 mb-1 w-full flex place-items-center">
