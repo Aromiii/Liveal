@@ -16,7 +16,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
     return (
       <>
         <Navbar />
-        <div className="flex mt-5 gap-5">
+        <aside className="flex mt-5 gap-5">
           <div className="w-1/6 md:block hidden">
             <Link href={`/profile/${session?.user.id}`}>
               <div className="h-36 bg-white rounded-lg flex place-items-center flex-col">
@@ -24,7 +24,9 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
                 <h1 className="font-bold text-lg">{session?.user?.name}</h1>
               </div>
             </Link>
-            <FriendsNav />
+            <div className="hidden md:block mt-5">
+              <FriendsNav/>
+            </div>
           </div>
           <main className="mx-auto md:w-1/2 w-full">
             {
@@ -39,10 +41,10 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
               </svg>
             </Link>
           </main>
-          <div className="w-1/6 md:block hidden">
+          <aside className="w-1/6 md:block hidden">
             <ChatsNav />
-          </div>
-        </div>
+          </aside>
+        </aside>
       </>
     );
   }
