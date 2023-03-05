@@ -20,7 +20,9 @@ const User = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) 
               <h1 className="font-bold text-lg">{user.name}</h1>
             </div>
             <div className="w-2/5 md:w-full flex-col flex">
-              <Button className="w-full md:mt-4" text="Start chat" />
+              <button className="mt-4 liveal-button">
+                Start chat
+              </button>
               <Link href={`/user/${user.id}/friends`} className="md:hidden h-full mt-4 block p-1 px-5 md:mt-2 rounded-lg bg-white flex place-items-center place-content-center">
                 Friends
               </Link>

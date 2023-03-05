@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import Button from "../../components/button";
 import BgWithLivealLogo from "../../components/bgWithLivealLogo";
 
 const New = () => {
@@ -25,9 +24,9 @@ const New = () => {
     });
 
     if (response.status > 399) {
-      console.error(response)
-      alert("Error occured")
-      return
+      console.error(response);
+      alert("Error occured");
+      return;
     }
 
     alert("Post created");
@@ -49,7 +48,9 @@ const New = () => {
             <textarea onChange={handelPostTextInput}
                       className="max-h-[50vh] w-full p-2 border border-gray-200 rounded-lg resize-none overflow-hidden" />
           <div className="w-full place-items-center flex">
-            <Button className="ml-auto mt-4" text="Send"/>
+            <button className="ml-auto mt-4 liveal-button">
+              Send
+            </button>
           </div>
         </form>
       </BgWithLivealLogo>

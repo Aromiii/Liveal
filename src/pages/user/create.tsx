@@ -9,9 +9,7 @@ const Create: NextPage = () => {
     return (
       <>
         <BgWithLivealLogo>
-          <main>
 
-          </main>
         </BgWithLivealLogo>
       </>
     );

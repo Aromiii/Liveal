@@ -1,5 +1,3 @@
-import Button from "./button";
-
 const BgWithLivealLogo = ({ children }: any) => {
   return <>
     <svg className="absolute" width="201" height="83" viewBox="0 0 201 83" fill="none"
