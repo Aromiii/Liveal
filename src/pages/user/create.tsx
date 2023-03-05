@@ -9,7 +9,17 @@ const Create: NextPage = () => {
     return (
       <>
         <BgWithLivealLogo>
-
+          <h1 className="text-2xl text-center mb-5">Create your account</h1>
+          <form className="flex flex-col gap-4">
+            <div className="w-full gap-4 flex">
+              <input required className="bg-gray-200 rounded-lg w-full p-2" placeholder=" Display name..."/>
+              <input required className="bg-gray-200 rounded-lg w-full p-2" placeholder=" Username..."/>
+            </div>
+            <textarea required className="bg-gray-200 rounded-lg w-full p-2" placeholder=" Your profile description..." maxLength={1000}/>
+            <button className="liveal-button ml-auto">
+              Create profile
+            </button>
+          </form>
         </BgWithLivealLogo>
       </>
     );
