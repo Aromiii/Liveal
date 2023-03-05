@@ -1,32 +1,27 @@
-import { type GetServerSidePropsContext, type NextPage } from "next";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from //import here
+import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
+import BgWithLivealLogo from "../../components/bgWithLivealLogo";
 
-const protectedRouteComponent: NextPage = () => {
-  const { data: session } = useSession();
+const Create: NextPage = () => {
+  const { status } = useSession();
 
-  if (session) {
+  if (status == "authenticated") {
     return (
       <>
+        <BgWithLivealLogo>
+          <main>
 
+          </main>
+        </BgWithLivealLogo>
       </>
     );
   }
 
-  return <p>Access Denied</p>;
+  if (status == "loading") {
+    return null
+  }
+
+  return <h1>Access denied</h1>
 };
 
-export default protectedRouteComponent;
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return {
-    props: {
-      session: await getServerSession(
-        context.req,
-        context.res,
-        authOptions
-      )
-    }
-  };
-}
+export default Create;
