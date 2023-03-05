@@ -4,6 +4,7 @@ import FriendsNav from "../../components/navs/friendsNav";
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { prisma } from "../../server/db";
 import Link from "next/link";
+import Button from "../../components/button";
 
 const User = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { status } = useSession();
@@ -22,9 +23,7 @@ const User = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) 
                 <h1 className="font-bold text-lg">{user.name}</h1>
               </div>
               <div className="w-2/5 md:w-full flex-col flex">
-                <button className="bg-red-500 text-white p-2 px-5 text-2xl w-full md:mt-4 rounded-lg">
-                  Start chat
-                </button>
+                <Button className="w-full md:mt-4" text="Start chat"/>
                 <Link href={`/user/${user.id}/friends`} className="md:hidden h-full mt-4 block p-1 px-5 md:mt-2 rounded-lg bg-white flex place-items-center place-content-center">
                   Friends
                 </Link>
