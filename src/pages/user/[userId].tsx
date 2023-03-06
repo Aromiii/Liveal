@@ -15,9 +15,9 @@ const User = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) 
       <div className="md:flex p-4 absolute w-full top-[60%]">
         <div className="flex md:block w-full md:w-1/6">
           <div className="w-full mr-auto md:block flex gap-5">
-            <div className="w-3/5 md:w-full h-36 bg-white rounded-lg flex place-items-center flex-col">
+            <div className="w-3/5 md:w-full bg-white rounded-lg flex place-items-center flex-col">
               <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture" src={user.image} />
-              <h1 className="font-bold text-lg">{user.name}</h1>
+              <h1 className="font-bold text-lg break-words max-w-[80%]">{user.name}</h1>
             </div>
             <div className="w-2/5 md:w-full flex-col flex">
               <button className="mt-4 liveal-button">
