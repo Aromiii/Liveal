@@ -8,7 +8,6 @@ const handler = async (req: NextRequest, res: NextResponse) => {
 
   if (!session) {
     res.status(401).json({ message: "You must be logged in" });
-    return;
   }
 
   if (req.method == "POST") {
@@ -18,14 +17,10 @@ const handler = async (req: NextRequest, res: NextResponse) => {
       description: z.string().max(1000).optional()
     });
 
-    try {
-      const body = schema.parse(JSON.parse(req.body));
-      res.status(200).json({ message: "200" });
-      return;
+    const body = schema.safeParse(JSON.parse(req.body))
 
-    } catch (error) {
-      res.status(400).json({ message: "Values you provided are invalid" });
-      return;
+    if (!body.success) {
+      res.status(400).json({ message: "Data you provided is not in correct format"})
     }
   }
 
