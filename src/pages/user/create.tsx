@@ -20,7 +20,9 @@ const Create: NextPage = () => {
         username: username,
         description: desc
       })
-    });
+    })
+    const body = await response.json()
+    alert(body.message)
   };
 
   if (status == "authenticated") {
