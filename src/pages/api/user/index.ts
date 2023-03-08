@@ -25,6 +25,17 @@ const handler = async (req: NextRequest, res: NextResponse) => {
       return;
     }
 
+    const isProfileCreated = await prisma.user.findFirst({
+      where: {
+        id: session.user.id
+      }
+    });
+
+    if (isProfileCreated.profileCreated) {
+      res.status(409).json({ message: "Profile is already created" })
+      return
+    }
+
     const isUsernameTaken = await prisma.user.findFirst({
       where: {
         username: body.data.username
