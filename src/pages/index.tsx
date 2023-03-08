@@ -2,14 +2,14 @@ import type { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage }
 import Navbar from "../components/navs/navbar";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../server/auth";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import ChatsNav from "../components/navs/chatsNav";
 import FriendsNav from "../components/navs/friendsNav";
 import Link from "next/link";
 import FeedPost from "../components/feed/feedPost";
 import { prisma } from "../server/db";
 
-const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Home: NextPage = ({ posts, image, username }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session, status } = useSession();
 
   if (status == "authenticated") {
@@ -18,7 +18,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
         <Navbar />
         <aside className="flex mt-5 gap-5">
           <div className="w-1/6 md:block hidden">
-            <Link href={`/user/${session?.user.id}`}>
+            <Link href={`/user/${username}`}>
               <div className="bg-white rounded-lg flex place-items-center flex-col">
                 <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture" src={session.user.image} />
                 <h1 className="m-2 font-bold text-lg break-words max-w-[80%]">{session?.user?.name}</h1>
@@ -30,7 +30,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
           </div>
           <main className="mx-auto md:w-1/2 w-full">
             {
-              posts.map((post) => <FeedPost authorName={post.author.name} authorId={post.author.id}
+              posts.map((post) => <FeedPost authorName={post.author.name} authorUsername={post.author.username}
                                             authorImage={post.author.image} text={post.content} image={image}
                                             createdAt={post.createdAt} />)
             }
@@ -55,7 +55,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
       <div className="flex mt-5 gap-5">
         <main className="w-[90vw] mx-auto md:w-1/2">
           {
-            posts.map((post) => <FeedPost authorName={post.author.name} authorId={post.author.id}
+            posts.map((post) => <FeedPost authorName={post.author.name} authorId={post.author.username}
                                           authorImage={post.author.image} text={post.content} image={image}
                                           createdAt={post.createdAt} />)
           }
@@ -76,8 +76,20 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
 export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(context.req, context.res, authOptions)
   const response = await fetch("https://dog.ceo/api/breeds/image/random");
   const data = await response.json();
+
+  const user = await prisma.user.findFirst({
+    where: {
+      id: session?.user.id
+    },
+    select: {
+      username: true
+    }
+  })
+
+  console.log(user)
 
   const posts = await prisma.post.findMany({
     select: {
@@ -85,7 +97,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       createdAt: true,
       author: {
         select: {
-          id: true,
+          username: true,
           name: true,
           image: true
         }
@@ -103,11 +115,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   return {
     props: {
-      session: await getServerSession(
-        context.req,
-        context.res,
-        authOptions
-      ),
+      username: user.username,
       posts: formattedPosts,
       image: data.message
     }

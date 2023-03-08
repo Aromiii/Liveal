@@ -1,10 +1,8 @@
 import Navbar from "../../components/navs/navbar";
-import { useSession } from "next-auth/react";
 import FriendsNav from "../../components/navs/friendsNav";
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { prisma } from "../../server/db";
 import Link from "next/link";
-import Button from "../../components/button";
 
 const User = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return <>
@@ -23,7 +21,7 @@ const User = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) 
               <button className="mt-4 liveal-button">
                 Start chat
               </button>
-              <Link href={`/user/${user.id}/friends`} className="md:hidden h-full mt-4 block p-1 px-5 md:mt-2 rounded-lg bg-white flex place-items-center place-content-center">
+              <Link href={`/user/${user.username || "kissa"}/friends`} className="md:hidden h-full mt-4 block p-1 px-5 md:mt-2 rounded-lg bg-white flex place-items-center place-content-center">
                 Friends
               </Link>
             </div>
@@ -46,16 +44,16 @@ const User = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) 
 export default User;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findFirst({
     where: {
-      id: context.query.userId
+      username: context.query.username
     }
   });
 
   return {
     props: {
       user: {
-        id: user.id,
+        username: user.username,
         name: user.name,
         image: user.image
       }
