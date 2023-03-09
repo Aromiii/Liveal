@@ -6,12 +6,11 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../../server/auth";
 import { useRouter } from "next/router";
 import BgWithLivealLogo from "../../../components/bgWithLivealLogo";
-import { redirect } from "next/navigation";
 
 const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session } = useSession();
   const router = useRouter();
-  const [postText, setPostText] = useState(post.content);
+  const [postText, setPostText] = useState("jsdjsdjf");
 
   const editPost = async (event) => {
     event.preventDefault();
@@ -27,8 +26,8 @@ const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>
     });
 
     if (response.status > 399) {
-      console.error(response);
-      alert("Error occured");
+      const error = await response.json()
+      alert(error.message);
       return;
     }
 
