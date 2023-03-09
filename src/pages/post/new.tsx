@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import BgWithLivealLogo from "../../components/bgWithLivealLogo";
+import { useRouter } from "next/router";
 
 const New = () => {
+  const router = useRouter()
   const { data: session, status } = useSession();
   const [postText, setPostText] = useState("");
 
@@ -58,10 +60,8 @@ const New = () => {
   }
 
   if (status == "unauthenticated") {
-    location.replace("/auth/signin");
+    router.push("/signin")
   }
-
-  return null;
 };
 
 export default New;

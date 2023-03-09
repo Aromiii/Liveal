@@ -2,9 +2,11 @@ import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
 import BgWithLivealLogo from "../../components/bgWithLivealLogo";
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 const Create: NextPage = () => {
-  const { status } = useSession();
+  const router = useRouter()
+  const { status } = useSession()
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [desc, setDesc] = useState();
@@ -20,9 +22,9 @@ const Create: NextPage = () => {
         username: username,
         description: desc
       })
-    })
-    const body = await response.json()
-    alert(body.message)
+    });
+    const body = await response.json();
+    alert(body.message);
   };
 
   if (status == "authenticated") {
@@ -48,11 +50,9 @@ const Create: NextPage = () => {
     );
   }
 
-  if (status == "loading") {
-    return null;
+  if (status == "unauthenticated") {
+    router.push("/signin")
   }
-
-  return <h1>Access denied</h1>;
 };
 
 export default Create;
