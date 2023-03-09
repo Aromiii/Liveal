@@ -6,9 +6,10 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../../server/auth";
 import { useRouter } from "next/router";
 import BgWithLivealLogo from "../../../components/bgWithLivealLogo";
+import { redirect } from "next/navigation";
 
 const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
   const [postText, setPostText] = useState(post.content);
 
@@ -41,7 +42,7 @@ const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>
     event.target.style.height = `${event.target.scrollHeight}px`;
   };
 
-  if (status == "authenticated") {
+  if (session) {
     return <>
       <BgWithLivealLogo>
         <div className="flex place-items-center gap-2">
@@ -63,17 +64,17 @@ const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>
     </>;
   }
 
-  if (status == "unauthenticated") {
-    location.replace("/auth/signin");
-  }
-
-  return null;
+  router.replace("/signin")
 };
 
 export default PostId;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getServerSession(context.req, context.res, authOptions);
+  const session = await getServerSession(
+    context.req,
+    context.res,
+    authOptions
+  )
 
   const post = await prisma.post.findFirst({
     select: {
@@ -85,21 +86,25 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       }
     },
     where: {
-      id: {
-        equals: context.query.postId
-      },
+      id: context.query.postId,
       author: {
-        id: {
-          equals: session.user.id
-        }
+        id: session.user.id
       }
     }
   });
 
-  console.log(post);
+  if (!post) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: true
+      }
+    }
+  }
 
   return {
     props: {
+      session: session,
       post: post
     }
   };
