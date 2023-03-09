@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 
-export default function Navbar() {
+export default function Navbar(props: { username: string }) {
   const { data: session } = useSession()
 
   return <nav className="bg-white rounded-lg h-[80px] flex place-items-center justify-center">
@@ -28,7 +28,7 @@ export default function Navbar() {
       </defs>
     </svg>
     <div className="w-[60px] flex place-content-center mx-3 md:hidden block">
-      <Link href={`/profile/${session?.user.id}`}>
+      <Link href={`/user/${session?.user.username}`}>
         <img className="rounded-full" src={session?.user?.image}/>
       </Link>
       <svg className={session?.user == null ? "block" : "hidden"} width="60" height="60" viewBox="0 0 60 75" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -1,7 +1,5 @@
 import type { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import Navbar from "../components/navs/navbar";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../server/auth";
 import { useSession } from "next-auth/react";
 import ChatsNav from "../components/navs/chatsNav";
 import FriendsNav from "../components/navs/friendsNav";
@@ -9,7 +7,7 @@ import Link from "next/link";
 import FeedPost from "../components/feed/feedPost";
 import { prisma } from "../server/db";
 
-const Home: NextPage = ({ posts, image, username }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session, status } = useSession();
 
   if (status == "authenticated") {
@@ -18,7 +16,7 @@ const Home: NextPage = ({ posts, image, username }: InferGetServerSidePropsType<
         <Navbar />
         <aside className="flex mt-5 gap-5">
           <div className="w-1/6 md:block hidden">
-            <Link href={`/user/${username}`}>
+            <Link href={`/user/${session?.user.username}`}>
               <div className="bg-white rounded-lg flex place-items-center flex-col">
                 <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture"
                      src={session.user.image} />
@@ -79,20 +77,8 @@ const Home: NextPage = ({ posts, image, username }: InferGetServerSidePropsType<
 export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getServerSession(context.req, context.res, authOptions);
   const response = await fetch("https://dog.ceo/api/breeds/image/random");
   const data = await response.json();
-
-  const user = await prisma.user.findFirst({
-    where: {
-      id: session?.user.id
-    },
-    select: {
-      username: true
-    }
-  });
-
-  console.log(user);
 
   const posts = await prisma.post.findMany({
     select: {
@@ -118,7 +104,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   return {
     props: {
-      username: user.username,
       posts: formattedPosts,
       image: data.message
     }
