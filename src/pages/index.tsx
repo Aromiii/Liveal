@@ -57,7 +57,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
         <div className="flex mt-5 gap-5">
           <main className="w-[90vw] mx-auto md:w-1/2">
             {
-              posts.map((post) => <FeedPost authorName={post.author.name} authorId={post.author.username}
+              posts.map((post) => <FeedPost authorName={post.author.name} authorUsername={post.author.username}
                                             authorImage={post.author.image} text={post.content} image={image}
                                             createdAt={post.createdAt} />)
             }
