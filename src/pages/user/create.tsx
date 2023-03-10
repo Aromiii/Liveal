@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 
 const Create: NextPage = () => {
   const router = useRouter()
-  const { status } = useSession()
+  const { data: session, status } = useSession()
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [desc, setDesc] = useState();
@@ -25,6 +25,10 @@ const Create: NextPage = () => {
     });
     const body = await response.json();
     alert(body.message);
+
+    if (response.status < 299) {
+      await router.replace("/")
+    }
   };
 
   if (status == "authenticated") {
