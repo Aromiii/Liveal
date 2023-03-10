@@ -3,8 +3,9 @@ import FriendsNav from "../../components/navs/friendsNav";
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { prisma } from "../../server/db";
 import Link from "next/link";
+import FeedPost from "../../components/feed/feedPost";
 
-const User = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const User = ({ user, posts }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return <>
     <Navbar />
     <div className="pt-5 relative">
@@ -27,13 +28,18 @@ const User = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) 
             </div>
           </div>
         </div>
-        <main className="mx-auto md:w-1/2 w-full h-72">
+        <main className="mx-auto md:w-1/2 w-full h-72 flex flex-col gap-4">
           <div className="h-10" />
           {user.description ?
             <section className="p-3 bg-white rounded-lg text-xl">
               {user.description}
             </section>
             : null
+          }
+          {
+            posts.map((post) => <FeedPost authorName={user.name} authorId={user.username}
+                                          authorImage={user.image} text={post.content} image={post.image}
+                                          createdAt={post.createdAt} />)
           }
         </main>
         <div className="md:w-1/6 w-1/3 h-96 md:block hidden">
@@ -47,14 +53,41 @@ const User = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) 
 export default User;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const response = await fetch("https://dog.ceo/api/breeds/image/random");
+  const data = await response.json();
+
   const user = await prisma.user.findFirst({
     where: {
       username: context.query.username
     }
   });
 
+  const posts = await prisma.post.findMany({
+    select: {
+      content: true,
+      createdAt: true
+    },
+    where: {
+      author: {
+        username: context.query.username
+      }
+    },
+    orderBy: {
+      updatedAt: 'desc'
+    }
+  });
+
+  const formattedPosts = posts.map(post => {
+    return {
+      content: post.content,
+      createdAt: post.createdAt.toString(),
+      image: data.message
+    };
+  });
+
   return {
     props: {
+      posts: formattedPosts,
       user: {
         description: user.description,
         username: user.username,
