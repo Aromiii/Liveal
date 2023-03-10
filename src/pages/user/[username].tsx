@@ -27,12 +27,15 @@ const User = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) 
             </div>
           </div>
         </div>
-        <div className="mx-auto md:w-1/2 w-full h-72">
+        <main className="mx-auto md:w-1/2 w-full h-72">
           <div className="h-10" />
-          <main className="bg-white rounded-lg p-3 text-xl">
-            {user.description}
-          </main>
-        </div>
+          {user.description ?
+            <section className="p-3 bg-white rounded-lg text-xl">
+              {user.description}
+            </section>
+            : null
+          }
+        </main>
         <div className="md:w-1/6 w-1/3 h-96 md:block hidden">
           <FriendsNav />
         </div>
