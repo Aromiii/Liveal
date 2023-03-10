@@ -65,7 +65,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
         </div>
         <footer className="fixed h-20 w-screen bottom-0 left-0 bg-red-500 flex place-items-center">
           <h1 className="text-white text-xl p-5 mr-auto hidden md:block">
-            Don't be left alone - Be conneted to your community
+            Don't be left alone - Be connected to your community
           </h1>
           <Link href="/signin" className="text-white text-[120%] w-fit m-10 p-2 px-5 rounded-lg bg-white text-black">
             Sing in
