@@ -6,10 +6,8 @@ import {
 } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
-import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "./db";
-import { createTransport } from "nodemailer";
 
 /**
  * Module augmentation for `next-auth` types
@@ -39,10 +37,15 @@ declare module "next-auth" {
  **/
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session({ session, user }) {
+    async session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
-        // session.user.role = user.role; <-- put other properties on the session here
+        const userRecord = await prisma.user.findFirst({
+          where: {
+            id: session.user.id
+          }
+        })
+        session.user.username = userRecord.username
       }
       return session;
     }
@@ -68,7 +71,7 @@ export const authOptions: NextAuthOptions = {
      **/
   ],
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/signin",
   }
 };
 
