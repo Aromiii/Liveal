@@ -49,8 +49,12 @@ export default function Navbar(props: { username: string }) {
     <form className="w-1/2 mx-auto">
       <input className="bg-gray-300 p-2 w-full rounded-lg" type="text" placeholder=" Search..." />
     </form>
-    <div className="md:w-[160px] mx-3 w-[60px]">
-      <Link href={`/user/${session?.user.username}`} className="md:hidden block">
+    <div className="md:w-[160px] mx-3 w-[60px] flex place-items-center gap-3">
+      <Link className="text-center ml-auto hidden md:block" href="/">
+        <svg xmlns="http://www.w3.org/2000/svg" className="fill-gray-400 w-[48px] h-[48px]"><path d="M9 42q-1.2 0-2.1-.9Q6 40.2 6 39V9q0-1.2.9-2.1Q7.8 6 9 6h23.1l9.9 9.9V39q0 1.2-.9 2.1-.9.9-2.1.9Zm0-3h30V17.55h-8.55V9H9v30Zm4.95-5.55h20.1v-3h-20.1Zm0-15.9H24v-3H13.95Zm0 7.95h20.1v-3h-20.1ZM9 9v8.55V9v30V9Z"/></svg>
+        <p className="text-sm">Feed</p>
+      </Link>
+      <Link href={`/user/${session?.user.username}`} className="block w-[60px]">
         <img className="rounded-full" src={session?.user?.image} />
       </Link>
     </div>
