@@ -8,7 +8,7 @@ export default function Navbar() {
   const [showSearch, setShowSearch] = useState(false)
 
   return <div className="h-[calc(80px-1.25rem)] w-full">
-    <nav className="fixed top-0 bg-white h-[80px] flex place-items-center justify-center w-full right-0 shadow-lg z-20 border-b">
+    <nav className="fixed top-0 bg-white h-[80px] flex place-items-center justify-center w-full right-0 shadow-lg z-50 border-b">
       <Image className="md:block hidden mr-auto mx-3" src="/livealLogoWithText.svg" width={160} height={0} alt="Liveal logo" />
       <Image className="md:hidden mr-auto mx-3" src="/livealLogoWithoutText.svg" alt="Liveal logo" width={60} height={0} />
       <ul className="h-[70] mx-3 flex gap-6 place-items-center">
@@ -28,7 +28,7 @@ export default function Navbar() {
           </Link>
         </li>
       </ul>
-      <div className="w-[60%] h-[80px] rounded-b-lg bg-white absolute top-[100%] z-10 shadow-lg" hidden={!showSearch}>
+      <div className="w-[60%] h-[80px] rounded-b-lg bg-white absolute top-[100%] shadow-lg" hidden={!showSearch}>
         <form className="m-4">
           <input className="w-full bg-gray-300 rounded-lg h-full shadow p-3" placeholder=" Search for anything..."/>
         </form>
