@@ -6,7 +6,6 @@ import FriendsNav from "../components/navs/friendsNav";
 import Link from "next/link";
 import FeedPost from "../components/feed/feedPost";
 import { prisma } from "../server/db";
-import MobileNavbar from "../components/navs/mobileNavbar";
 
 const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session, status } = useSession();
@@ -34,7 +33,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
                                             authorImage={post.author.image} text={post.content} image={image}
                                             createdAt={post.createdAt} />)
             }
-            <Link href="/post/new" className="md:block hidden">
+            <Link href="/post/new">
               <svg className="bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"
                    xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="48">
                 <path d="M450 856V606H200v-60h250V296h60v250h250v60H510v250h-60Z" />
@@ -45,7 +44,6 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
             <ChatsNav />
           </aside>
         </aside>
-        <MobileNavbar/>
       </>
     );
   }
