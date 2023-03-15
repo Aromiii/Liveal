@@ -3,7 +3,7 @@ import FriendsNav from "../../components/navs/friendsNav";
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { prisma } from "../../server/db";
 import Link from "next/link";
-import FeedPost from "../../components/feed/feedPost";
+import Post from "../../components/feed/post";
 
 const User = ({ user, posts }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return <>
@@ -37,9 +37,9 @@ const User = ({ user, posts }: InferGetServerSidePropsType<typeof getServerSideP
             : null
           }
           {
-            posts.map((post) => <FeedPost authorName={user.name} authorUsername={user.username}
-                                          authorImage={user.image} text={post.content} image={post.image}
-                                          createdAt={post.createdAt} />)
+            posts.map((post) => <Post authorName={user.name} authorUsername={user.username}
+                                      authorImage={user.image} text={post.content} image={post.image}
+                                      createdAt={post.createdAt} />)
           }
         </main>
         <div className="md:w-1/6 w-1/3 h-96 md:block hidden md:mr-4 z-20">

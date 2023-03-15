@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import ChatsNav from "../components/navs/chatsNav";
 import FriendsNav from "../components/navs/friendsNav";
 import Link from "next/link";
-import FeedPost from "../components/feed/feedPost";
+import Post from "../components/feed/post";
 import { prisma } from "../server/db";
 
 const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
@@ -29,9 +29,9 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
           </div>
           <main className="mx-auto md:w-1/2 w-full">
             {
-              posts.map((post) => <FeedPost authorName={post.author.name} authorUsername={post.author.username}
-                                            authorImage={post.author.image} text={post.content} image={image}
-                                            createdAt={post.createdAt} />)
+              posts.map((post) => <Post authorName={post.author.name} authorUsername={post.author.username}
+                                        authorImage={post.author.image} text={post.content} image={image}
+                                        createdAt={post.createdAt} />)
             }
             <Link href="/post/new">
               <svg className="bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"
@@ -55,9 +55,9 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
         <div className="flex mt-5 gap-5">
           <main className="w-[90vw] mx-auto md:w-1/2">
             {
-              posts.map((post) => <FeedPost authorName={post.author.name} authorUsername={post.author.username}
-                                            authorImage={post.author.image} text={post.content} image={image}
-                                            createdAt={post.createdAt} />)
+              posts.map((post) => <Post authorName={post.author.name} authorUsername={post.author.username}
+                                        authorImage={post.author.image} text={post.content} image={image}
+                                        createdAt={post.createdAt} />)
             }
           </main>
         </div>
