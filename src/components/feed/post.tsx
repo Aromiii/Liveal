@@ -3,24 +3,21 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 
 export default function Post(props: { postId: string, authorName: string, authorUsername: string, authorImage: string, text: string, image: string, createdAt: string }) {
-  const router = useRouter();
   const [liked, setLiked] = useState(false);
 
   const like = async (event) => {
     event.preventDefault();
     setLiked(!liked);
 
-    if (!liked) {
-      const response = await fetch("/api/post/like", {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify({
-          postId: props.postId
-        })
-      });
-      const body = await response.json();
-      console.log(body);
-    }
+    const response = await fetch("/api/post/like", {
+      method: !liked ? "POST" : "DELETE",
+      credentials: "include",
+      body: JSON.stringify({
+        postId: props.postId
+      })
+    });
+    const body = await response.json();
+    console.log(body);
   };
 
   return <section className="bg-white rounded-lg mb-2 p-2">
