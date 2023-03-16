@@ -6,7 +6,8 @@ import FriendsNav from "../components/navs/friendsNav";
 import Link from "next/link";
 import Post from "../components/feed/post";
 import { prisma } from "../server/db";
-
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../server/auth";
 const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session, status } = useSession();
 
@@ -29,7 +30,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
           </div>
           <main className="mx-auto md:w-1/2 w-full">
             {
-              posts.map((post) => <Post postId={post.id} authorName={post.author.name}
+              posts.map((post) => <Post postId={post.id} authorName={post.author.name} liked={post.liked}
                                         authorUsername={post.author.username}
                                         authorImage={post.author.image} text={post.content} image={image}
                                         createdAt={post.createdAt} />)
@@ -78,6 +79,8 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
 export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(context.req, context.res, authOptions)
+
   const response = await fetch("https://dog.ceo/api/breeds/image/random");
   const data = await response.json();
 
@@ -86,6 +89,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       id: true,
       content: true,
       createdAt: true,
+      likes: true,
       author: {
         select: {
           username: true,
@@ -96,9 +100,19 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   });
 
+  const likedPosts = await prisma.like.findMany({
+    where: {
+      postId: { in: posts.map(post => {return post.id}) },
+      userId: session.user.id
+    },
+    select: { postId: true }
+  })
+  const formattedLikedPosts = likedPosts.map(likedPost => {return likedPost.postId})
+
   const formattedPosts = posts.map(post => {
     return {
       id: post.id,
+      liked: formattedLikedPosts.includes(post.id),
       content: post.content,
       createdAt: post.createdAt.toString(),
       author: post.author// convert the timestamp to a string

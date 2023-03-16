@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/router";
 
-export default function Post(props: { postId: string, authorName: string, authorUsername: string, authorImage: string, text: string, image: string, createdAt: string }) {
-  const [liked, setLiked] = useState(false);
+export default function Post(props: { postId: string, authorName: string, authorUsername: string, authorImage: string, text: string, image: string, createdAt: string, liked: boolean }) {
+  const [liked, setLiked] = useState(props.liked);
 
   const like = async (event) => {
     event.preventDefault();
