@@ -20,6 +20,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
   if (!body.success) {
     res.status(400).json({ message: "Data you provided is not in correct format" });
     return;
+  }
 
   if (req.method == "POST") {
 

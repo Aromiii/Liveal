@@ -29,7 +29,8 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
           </div>
           <main className="mx-auto md:w-1/2 w-full">
             {
-              posts.map((post) => <Post authorName={post.author.name} authorUsername={post.author.username}
+              posts.map((post) => <Post postId={post.id} authorName={post.author.name}
+                                        authorUsername={post.author.username}
                                         authorImage={post.author.image} text={post.content} image={image}
                                         createdAt={post.createdAt} />)
             }
@@ -82,6 +83,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const posts = await prisma.post.findMany({
     select: {
+      id: true,
       content: true,
       createdAt: true,
       author: {
@@ -96,6 +98,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const formattedPosts = posts.map(post => {
     return {
+      id: post.id,
       content: post.content,
       createdAt: post.createdAt.toString(),
       author: post.author// convert the timestamp to a string
