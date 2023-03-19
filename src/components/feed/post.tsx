@@ -19,7 +19,7 @@ export default function Post(props: { postId: string, authorName: string, author
     console.log(body);
   };
 
-  return <section className="bg-white rounded-lg mb-2 p-2">
+  return<section className="bg-white rounded-lg mb-2 p-2">
     <div className="flex place-items-center gap-2">
       <Link href={`/user/${props.authorUsername}`}>
         <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={props.authorImage} />
@@ -50,5 +50,21 @@ export default function Post(props: { postId: string, authorName: string, author
         <button className="bg-red-500 rounded-r-lg p-2 px-5 text-white text-l right-0">Send</button>
       </form>
     </div>
+    <ul className="shadow-lg mt-2 p-1 rounded-lg flex flex-col gap-1">
+      <li className="h-12 m-1 flex place-items-center gap-2">
+        <img className="h-full rounded-full" src={props.authorImage}/>
+        <div>
+          <h1 className="font-semibold m-0.5">{props.authorName}</h1>
+          <p className="m-0.5 rounded-lg">kissa koita sjklögopwphklörjklhjkldjkkkklklsdklkldklögklö</p>
+        </div>
+      </li>
+      <li className="h-12 m-1 flex place-items-center gap-2">
+        <img className="h-full rounded-full" src={props.authorImage}/>
+        <div>
+          <h1 className="font-semibold m-0.5">{props.authorName}</h1>
+          <p className="m-0.5 rounded-lg">kissa koita sjklögopwphklörjklhjkldjkkkklklsdklkldklögklö</p>
+        </div>
+      </li>
+    </ul>
   </section>;
 }
