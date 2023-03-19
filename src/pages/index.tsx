@@ -8,7 +8,6 @@ import Post from "../components/feed/post";
 import { prisma } from "../server/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../server/auth";
-import { redirect } from "next/navigation";
 
 const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session, status } = useSession();
@@ -61,7 +60,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
             {
               posts.map((post) => <Post authorName={post.author.name} authorUsername={post.author.username}
                                         authorImage={post.author.image} text={post.content} image={image}
-                                        createdAt={post.createdAt} p />)
+                                        createdAt={post.createdAt} comments={post.comments}/>)
             }
           </main>
         </div>
@@ -83,12 +82,6 @@ export default Home;
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
 
-  if (!session) {
-    return {
-      redirect: { destination: "/signin", }
-    }
-  }
-
   const response = await fetch("https://dog.ceo/api/breeds/image/random");
   const data = await response.json();
 
@@ -108,20 +101,25 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   });
 
-  const likedPosts = await prisma.like.findMany({
-    where: {
-      postId: {
-        in: posts.map(post => {
-          return post.id;
-        })
+  let formattedLikedPosts: string[]
+
+  if (session) {
+    const likedPosts = await prisma.like.findMany({
+      where: {
+        postId: {
+          in: posts.map(post => {
+            return post.id;
+          })
+        },
+        userId: session.user.id
       },
-      userId: session.user.id
-    },
-    select: { postId: true }
-  });
-  const formattedLikedPosts = likedPosts.map(likedPost => {
-    return likedPost.postId;
-  });
+      select: { postId: true }
+    });
+
+    formattedLikedPosts = likedPosts.map(likedPost => {
+      return likedPost.postId;
+    });
+  }
 
   const comments = await prisma.comment.findMany({
     where: {
@@ -155,7 +153,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const formattedPosts = posts.map(post => {
     return {
       id: post.id,
-      liked: formattedLikedPosts.includes(post.id),
+      liked: formattedLikedPosts ? formattedLikedPosts.includes(post.id) : false,
       content: post.content,
       createdAt: post.createdAt.toString(),
       author: post.author,
