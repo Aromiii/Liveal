@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useState } from "react";
+import Comment from "./comment";
 
 export default function Post(props: { postId: string, authorName: string, authorUsername: string, authorImage: string, text: string, image: string, createdAt: string, liked: boolean }) {
   const [liked, setLiked] = useState(props.liked);
@@ -63,25 +64,12 @@ export default function Post(props: { postId: string, authorName: string, author
         </svg>
       </button>
       <form className="ml-auto mr-4 w-2/3 flex" onSubmit={comment}>
-        <input onChange={event => setCommentText(event.target.value)} maxLength={200} type="text" className="bg-gray-200 rounded-l-lg p-2 w-full" placeholder=" Comment..." />
+        <input onChange={event => setCommentText(event.target.value)} maxLength={200} type="text"
+               className="bg-gray-200 rounded-l-lg p-2 w-full" placeholder=" Comment..." />
         <button className="bg-red-500 rounded-r-lg p-2 px-5 text-white text-l right-0">Send</button>
       </form>
     </div>
     <ul className="shadow-lg mt-2 p-1 rounded-lg flex flex-col gap-1">
-      <li className="h-12 m-1 flex place-items-center gap-2">
-        <img className="h-full rounded-full" src={props.authorImage}/>
-        <div>
-          <h1 className="font-semibold m-0.5">{props.authorName}</h1>
-          <p className="m-0.5 rounded-lg">kissa koita sjklögopwphklörjklhjkldjkkkklklsdklkldklögklö</p>
-        </div>
-      </li>
-      <li className="h-12 m-1 flex place-items-center gap-2">
-        <img className="h-full rounded-full" src={props.authorImage}/>
-        <div>
-          <h1 className="font-semibold m-0.5">{props.authorName}</h1>
-          <p className="m-0.5 rounded-lg">kissa koita sjklögopwphklörjklhjkldjkkkklklsdklkldklögklö</p>
-        </div>
-      </li>
     </ul>
   </section>;
 }
