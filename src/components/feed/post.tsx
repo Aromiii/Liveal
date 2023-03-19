@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useState } from "react";
 import Comment from "./comment";
 
-export default function Post(props: { postId: string, authorName: string, authorUsername: string, authorImage: string, text: string, image: string, createdAt: string, liked: boolean }) {
+export default function Post(props: { postId: string, authorName: string, authorUsername: string, authorImage: string, text: string, image: string, createdAt: string, liked: boolean, comments: {updatedAt: string, author: {image: string | null, name: string | null, username: string | null}, content: string, postId: string}[] }) {
   const [liked, setLiked] = useState(props.liked);
   const [commentText, setCommentText] = useState("")
 
@@ -69,7 +69,8 @@ export default function Post(props: { postId: string, authorName: string, author
         <button className="bg-red-500 rounded-r-lg p-2 px-5 text-white text-l right-0">Send</button>
       </form>
     </div>
-    <ul className="shadow-lg mt-2 p-1 rounded-lg flex flex-col gap-1">
+    <ul className="mt-2 p-1 rounded-lg flex flex-col gap-1">
+      {props.comments.map(comment => <Comment authorImage={comment.author.image} authorName={comment.author.name} authorUsername={comment.author.username} content={comment.content}/>)}
     </ul>
   </section>;
 }

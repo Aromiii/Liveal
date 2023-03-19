@@ -8,6 +8,8 @@ import Post from "../components/feed/post";
 import { prisma } from "../server/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../server/auth";
+import { redirect } from "next/navigation";
+
 const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session, status } = useSession();
 
@@ -33,7 +35,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
               posts.map((post) => <Post postId={post.id} authorName={post.author.name} liked={post.liked}
                                         authorUsername={post.author.username}
                                         authorImage={post.author.image} text={post.content} image={image}
-                                        createdAt={post.createdAt} />)
+                                        createdAt={post.createdAt} comments={post.comments} />)
             }
             <Link href="/post/new">
               <svg className="bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"
@@ -59,7 +61,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
             {
               posts.map((post) => <Post authorName={post.author.name} authorUsername={post.author.username}
                                         authorImage={post.author.image} text={post.content} image={image}
-                                        createdAt={post.createdAt} />)
+                                        createdAt={post.createdAt} p />)
             }
           </main>
         </div>
@@ -79,7 +81,13 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
 export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getServerSession(context.req, context.res, authOptions)
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: { destination: "/signin", }
+    }
+  }
 
   const response = await fetch("https://dog.ceo/api/breeds/image/random");
   const data = await response.json();
@@ -102,12 +110,47 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const likedPosts = await prisma.like.findMany({
     where: {
-      postId: { in: posts.map(post => {return post.id}) },
+      postId: {
+        in: posts.map(post => {
+          return post.id;
+        })
+      },
       userId: session.user.id
     },
     select: { postId: true }
-  })
-  const formattedLikedPosts = likedPosts.map(likedPost => {return likedPost.postId})
+  });
+  const formattedLikedPosts = likedPosts.map(likedPost => {
+    return likedPost.postId;
+  });
+
+  const comments = await prisma.comment.findMany({
+    where: {
+      postId: {
+        in: posts.map(post => {
+          return post.id;
+        })
+      }
+    },
+    select: {
+      postId: true,
+      content: true,
+      updatedAt: true,
+      author: {
+        select: {
+          username: true,
+          name: true,
+          image: true
+        }
+      }
+    }
+  });
+
+  const formattedComments = comments.map(comment => {
+    return {
+      ...comment,
+      updatedAt: comment.updatedAt.toLocaleString()
+    };
+  });
 
   const formattedPosts = posts.map(post => {
     return {
@@ -115,7 +158,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       liked: formattedLikedPosts.includes(post.id),
       content: post.content,
       createdAt: post.createdAt.toString(),
-      author: post.author// convert the timestamp to a string
+      author: post.author,
+      comments: formattedComments.filter(comment => comment.postId === post.id)
     };
   });
 
