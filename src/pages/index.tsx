@@ -34,7 +34,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
               posts.map((post) => <Post postId={post.id} authorName={post.author.name} liked={post.liked}
                                         authorUsername={post.author.username}
                                         authorImage={post.author.image} text={post.content} image={image}
-                                        createdAt={post.createdAt} comments={post.comments} />)
+                                        createdAt={post.createdAt} comments={post.comments} postLikes={post.likes} />)
             }
             <Link href="/post/new">
               <svg className="bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"
@@ -60,7 +60,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
             {
               posts.map((post) => <Post authorName={post.author.name} authorUsername={post.author.username}
                                         authorImage={post.author.image} text={post.content} image={image}
-                                        createdAt={post.createdAt} comments={post.comments}/>)
+                                        createdAt={post.createdAt} comments={post.comments} postLikes={post.likes}/>)
             }
           </main>
         </div>
@@ -154,6 +154,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const formattedPosts = posts.map(post => {
     return {
       id: post.id,
+      likes: post.likes,
       liked: formattedLikedPosts ? formattedLikedPosts.includes(post.id) : false,
       content: post.content,
       createdAt: post.createdAt.toString(),

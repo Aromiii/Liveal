@@ -2,9 +2,10 @@ import Link from "next/link";
 import { useState } from "react";
 import Comment from "./comment";
 
-export default function Post(props: { postId: string, authorName: string, authorUsername: string, authorImage: string, text: string, image: string, createdAt: string, liked: boolean, comments: { updatedAt: string, id: string, author: { image: string | null, name: string | null, username: string | null }, content: string, postId: string }[] }) {
+export default function Post(props: { postId: string, postLikes: number, authorName: string, authorUsername: string, authorImage: string, text: string, image: string, createdAt: string, liked: boolean, comments: { updatedAt: string, id: string, author: { image: string | null, name: string | null, username: string | null }, content: string, postId: string }[] }) {
   const [liked, setLiked] = useState(props.liked);
   const [commentText, setCommentText] = useState("");
+  const [likes, setLikes] = useState(props.postLikes)
 
   const comment = async (event) => {
     event.preventDefault();
@@ -25,6 +26,13 @@ export default function Post(props: { postId: string, authorName: string, author
   const like = async (event) => {
     event.preventDefault();
     setLiked(!liked);
+
+    if (!liked) {
+      setLikes(likes + 1)
+    } else {
+      setLikes(likes - 1)
+    }
+
 
     const response = await fetch("/api/post/like", {
       method: !liked ? "POST" : "DELETE",
@@ -63,6 +71,7 @@ export default function Post(props: { postId: string, authorName: string, author
             d="M36.05 42H12.7V16.4L26.6 2l1.65 1.3q.55.4.725.9.175.5.175 1.15v.5L26.9 16.4H43q1.15 0 2.075.925Q46 18.25 46 19.4v4.1q0 .55-.125 1.275-.125.725-.375 1.275l-5.8 13.4q-.45 1.05-1.475 1.8Q37.2 42 36.05 42ZM9.7 16.4V42H4V16.4Z" />
         </svg>
       </button>
+      <p className="ml-2 text-sm font-semibold">{likes}</p>
       <form className="ml-auto mr-4 w-2/3 flex" onSubmit={comment}>
         <input onChange={event => setCommentText(event.target.value)} maxLength={200} type="text"
                className="bg-gray-200 rounded-l-lg p-2 w-full" placeholder=" Comment..." />
