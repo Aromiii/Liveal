@@ -3,7 +3,7 @@ import FriendsNav from "../../components/navs/friendsNav";
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { prisma } from "../../server/db";
 import Link from "next/link";
-import FeedPost from "../../components/feed/feedPost";
+import Post from "../../components/feed/post";
 
 const User = ({ user, posts }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return <>
@@ -22,7 +22,8 @@ const User = ({ user, posts }: InferGetServerSidePropsType<typeof getServerSideP
               <button className="mt-0 md:mt-4 liveal-button h-full">
                 Start chat
               </button>
-              <Link href={`/user/${user.username}/friends`} className="md:hidden mt-4 block p-2 px-5 md:mt-2 rounded-lg bg-white flex place-items-center place-content-center">
+              <Link href={`/user/${user.username}/friends`}
+                    className="md:hidden mt-4 block p-2 px-5 md:mt-2 rounded-lg bg-white flex place-items-center place-content-center">
                 Friends
               </Link>
             </div>
@@ -37,9 +38,9 @@ const User = ({ user, posts }: InferGetServerSidePropsType<typeof getServerSideP
             : null
           }
           {
-            posts.map((post) => <FeedPost authorName={user.name} authorUsername={user.username}
-                                          authorImage={user.image} text={post.content} image={post.image}
-                                          createdAt={post.createdAt} />)
+            posts.map(post => <Post authorName={user.name} authorUsername={user.username}
+                                    authorImage={user.image} text={post.content} image={post.image}
+                                    createdAt={post.createdAt} comments={post.comments} />)
           }
         </main>
         <div className="md:w-1/6 w-1/3 h-96 md:block hidden md:mr-4 z-20">
@@ -64,6 +65,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const posts = await prisma.post.findMany({
     select: {
+      id: true,
       content: true,
       createdAt: true
     },
@@ -73,15 +75,45 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       }
     },
     orderBy: {
-      updatedAt: 'desc'
+      updatedAt: "desc"
     }
+  });
+
+  const comments = await prisma.comment.findMany({
+    where: {
+      postId: {
+        in: posts.map(post => {
+          return post.id;
+        })
+      }
+    },
+    select: {
+      postId: true,
+      content: true,
+      updatedAt: true,
+      author: {
+        select: {
+          username: true,
+          name: true,
+          image: true
+        }
+      }
+    }
+  });
+
+  const formattedComments = comments.map(comment => {
+    return {
+      ...comment,
+      updatedAt: comment.updatedAt.toLocaleString()
+    };
   });
 
   const formattedPosts = posts.map(post => {
     return {
       content: post.content,
       createdAt: post.createdAt.toString(),
-      image: data.message
+      image: data.message,
+      comments: formattedComments.filter(comment => comment.postId === post.id)
     };
   });
 
