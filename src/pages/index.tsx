@@ -130,6 +130,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       }
     },
     select: {
+      id: true,
       postId: true,
       content: true,
       updatedAt: true,

@@ -2,13 +2,13 @@ import Link from "next/link";
 import { useState } from "react";
 import Comment from "./comment";
 
-export default function Post(props: { postId: string, authorName: string, authorUsername: string, authorImage: string, text: string, image: string, createdAt: string, liked: boolean, comments: {updatedAt: string, author: {image: string | null, name: string | null, username: string | null}, content: string, postId: string}[] }) {
+export default function Post(props: { postId: string, authorName: string, authorUsername: string, authorImage: string, text: string, image: string, createdAt: string, liked: boolean, comments: { updatedAt: string, id: string, author: { image: string | null, name: string | null, username: string | null }, content: string, postId: string }[] }) {
   const [liked, setLiked] = useState(props.liked);
-  const [commentText, setCommentText] = useState("")
+  const [commentText, setCommentText] = useState("");
 
   const comment = async (event) => {
     event.preventDefault();
-    console.log(commentText, props.postId)
+    console.log(commentText, props.postId);
 
     const response = await fetch("/api/post/comment", {
       method: "POST",
@@ -20,7 +20,7 @@ export default function Post(props: { postId: string, authorName: string, author
     });
     const body = await response.json();
     console.log(body);
-  }
+  };
 
   const like = async (event) => {
     event.preventDefault();
@@ -37,7 +37,7 @@ export default function Post(props: { postId: string, authorName: string, author
     console.log(body);
   };
 
-  return<section className="bg-white rounded-lg mb-2 p-2">
+  return <section className="bg-white rounded-lg mb-2 p-2">
     <div className="flex place-items-center gap-2">
       <Link href={`/user/${props.authorUsername}`}>
         <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={props.authorImage} />
@@ -70,7 +70,9 @@ export default function Post(props: { postId: string, authorName: string, author
       </form>
     </div>
     <ul className="mt-2 p-1 rounded-lg flex flex-col gap-1">
-      {props.comments.map(comment => <Comment authorImage={comment.author.image} authorName={comment.author.name} authorUsername={comment.author.username} content={comment.content} postAuthorUsername={props.authorUsername}/>)}
+      {props.comments.map(comment => <Comment authorImage={comment.author.image} authorName={comment.author.name}
+                                              authorUsername={comment.author.username} content={comment.content}
+                                              postAuthorUsername={props.authorUsername} commentId={comment.id} />)}
     </ul>
   </section>;
 }

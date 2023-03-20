@@ -12,26 +12,26 @@ const handler = async (req: NextRequest, res: NextResponse) => {
     return;
   }
 
-  const body = z.object({
-    text: z.string().min(1).max(200),
-    postId: z.string()
-  })
-    .safeParse(JSON.parse(req.body));
-
-  if (!body.success) {
-    res.status(400).json({ message: "Data you provided is not in correct format" });
-    return;
-  }
-
   if (req.method == "POST") {
+    const body = z.object({
+      text: z.string().min(1).max(200),
+      postId: z.string()
+    })
+      .safeParse(JSON.parse(req.body));
+
+    if (!body.success) {
+      res.status(400).json({ message: "Data you provided is not in correct format" });
+      return;
+    }
+
     try {
       await prisma.comment.create({
         data: {
+          content: body.data.text,
           userId: session.user.id,
-          postId: body.data.postId,
-          content: body.data.text
+          postId: body.data.postId
         }
-      });
+      })
 
       res.status(200).json({ message: "Commented" });
       return;
@@ -42,6 +42,22 @@ const handler = async (req: NextRequest, res: NextResponse) => {
       res.status(400).json({ message: "Could not create comment" });
       return;
     }
+  }
+
+  if (req.method == "DELETE") {
+    const body = z.object({
+      commentId: z.string(),
+    })
+      .safeParse(JSON.parse(req.body));
+
+    if (!body.success) {
+      res.status(400).json({ message: "Data you provided is not in correct format" });
+      return;
+    }
+
+    await prisma.comment.delete({
+      where: { id: body.data.commentId }
+    })
   }
 
   res.status(405).json({ message: "Method not allowed" });
