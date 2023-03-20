@@ -70,7 +70,7 @@ export default function Post(props: { postId: string, authorName: string, author
       </form>
     </div>
     <ul className="mt-2 p-1 rounded-lg flex flex-col gap-1">
-      {props.comments.map(comment => <Comment authorImage={comment.author.image} authorName={comment.author.name} authorUsername={comment.author.username} content={comment.content}/>)}
+      {props.comments.map(comment => <Comment authorImage={comment.author.image} authorName={comment.author.name} authorUsername={comment.author.username} content={comment.content} postAuthorUsername={props.authorUsername}/>)}
     </ul>
   </section>;
 }
