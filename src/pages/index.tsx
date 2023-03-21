@@ -8,6 +8,7 @@ import Post from "../components/feed/post";
 import { prisma } from "../server/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../server/auth";
+import SignInFooter from "../components/signInFooter";
 
 const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session, status } = useSession();
@@ -64,14 +65,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
             }
           </main>
         </div>
-        <footer className="fixed h-20 w-screen bottom-0 left-0 bg-red-500 flex place-items-center">
-          <h1 className="text-white text-xl p-5 mr-auto hidden md:block">
-            Don't be left alone - Be connected to your community
-          </h1>
-          <Link href="/signin" className="text-white text-[120%] w-fit m-10 p-2 px-5 rounded-lg bg-white text-black">
-            Sing in
-          </Link>
-        </footer>
+        <SignInFooter/>
       </>
     );
   }
