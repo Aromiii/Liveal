@@ -58,6 +58,9 @@ const handler = async (req: NextRequest, res: NextResponse) => {
     await prisma.comment.delete({
       where: { id: body.data.commentId }
     })
+
+    res.status(200).json({ message: "Comment deleted" })
+    return
   }
 
   res.status(405).json({ message: "Method not allowed" });

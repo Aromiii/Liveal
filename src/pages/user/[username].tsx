@@ -40,7 +40,7 @@ const User = ({ user, posts }: InferGetServerSidePropsType<typeof getServerSideP
           {
             posts.map(post => <Post authorName={user.name} authorUsername={user.username}
                                     authorImage={user.image} text={post.content} image={post.image}
-                                    createdAt={post.createdAt} comments={post.comments} />)
+                                    createdAt={post.createdAt} comments={post.comments} postId={post.id}/>)
           }
         </main>
         <div className="md:w-1/6 w-1/3 h-96 md:block hidden md:mr-4 z-20">
@@ -88,6 +88,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       }
     },
     select: {
+      id: true,
       postId: true,
       content: true,
       updatedAt: true,
@@ -110,7 +111,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const formattedPosts = posts.map(post => {
     return {
-      content: post.content,
+      ...post,
       createdAt: post.createdAt.toString(),
       image: data.message,
       comments: formattedComments.filter(comment => comment.postId === post.id)
