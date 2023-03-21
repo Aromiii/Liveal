@@ -4,11 +4,11 @@ import Comment from "./comment";
 import { useSession } from "next-auth/react";
 
 export default function Post(props: { postId: string, postLikes: number, authorName: string, authorUsername: string, authorImage: string, text: string, image: string, createdAt: string, liked: boolean, comments: { updatedAt: string, id: string, author: { image: string | null, name: string | null, username: string | null }, content: string, postId: string }[] }) {
-  const { data: session } = useSession()
+  const { data: session } = useSession();
   const [liked, setLiked] = useState(props.liked);
   const [commentText, setCommentText] = useState("");
-  const [likes, setLikes] = useState(props.postLikes)
-  const [comments, setComments] = useState(props.comments)
+  const [likes, setLikes] = useState(props.postLikes);
+  const [comments, setComments] = useState(props.comments);
 
   const comment = async (event) => {
     event.preventDefault();
@@ -23,7 +23,14 @@ export default function Post(props: { postId: string, postLikes: number, authorN
       })
     });
 
-    setComments([{author: {image: session?.user?.image, name: session?.user?.name, username: session?.user.username}, content: commentText}, ...comments])
+    if (response.status == 200) {
+      setComments([{
+        author: { image: session?.user?.image, name: session?.user?.name, username: session?.user.username },
+        content: commentText
+      }, ...comments]);
+
+      console.log(event.target.reset())
+    }
 
     const body = await response.json();
     console.log(body);
@@ -34,9 +41,9 @@ export default function Post(props: { postId: string, postLikes: number, authorN
     setLiked(!liked);
 
     if (!liked) {
-      setLikes(likes + 1)
+      setLikes(likes + 1);
     } else {
-      setLikes(likes - 1)
+      setLikes(likes - 1);
     }
 
 
@@ -86,8 +93,8 @@ export default function Post(props: { postId: string, postLikes: number, authorN
     </div>
     <ul className="mt-2 p-1 rounded-lg flex flex-col gap-1">
       {comments.map(comment => <Comment authorImage={comment.author.image} authorName={comment.author.name}
-                                              authorUsername={comment.author.username} content={comment.content}
-                                              postAuthorUsername={props.authorUsername} commentId={comment.id} />)}
+                                        authorUsername={comment.author.username} content={comment.content}
+                                        postAuthorUsername={props.authorUsername} commentId={comment.id} />)}
     </ul>
   </section>;
 }
