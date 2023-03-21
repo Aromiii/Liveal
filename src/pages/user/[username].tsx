@@ -101,7 +101,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
           image: true
         }
       }
-    }
+    },
   });
 
   const formattedComments = comments.map(comment => {

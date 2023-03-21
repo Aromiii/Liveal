@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { useState } from "react";
 import Comment from "./comment";
+import { useSession } from "next-auth/react";
 
 export default function Post(props: { postId: string, postLikes: number, authorName: string, authorUsername: string, authorImage: string, text: string, image: string, createdAt: string, liked: boolean, comments: { updatedAt: string, id: string, author: { image: string | null, name: string | null, username: string | null }, content: string, postId: string }[] }) {
+  const { data: session } = useSession()
   const [liked, setLiked] = useState(props.liked);
   const [commentText, setCommentText] = useState("");
   const [likes, setLikes] = useState(props.postLikes)
+  const [comments, setComments] = useState(props.comments)
 
   const comment = async (event) => {
     event.preventDefault();
@@ -19,6 +22,9 @@ export default function Post(props: { postId: string, postLikes: number, authorN
         postId: props.postId
       })
     });
+
+    setComments([{author: {image: session?.user?.image, name: session?.user?.name, username: session?.user.username}, content: commentText}, ...comments])
+
     const body = await response.json();
     console.log(body);
   };
@@ -79,7 +85,7 @@ export default function Post(props: { postId: string, postLikes: number, authorN
       </form>
     </div>
     <ul className="mt-2 p-1 rounded-lg flex flex-col gap-1">
-      {props.comments.map(comment => <Comment authorImage={comment.author.image} authorName={comment.author.name}
+      {comments.map(comment => <Comment authorImage={comment.author.image} authorName={comment.author.name}
                                               authorUsername={comment.author.username} content={comment.content}
                                               postAuthorUsername={props.authorUsername} commentId={comment.id} />)}
     </ul>
