@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 
 const Create: NextPage = () => {
   const router = useRouter()
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [desc, setDesc] = useState();

@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 
 const BgWithLivealLogo = ({ children }: any) => {
   const router = useRouter()
-  console.log(router)
 
   return <>
     <div className="absolute">
