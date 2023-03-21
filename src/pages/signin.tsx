@@ -5,10 +5,13 @@ import { useRouter } from "next/router";
 
 const Signin = () => {
   const router = useRouter();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
 
   if (status == "authenticated") {
-    router.replace("/");
+    if (!session?.user.profileCreated)
+      router.replace("/user/create");
+    else
+      router.replace("/")
   }
 
   if (status == "unauthenticated") {

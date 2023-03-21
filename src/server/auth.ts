@@ -46,6 +46,7 @@ export const authOptions: NextAuthOptions = {
           }
         })
         session.user.username = userRecord.username
+        session.user.profileCreated = userRecord.profileCreated
       }
       return session;
     }
