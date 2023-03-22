@@ -3,13 +3,11 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../server/auth";
 import { prisma } from "../../server/db";
 import BgWithLivealLogo from "../../components/bgWithLivealLogo";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/router";
 
 const Edit: NextPage = ({ user }: InferGetServerSidePropsType<GetServerSideProps>) => {
   const router = useRouter()
-  const { data: session } = useSession()
   const [displayName, setDisplayName] = useState(user.name);
   const [username, setUsername] = useState(user.username);
   const [desc, setDesc] = useState(user.description);
@@ -59,20 +57,20 @@ export default Edit;
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions)
 
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/signin",
+        permanent: true
+      }
+    }
+  }
+
   const user = await prisma.user.findFirst({
     where: {
       id: session.user.id
     }
   })
-
-  if (!user) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: true
-      }
-    }
-  }
 
   return {
     props: {
