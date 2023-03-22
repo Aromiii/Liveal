@@ -28,11 +28,11 @@ export default function Navbar() {
           </Link>
         </li>
       </ul>
-      <div className="w-[60%] h-[80px] rounded-b-lg bg-white absolute top-[100%] shadow-lg" hidden={!showSearch}>
+      <div className="w-full md:w-[60%] md:min-w-[700px] h-[80px] rounded-b-lg bg-white absolute top-[100%] shadow-lg" hidden={!showSearch}>
         <form className="m-4">
           <input className="w-full bg-gray-300 rounded-lg h-full shadow p-3" placeholder=" Search for anything..."/>
         </form>
       </div>
-    </nav>;
+    </nav>
   </div>
 }
