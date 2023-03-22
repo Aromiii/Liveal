@@ -5,8 +5,13 @@ import { prisma } from "../../server/db";
 import Link from "next/link";
 import Post from "../../components/feed/post";
 import SignInFooter from "../../components/signInFooter";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 const User = ({ user, posts }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const router = useRouter()
+  const { data: session } = useSession()
+
   return <>
     <Navbar />
     <div className="pt-5 relative">
@@ -20,9 +25,14 @@ const User = ({ user, posts }: InferGetServerSidePropsType<typeof getServerSideP
               <h1 className="font-bold text-lg break-words max-w-[80%]">{user.name}</h1>
             </div>
             <div className="w-2/5 md:w-full flex-col flex z-30">
-              <button className="mt-0 md:mt-4 liveal-button h-full">
-                Start chat
-              </button>
+              {session?.user.username == router.query.username ?
+                <Link className="p-2 bg-white mt-0 md:mt-3 rounded-lg text-center" href="/user/edit">
+                  Edit profile
+                </Link> :
+                <button className="mt-0 md:mt-3 liveal-button h-full">
+                  Start chat
+                </button>
+              }
               <Link href={`/user/${user.username}/friends`}
                     className="md:hidden mt-4 block p-2 px-5 md:mt-2 rounded-lg bg-white flex place-items-center place-content-center">
                 Friends
