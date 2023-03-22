@@ -9,10 +9,12 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../server/auth";
+import { getComments } from "../../utils/getComments";
+import { getLikes } from "../../utils/getLikes";
 
 const User = ({ user, posts }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const router = useRouter()
-  const { data: session } = useSession()
+  const router = useRouter();
+  const { data: session } = useSession();
 
   return <>
     <Navbar />
@@ -31,9 +33,7 @@ const User = ({ user, posts }: InferGetServerSidePropsType<typeof getServerSideP
                 <Link className="p-2 bg-white mt-0 md:mt-3 rounded-lg text-center" href="/user/edit">
                   Edit profile
                 </Link> :
-                <button className="mt-0 md:mt-3 liveal-button h-full">
-                  Start chat
-                </button>
+                null
               }
               <Link href={`/user/${user.username}/friends`}
                     className="md:hidden mt-4 block p-2 px-5 md:mt-2 rounded-lg bg-white flex place-items-center place-content-center">
@@ -53,14 +53,15 @@ const User = ({ user, posts }: InferGetServerSidePropsType<typeof getServerSideP
           {
             posts.map(post => <Post authorName={user.name} authorUsername={user.username}
                                     authorImage={user.image} text={post.content} image={post.image}
-                                    createdAt={post.createdAt} comments={post.comments} postId={post.id} postLikes={post.likes} liked={post.liked}/>)
+                                    createdAt={post.createdAt} comments={post.comments} postId={post.id}
+                                    postLikes={post.likes} liked={post.liked} />)
           }
         </main>
         <div className="md:w-1/6 md:min-w-[150px] w-1/3 h-96 md:block hidden md:mr-4 z-20">
           <FriendsNav />
         </div>
       </div>
-      <SignInFooter/>
+      <SignInFooter />
     </div>
   </>;
 };
@@ -95,55 +96,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   });
 
-  let formattedLikedPosts: string[]
-
-  if (session) {
-    const likedPosts = await prisma.like.findMany({
-      where: {
-        postId: {
-          in: posts.map(post => {
-            return post.id;
-          })
-        },
-        userId: session.user.id
-      },
-      select: { postId: true }
-    });
-
-    formattedLikedPosts = likedPosts.map(likedPost => {
-      return likedPost.postId;
-    });
-  }
-
-  const comments = await prisma.comment.findMany({
-    where: {
-      postId: {
-        in: posts.map(post => {
-          return post.id;
-        })
-      }
-    },
-    select: {
-      id: true,
-      postId: true,
-      content: true,
-      updatedAt: true,
-      author: {
-        select: {
-          username: true,
-          name: true,
-          image: true
-        }
-      }
-    },
-  });
-
-  const formattedComments = comments.map(comment => {
-    return {
-      ...comment,
-      updatedAt: comment.updatedAt.toLocaleString()
-    };
-  });
+  const formattedLikedPosts = await getLikes(session?.user.id, posts);
+  const formattedComments = await getComments(posts);
 
   const formattedPosts = posts.map(post => {
     return {
