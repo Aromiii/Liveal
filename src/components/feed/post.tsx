@@ -2,8 +2,10 @@ import Link from "next/link";
 import { useState } from "react";
 import Comment from "./comment";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export default function Post(props: { postId: string, postLikes: number, authorName: string, authorUsername: string, authorImage: string, text: string, image: string, createdAt: string, liked: boolean, comments: { updatedAt: string, id: string, author: { image: string | null, name: string | null, username: string | null }, content: string, postId: string }[] }) {
+  const router = useRouter()
   const { data: session } = useSession();
   const [liked, setLiked] = useState(props.liked);
   const [commentText, setCommentText] = useState("");
@@ -12,7 +14,13 @@ export default function Post(props: { postId: string, postLikes: number, authorN
 
   const comment = async (event) => {
     event.preventDefault();
-    console.log(commentText, props.postId);
+
+    if (!session) {
+      if (confirm("You can't comment because you are not signed in\nDo you want to be redirected in to sign in page"))
+        router.push("/signin")
+
+      return
+    }
 
     const response = await fetch("/api/post/comment", {
       method: "POST",
@@ -38,6 +46,14 @@ export default function Post(props: { postId: string, postLikes: number, authorN
 
   const like = async (event) => {
     event.preventDefault();
+
+    if (!session) {
+      if (confirm("You can't like because you are not signed in\nDo you want to be redirected in to sign in page"))
+        router.push("/signin")
+
+      return
+    }
+
     setLiked(!liked);
 
     if (!liked) {
