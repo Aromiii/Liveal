@@ -29,7 +29,7 @@ const Comment = (props: { authorImage: string, authorName: string, authorUsernam
         <img className="h-full rounded-full w-full" src={props.authorImage} />
       </Link>
       <div className="w-[80%]">
-        <h1 className="font-semibold m-0.5">{props.authorName}</h1>
+        <h1 className="font-semibold m-0.5 break-words">{props.authorName}</h1>
         <p className="m-0.5 rounded-lg break-words whitespace-pre-line">{props.content}</p>
       </div>
       <div className={props.authorUsername == session?.user.username ? "ml-auto" : "hidden"}>

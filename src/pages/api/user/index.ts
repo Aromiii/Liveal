@@ -12,8 +12,8 @@ const handler = async (req: NextRequest, res: NextResponse) => {
   }
 
   const schema = z.object({
-    displayName: z.string().min(3).max(50),
-    username: z.string().min(3).max(50)
+    displayName: z.string().min(3).max(30),
+    username: z.string().min(3).max(30)
       .transform((value) => {
       // Remove whitespace
       value = value.trim().replace(/\s+/g, '');
