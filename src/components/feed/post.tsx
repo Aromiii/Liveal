@@ -81,7 +81,7 @@ export default function Post(props: { postId: string, postLikes: number, authorN
       </Link>
       <div>
         <h1 className="font-semibold text-lg">{props.authorName}</h1>
-        <h2 className="font-extralight">{props.createdAt}</h2>
+        <h2 className="font-extralight">{new Intl.DateTimeFormat("eur", { year: new Date().getFullYear() === new Date(props.createdAt).getFullYear() ? undefined : 'numeric', month: 'long', day: 'numeric' }).format(new Date(props.createdAt))}</h2>
       </div>
     </div>
     <img className="p-2 w-full max-h-[70vh] object-cover rounded-2xl" src={props.image} />

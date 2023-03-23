@@ -9,8 +9,12 @@ export default function Navbar() {
 
   return <div className="h-[calc(80px-1.25rem)] w-full">
     <nav className="fixed top-0 bg-white h-[80px] flex place-items-center justify-center w-full right-0 shadow-lg z-50 border-b">
-      <Image className="md:block hidden mr-auto mx-3" src="/livealLogoWithText.svg" width={160} height={0} alt="Liveal logo" />
-      <Image className="md:hidden mr-auto mx-3" src="/livealLogoWithoutText.svg" alt="Liveal logo" width={60} height={0} />
+      <Link className="md:block hidden mr-auto mx-3" href="/">
+        <Image src="/livealLogoWithText.svg" width={160} height={0} alt="Liveal logo" />
+      </Link>
+      <Link className="md:hidden mr-auto mx-3"  href="/">
+        <Image src="/livealLogoWithoutText.svg" alt="Liveal logo" width={60} height={0} />
+      </Link>
       <ul className="h-[70] mx-3 flex gap-6 place-items-center">
         <li>
           <Link href="/">
