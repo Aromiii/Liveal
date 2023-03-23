@@ -28,11 +28,11 @@ const Comment = (props: { authorImage: string, authorName: string, authorUsernam
       <Link className="w-[10%] h-[10%] md:min-w-[60px] min-w-[40px]" href={`/user/${props.authorUsername}`}>
         <img className="h-full rounded-full w-full" src={props.authorImage} />
       </Link>
-      <div className="w-[80%]">
-        <h1 className="font-semibold m-0.5 break-words">{props.authorName}</h1>
+      <div className="w-[calc(100%-80px)]">
+        <p className="font-semibold w-full break-words">{props.authorName}</p>
         <p className="m-0.5 rounded-lg break-words whitespace-pre-line">{props.content}</p>
       </div>
-      <div className={props.authorUsername == session?.user.username ? "ml-auto" : "hidden"}>
+      <div className={props.authorUsername == session?.user.username ? "ml-auto w-[40px]" : "hidden"}>
         <button className="ml-auto" onClick={deleteComment}>
           <Image src="/delete.svg" width={30} height={30}/>
         </button>
