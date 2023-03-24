@@ -74,7 +74,7 @@ export default function Post(props: { postId: string, postLikes: number, authorN
     console.log(body);
   };
 
-  return <section className="bg-white rounded-lg mb-2 p-2">
+  return <li className="bg-white rounded-lg mb-2 p-2">
     <div className="flex place-items-center gap-2">
       <Link href={`/user/${props.authorUsername}`}>
         <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={props.authorImage} />
@@ -112,5 +112,5 @@ export default function Post(props: { postId: string, postLikes: number, authorN
                                         authorUsername={comment.author.username} content={comment.content}
                                         postAuthorUsername={props.authorUsername} commentId={comment.id} />)}
     </ul>
-  </section>;
+  </li>;
 }

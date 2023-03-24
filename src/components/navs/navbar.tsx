@@ -15,7 +15,7 @@ export default function Navbar() {
       <Link className="md:hidden mr-auto mx-3"  href="/">
         <Image src="/livealLogoWithoutText.svg" alt="Liveal logo" width={60} height={0} />
       </Link>
-      <ul className="h-[70] mx-3 flex gap-6 place-items-center">
+      <ul className="h-[70] mx-3 flex gap-3 place-items-center">
         <li>
           <Link href="/">
             <Image src="/home.svg" width={50} height={50}/>

@@ -19,8 +19,8 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
     return (
       <>
         <Navbar />
-        <aside className="flex mt-5 gap-5">
-          <div className="w-1/6 min-w-[150px] md:block hidden">
+        <div className="flex mt-5 gap-5">
+          <aside className="w-1/6 min-w-[150px] md:block hidden">
             <Link href={`/user/${session?.user.username}`}>
               <div className="bg-white rounded-lg flex place-items-center flex-col">
                 <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture"
@@ -31,14 +31,16 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
             <div className="hidden md:block mt-5">
               <FriendsNav />
             </div>
-          </div>
+          </aside>
           <main className="mx-auto md:w-1/2 w-full">
-            {
-              posts.map((post) => <Post postId={post.id} authorName={post.author.name} liked={post.liked}
-                                        authorUsername={post.author.username}
-                                        authorImage={post.author.image} text={post.content} image={image}
-                                        createdAt={post.createdAt} comments={post.comments} postLikes={post.likes} />)
-            }
+            <ul>
+              {
+                posts.map((post) => <Post postId={post.id} authorName={post.author.name} liked={post.liked}
+                                          authorUsername={post.author.username}
+                                          authorImage={post.author.image} text={post.content} image={image}
+                                          createdAt={post.createdAt} comments={post.comments} postLikes={post.likes} />)
+              }
+            </ul>
             <Link href="/post/new">
               <svg className="bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"
                    xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="48">
@@ -49,7 +51,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
           <aside className="w-1/6 min-w-[150px] md:block hidden">
             <ChatsNav />
           </aside>
-        </aside>
+        </div>
       </>
     );
   }
