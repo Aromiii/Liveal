@@ -42,7 +42,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
               }
             </ul>
             <Link href="/post/new">
-              <svg className="bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"
+              <svg className="shadow shadow-gray-500 bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"
                    xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="48">
                 <path d="M450 856V606H200v-60h250V296h60v250h250v60H510v250h-60Z" />
               </svg>

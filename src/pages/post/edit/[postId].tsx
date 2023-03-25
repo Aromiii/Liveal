@@ -43,7 +43,7 @@ const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>
 
   if (session) {
     return <>
-      <BgWithLivealLogo>
+      <BgWithLivealLogo showBack={true}>
         <div className="flex place-items-center gap-2">
           <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={session?.user?.image} />
           <div className="w-[calc(100%-5rem)]">

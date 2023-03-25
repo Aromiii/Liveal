@@ -33,7 +33,7 @@ const Edit: NextPage = ({ user }: InferGetServerSidePropsType<GetServerSideProps
   };
 
   return <>
-    <BgWithLivealLogo>
+    <BgWithLivealLogo showBack={true}>
       <h1 className="text-2xl text-center mb-5">Create your account</h1>
       <form className="flex flex-col gap-4" onSubmit={updateAccount}>
         <div className="w-full gap-4 flex">
