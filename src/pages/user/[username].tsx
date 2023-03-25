@@ -17,6 +17,34 @@ const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getSe
   const router = useRouter();
   const { data: session } = useSession();
 
+  const addFriend = async (event: any) => {
+    event.preventDefault();
+
+    const response = await fetch("/api/user/friend", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({
+        userId: user.id
+      })
+    });
+    const body = await response.json();
+    alert(body.message);
+  }
+
+  const removeFriend = async (event: any) => {
+    event.preventDefault();
+
+    const response = await fetch("/api/user/friend", {
+      method: "DELETE",
+      credentials: "include",
+      body: JSON.stringify({
+        userId: user.id
+      })
+    });
+    const body = await response.json();
+    alert(body.message);
+  }
+
   return <>
     <Navbar />
     <div className="pt-5 relative">
@@ -25,16 +53,24 @@ const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getSe
       <div className="md:flex px-5 absolute w-full w-[calc(100%+2.5rem)] left-[-1.25rem] top-[60%] bg-gray-200">
         <div className="flex md:block w-full md:w-1/6 md:min-w-[150px] md:ml-4 md:z-20">
           <div className="w-full mr-auto md:block flex gap-5">
-            <div className="shadow w-[calc(60%-1.25rem)] md:w-full bg-white rounded-lg flex place-items-center flex-col z-30">
+            <div
+              className="shadow w-[calc(60%-1.25rem)] md:w-full bg-white rounded-lg flex place-items-center flex-col z-30">
               <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture" src={user.image} />
               <h1 className="font-bold text-lg break-words max-w-[80%]">{user.name}</h1>
             </div>
             <div className=" w-2/5 md:w-full flex-col flex z-30 gap-4">
               {session?.user.username == router.query.username ?
-                <Link className="shadow p-2 h-full bg-white mt-0 md:mt-3 rounded-lg text-center flex place-items-center place-content-center text-xl" href="/user/edit">
+                <Link
+                  className="shadow p-2 h-full bg-white md:mt-3 rounded-lg text-center flex place-items-center place-content-center text-xl"
+                  href="/user/edit">
                   Edit profile
                 </Link> :
-                null
+                <div className="w-full">
+                  {friends.map(friend => { return friend.id }).includes(session?.user?.id) ?
+                    <button onClick={removeFriend} className="w-full liveal-button md:mt-3 h-full">Remove friend</button> :
+                    <button onClick={addFriend} className="w-full liveal-button md:mt-3 h-full">Add friend</button>
+                  }
+                </div>
               }
               <Link href={`/user/${user.username}/friends`}
                     className="shadow md:hidden h-full block p-2 px-5 md:mt-2 rounded-lg bg-white flex place-items-center place-content-center text-xl">
@@ -61,7 +97,7 @@ const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getSe
           </ul>
         </main>
         <div className="md:w-1/6 md:min-w-[175px] w-1/3 h-96 md:block hidden md:mr-4 z-20">
-          <FriendsNav friends={friends}/>
+          <FriendsNav friends={friends} />
         </div>
       </div>
       <SignInFooter />
@@ -88,7 +124,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         destination: "/404",
         permanent: true
       }
-    }
+    };
   }
 
   const posts = await prisma.post.findMany({
@@ -108,7 +144,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   });
 
-  const friends = await getFriends(user.id)
+  const friends = await getFriends(user.id);
   const likedPosts = await getLikes(session?.user.id, posts);
   const comments = await getComments(posts);
 
@@ -126,12 +162,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     props: {
       friends: friends,
       posts: formattedPosts,
-      user: {
-        description: user.description,
-        username: user.username,
-        name: user.name,
-        image: user.image
-      }
+      user: user
     }
   };
 }

@@ -1,8 +1,6 @@
 import ConnectionOrChatCard from "../feed/connectionOrChatCard";
 
 const FriendsNav = (props: { friends: {image: string, name: string, username: string}[] }) => {
-  console.log(props.friends)
-
   return <>
     <aside className="shadow hidden md:block">
       <div className="bg-white rounded-lg px-4 p-1">
