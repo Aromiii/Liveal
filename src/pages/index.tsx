@@ -11,8 +11,9 @@ import { authOptions } from "../server/auth";
 import SignInFooter from "../components/signInFooter";
 import { getLikes } from "../utils/getLikes";
 import { getComments } from "../utils/getComments";
+import getFriends from "../utils/getFriends";
 
-const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Home: NextPage = ({ posts, image, friends }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session, status } = useSession();
 
   if (status == "authenticated") {
@@ -29,7 +30,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
               </div>
             </Link>
             <div className="hidden md:block mt-5">
-              <FriendsNav />
+              <FriendsNav friends={friends}/>
             </div>
           </aside>
           <main className="mx-auto md:w-1/2 w-full">
@@ -99,23 +100,25 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   });
 
-  const formattedLikedPosts = await getLikes(session?.user.id, posts);
-  const formattedComments = await getComments(posts);
+  const friends = await getFriends(session.user.id);
+  const likedPosts = await getLikes(session?.user.id, posts);
+  const comments = await getComments(posts);
 
   const formattedPosts = posts.map(post => {
     return {
       id: post.id,
       likes: post.likes,
-      liked: formattedLikedPosts ? formattedLikedPosts.includes(post.id) : false,
+      liked: likedPosts ? likedPosts.includes(post.id) : false,
       content: post.content,
       createdAt: post.createdAt.toString(),
       author: post.author,
-      comments: formattedComments.filter(comment => comment.postId === post.id)
+      comments: comments.filter(comment => comment.postId === post.id)
     };
   });
 
   return {
     props: {
+      friends: friends,
       posts: formattedPosts,
       image: data.message
     }

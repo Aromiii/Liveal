@@ -11,8 +11,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../server/auth";
 import { getComments } from "../../utils/getComments";
 import { getLikes } from "../../utils/getLikes";
+import getFriends from "../../utils/getFriends";
 
-const User = ({ user, posts }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -59,8 +60,8 @@ const User = ({ user, posts }: InferGetServerSidePropsType<typeof getServerSideP
             }
           </ul>
         </main>
-        <div className="md:w-1/6 md:min-w-[150px] w-1/3 h-96 md:block hidden md:mr-4 z-20">
-          <FriendsNav />
+        <div className="md:w-1/6 md:min-w-[175px] w-1/3 h-96 md:block hidden md:mr-4 z-20">
+          <FriendsNav friends={friends}/>
         </div>
       </div>
       <SignInFooter />
@@ -107,21 +108,23 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   });
 
-  const formattedLikedPosts = await getLikes(session?.user.id, posts);
-  const formattedComments = await getComments(posts);
+  const friends = await getFriends(user.id)
+  const likedPosts = await getLikes(session?.user.id, posts);
+  const comments = await getComments(posts);
 
   const formattedPosts = posts.map(post => {
     return {
       ...post,
-      liked: formattedLikedPosts ? formattedLikedPosts.includes(post.id) : false,
+      liked: likedPosts ? likedPosts.includes(post.id) : false,
       createdAt: post.createdAt.toString(),
       image: data.message,
-      comments: formattedComments.filter(comment => comment.postId === post.id)
+      comments: comments.filter(comment => comment.postId === post.id)
     };
   });
 
   return {
     props: {
+      friends: friends,
       posts: formattedPosts,
       user: {
         description: user.description,
