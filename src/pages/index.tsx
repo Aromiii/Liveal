@@ -8,6 +8,9 @@ import Post from "../components/feed/post";
 import { prisma } from "../server/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../server/auth";
+import SignInFooter from "../components/signInFooter";
+import { getLikes } from "../utils/getLikes";
+import { getComments } from "../utils/getComments";
 
 const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session, status } = useSession();
@@ -16,8 +19,8 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
     return (
       <>
         <Navbar />
-        <aside className="flex mt-5 gap-5">
-          <div className="w-1/6 md:block hidden">
+        <div className="flex mt-5 gap-5">
+          <aside className="w-1/6 min-w-[150px] md:block hidden">
             <Link href={`/user/${session?.user.username}`}>
               <div className="bg-white rounded-lg flex place-items-center flex-col">
                 <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture"
@@ -28,25 +31,27 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
             <div className="hidden md:block mt-5">
               <FriendsNav />
             </div>
-          </div>
+          </aside>
           <main className="mx-auto md:w-1/2 w-full">
-            {
-              posts.map((post) => <Post postId={post.id} authorName={post.author.name} liked={post.liked}
-                                        authorUsername={post.author.username}
-                                        authorImage={post.author.image} text={post.content} image={image}
-                                        createdAt={post.createdAt} comments={post.comments} postLikes={post.likes} />)
-            }
+            <ul>
+              {
+                posts.map((post) => <Post postId={post.id} authorName={post.author.name} liked={post.liked}
+                                          authorUsername={post.author.username}
+                                          authorImage={post.author.image} text={post.content} image={image}
+                                          createdAt={post.createdAt} comments={post.comments} postLikes={post.likes} />)
+              }
+            </ul>
             <Link href="/post/new">
-              <svg className="bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"
+              <svg className="shadow shadow-gray-500 bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"
                    xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="48">
                 <path d="M450 856V606H200v-60h250V296h60v250h250v60H510v250h-60Z" />
               </svg>
             </Link>
           </main>
-          <aside className="w-1/6 md:block hidden">
+          <aside className="w-1/6 min-w-[150px] md:block hidden">
             <ChatsNav />
           </aside>
-        </aside>
+        </div>
       </>
     );
   }
@@ -64,14 +69,7 @@ const Home: NextPage = ({ posts, image }: InferGetServerSidePropsType<typeof get
             }
           </main>
         </div>
-        <footer className="fixed h-20 w-screen bottom-0 left-0 bg-red-500 flex place-items-center">
-          <h1 className="text-white text-xl p-5 mr-auto hidden md:block">
-            Don't be left alone - Be connected to your community
-          </h1>
-          <Link href="/signin" className="text-white text-[120%] w-fit m-10 p-2 px-5 rounded-lg bg-white text-black">
-            Sing in
-          </Link>
-        </footer>
+        <SignInFooter/>
       </>
     );
   }
@@ -101,55 +99,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   });
 
-  let formattedLikedPosts: string[]
-
-  if (session) {
-    const likedPosts = await prisma.like.findMany({
-      where: {
-        postId: {
-          in: posts.map(post => {
-            return post.id;
-          })
-        },
-        userId: session.user.id
-      },
-      select: { postId: true }
-    });
-
-    formattedLikedPosts = likedPosts.map(likedPost => {
-      return likedPost.postId;
-    });
-  }
-
-  const comments = await prisma.comment.findMany({
-    where: {
-      postId: {
-        in: posts.map(post => {
-          return post.id;
-        })
-      }
-    },
-    select: {
-      id: true,
-      postId: true,
-      content: true,
-      updatedAt: true,
-      author: {
-        select: {
-          username: true,
-          name: true,
-          image: true
-        }
-      }
-    }
-  });
-
-  const formattedComments = comments.map(comment => {
-    return {
-      ...comment,
-      updatedAt: comment.updatedAt.toLocaleString()
-    };
-  });
+  const formattedLikedPosts = await getLikes(session?.user.id, posts);
+  const formattedComments = await getComments(posts);
 
   const formattedPosts = posts.map(post => {
     return {

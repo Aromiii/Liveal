@@ -1,15 +1,26 @@
 import Link from "next/link";
 import { useState } from "react";
 import Comment from "./comment";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export default function Post(props: { postId: string, postLikes: number, authorName: string, authorUsername: string, authorImage: string, text: string, image: string, createdAt: string, liked: boolean, comments: { updatedAt: string, id: string, author: { image: string | null, name: string | null, username: string | null }, content: string, postId: string }[] }) {
+  const router = useRouter()
+  const { data: session } = useSession();
   const [liked, setLiked] = useState(props.liked);
   const [commentText, setCommentText] = useState("");
-  const [likes, setLikes] = useState(props.postLikes)
+  const [likes, setLikes] = useState(props.postLikes);
+  const [comments, setComments] = useState(props.comments);
 
   const comment = async (event) => {
     event.preventDefault();
-    console.log(commentText, props.postId);
+
+    if (!session) {
+      if (confirm("You can't comment because you are not signed in\nDo you want to be redirected in to sign in page"))
+        router.push("/signin")
+
+      return
+    }
 
     const response = await fetch("/api/post/comment", {
       method: "POST",
@@ -19,18 +30,36 @@ export default function Post(props: { postId: string, postLikes: number, authorN
         postId: props.postId
       })
     });
+
+    if (response.status == 200) {
+      setComments([{
+        author: { image: session?.user?.image, name: session?.user?.name, username: session?.user.username },
+        content: commentText
+      }, ...comments]);
+
+      console.log(event.target.reset())
+    }
+
     const body = await response.json();
     console.log(body);
   };
 
   const like = async (event) => {
     event.preventDefault();
+
+    if (!session) {
+      if (confirm("You can't like because you are not signed in\nDo you want to be redirected in to sign in page"))
+        router.push("/signin")
+
+      return
+    }
+
     setLiked(!liked);
 
     if (!liked) {
-      setLikes(likes + 1)
+      setLikes(likes + 1);
     } else {
-      setLikes(likes - 1)
+      setLikes(likes - 1);
     }
 
 
@@ -45,14 +74,14 @@ export default function Post(props: { postId: string, postLikes: number, authorN
     console.log(body);
   };
 
-  return <section className="bg-white rounded-lg mb-2 p-2">
+  return <li className="shadow bg-white rounded-lg mb-2 p-2">
     <div className="flex place-items-center gap-2">
       <Link href={`/user/${props.authorUsername}`}>
         <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={props.authorImage} />
       </Link>
-      <div>
-        <h1 className="font-semibold text-lg">{props.authorName}</h1>
-        <h2 className="font-extralight">{props.createdAt}</h2>
+      <div className="w-[calc(100%-5rem)]">
+        <p className="break-words font-semibold text-lg">{props.authorName}</p>
+        <h2 className="font-extralight">{new Intl.DateTimeFormat("eur", { year: new Date().getFullYear() === new Date(props.createdAt).getFullYear() ? undefined : 'numeric', month: 'long', day: 'numeric' }).format(new Date(props.createdAt))}</h2>
       </div>
     </div>
     <img className="p-2 w-full max-h-[70vh] object-cover rounded-2xl" src={props.image} />
@@ -79,9 +108,9 @@ export default function Post(props: { postId: string, postLikes: number, authorN
       </form>
     </div>
     <ul className="mt-2 p-1 rounded-lg flex flex-col gap-1">
-      {props.comments.map(comment => <Comment authorImage={comment.author.image} authorName={comment.author.name}
-                                              authorUsername={comment.author.username} content={comment.content}
-                                              postAuthorUsername={props.authorUsername} commentId={comment.id} />)}
+      {comments.map(comment => <Comment authorImage={comment.author.image} authorName={comment.author.name}
+                                        authorUsername={comment.author.username} content={comment.content}
+                                        postAuthorUsername={props.authorUsername} commentId={comment.id} />)}
     </ul>
-  </section>;
+  </li>;
 }

@@ -1,14 +1,15 @@
-import { type NextPage } from "next";
-import { useSession } from "next-auth/react";
+import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType, type NextPage } from "next";
 import BgWithLivealLogo from "../../components/bgWithLivealLogo";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../../server/auth";
+import { prisma } from "../../server/db";
 
-const Create: NextPage = () => {
+const Create: NextPage = ({ user }: InferGetServerSidePropsType<GetServerSideProps>) => {
   const router = useRouter()
-  const { data: session, status } = useSession()
-  const [displayName, setDisplayName] = useState("");
-  const [username, setUsername] = useState("");
+  const [displayName, setDisplayName] = useState(user.name);
+  const [username, setUsername] = useState(user.username);
   const [desc, setDesc] = useState();
 
   const createAccount = async (event) => {
@@ -31,17 +32,16 @@ const Create: NextPage = () => {
     }
   };
 
-  if (status == "authenticated") {
     return (
       <>
-        <BgWithLivealLogo>
+        <BgWithLivealLogo showBack={false}>
           <h1 className="text-2xl text-center mb-5">Create your account</h1>
           <form className="flex flex-col gap-4" onSubmit={createAccount}>
             <div className="w-full gap-4 flex">
-              <input minLength={3} maxLength={50} required className="bg-gray-200 rounded-lg w-full p-2"
-                     placeholder=" Display name..." onChange={event => setDisplayName(event.target.value)} />
-              <input minLength={3} maxLength={50} required className="bg-gray-200 rounded-lg w-full p-2"
-                     placeholder=" Username..." onChange={event => setUsername(event.target.value)} />
+              <input minLength={3} maxLength={30} required className="bg-gray-200 rounded-lg w-full p-2"
+                     placeholder=" Display name..." onChange={event => setDisplayName(event.target.value)} defaultValue={displayName}/>
+              <input minLength={3} maxLength={30} required className="bg-gray-200 rounded-lg w-full p-2"
+                     placeholder=" Username..." onChange={event => setUsername(event.target.value)} defaultValue={username}/>
             </div>
             <textarea className="bg-gray-200 rounded-lg w-full p-2" placeholder=" Your profile description..."
                       maxLength={1000} onChange={event => setDesc(event.target.value)} />
@@ -52,11 +52,55 @@ const Create: NextPage = () => {
         </BgWithLivealLogo>
       </>
     );
-  }
-
-  if (status == "unauthenticated") {
-    router.push("/signin")
-  }
 };
 
 export default Create;
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(context.req, context.res, authOptions)
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/signin",
+        permanent: true
+      }
+    }
+  }
+
+  try {
+    const user = await prisma.user.findFirst({
+      where: { id: session.user.id }
+    })
+
+    if (user.profileCreated) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: true
+        }
+      }
+    }
+
+    return {
+      props: {
+        user: {
+          name: user.name,
+          username: user.email.match(/^([^@]+)/)[1]
+        }
+      }
+    };
+
+  } catch (error) {
+
+  }
+
+  return {
+    props: {
+      user: {
+        name: null,
+        username: null
+      }
+    }
+  }
+}

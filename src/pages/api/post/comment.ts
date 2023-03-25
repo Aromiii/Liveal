@@ -31,7 +31,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
           userId: session.user.id,
           postId: body.data.postId
         }
-      })
+      });
 
       res.status(200).json({ message: "Commented" });
       return;
@@ -46,7 +46,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
 
   if (req.method == "DELETE") {
     const body = z.object({
-      commentId: z.string(),
+      commentId: z.string()
     })
       .safeParse(JSON.parse(req.body));
 
@@ -55,12 +55,21 @@ const handler = async (req: NextRequest, res: NextResponse) => {
       return;
     }
 
-    await prisma.comment.delete({
-      where: { id: body.data.commentId }
-    })
+    try {
+      await prisma.comment.deleteMany({
+        where: {
+          id: body.data.commentId,
+          userId: session.user.id
+        }
+      });
+    } catch (error) {
+      console.error(error)
+      res.status(403).json({ message: "You are not the owner of comment" })
+      return
+    }
 
-    res.status(200).json({ message: "Comment deleted" })
-    return
+    res.status(200).json({ message: "Comment deleted" });
+    return;
   }
 
   res.status(405).json({ message: "Method not allowed" });

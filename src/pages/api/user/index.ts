@@ -12,8 +12,27 @@ const handler = async (req: NextRequest, res: NextResponse) => {
   }
 
   const schema = z.object({
-    displayName: z.string().min(3).max(50),
-    username: z.string().min(3).max(50),
+    displayName: z.string().min(3).max(30),
+    username: z.string().min(3).max(30)
+      .transform((value) => {
+      // Remove whitespace
+      value = value.trim().replace(/\s+/g, '');
+
+      // Remove special characters
+      value = value.replace(/[^a-zA-Z0-9-._~]/g, '');
+
+      // Percent-encode the string
+      value = encodeURIComponent(value);
+
+      return value;
+    })
+      .refine((value) => {
+        // Check if the resulting string is a valid URL path segment
+        const url = new URL(`http://example.com/${value}`);
+        return url.pathname.slice(1) === value;
+      }, {
+        message: 'Value is not a valid URL path segment'
+      }),
     description: z.string().max(1000).optional()
   });
 

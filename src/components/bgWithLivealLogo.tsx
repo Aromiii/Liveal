@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
+import type { ReactNode } from "react";
 
-const BgWithLivealLogo = ({ children }: any) => {
+const BgWithLivealLogo = ({ showBack, children }: {showBack: string, children: ReactNode}) => {
   const router = useRouter()
-  console.log(router)
 
   return <>
     <div className="absolute">
@@ -28,10 +28,10 @@ const BgWithLivealLogo = ({ children }: any) => {
         </defs>
       </svg>
       <br/>
-      <Image src="/arrow_back.svg" width={50} height={50} onClick={() => router.back()} hidden={router.route == "/user/create"}/>
+      <Image src="/arrow_back.svg" width={50} height={50} onClick={() => router.back()} hidden={!showBack}/>
     </div>
     <div className="h-[calc(100vh-2.5rem)] flex place-content-center place-items-center">
-      <main className="md:w-1/2 w-full bg-white rounded-lg p-5 ">
+      <main className="md:w-1/2 w-full bg-white rounded-lg p-5 shadow">
         { children }
       </main>
     </div>

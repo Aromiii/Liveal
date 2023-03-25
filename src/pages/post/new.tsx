@@ -37,11 +37,11 @@ const New = () => {
 
   if (status == "authenticated") {
     return <>
-      <BgWithLivealLogo>
+      <BgWithLivealLogo showBack={true}>
         <div className="flex place-items-center gap-2">
           <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={session?.user?.image} />
-          <div>
-            <h1 className="font-semibold text-lg">{session?.user?.name}</h1>
+          <div className="w-[calc(100%-5rem)]">
+            <h1 className="font-semibold text-lg break-words">{session?.user?.name}</h1>
             <h2 className="font-extralight">Current time</h2>
           </div>
         </div>
