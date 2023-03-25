@@ -96,7 +96,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   if (!post) {
     return {
       redirect: {
-        destination: "/",
+        destination: "/404",
         permanent: true
       }
     }

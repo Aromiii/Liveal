@@ -76,7 +76,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     if (user.profileCreated) {
       return {
         redirect: {
-          destination: "/signin",
+          destination: "/",
           permanent: true
         }
       }

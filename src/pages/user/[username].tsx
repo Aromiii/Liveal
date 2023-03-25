@@ -81,6 +81,15 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   });
 
+  if (!user) {
+    return {
+      redirect: {
+        destination: "/404",
+        permanent: true
+      }
+    }
+  }
+
   const posts = await prisma.post.findMany({
     select: {
       likes: true,
