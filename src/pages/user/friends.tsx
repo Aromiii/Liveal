@@ -1,25 +1,32 @@
 import Navbar from "../../components/navs/navbar";
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import ConnectionOrChatCard from "../../components/feed/connectionOrChatCard";
 import { getServerSession } from "next-auth/next";
 import getFriends from "../../utils/getFriends";
 import { authOptions } from "../../server/auth";
 import { prisma } from "../../server/db";
+import { useState } from "react";
 
 const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const [selectedFriend, setSelectedFriend] = useState()
+
   return <>
     <Navbar />
-    <aside className="bg-white absolute left-0 p-2 md:w-[200px] w-1/2 h-[calc(100%-80px)]">
+    <aside className="bg-white absolute left-0 p-2 md:w-[200px] w-2/5 h-[calc(100%-80px)]">
       <ul>
         {
-          friends.map(friend => {
-            return <ConnectionOrChatCard image={friend.image} text={friend.name} link={`/user/${friend.username}`} />;
+          friends.map((friend, key) => {
+            return <li className={selectedFriend == key ? "mb-2 bg-gray-300 rounded-lg p-1 shadow shadow-red-500" : "mb-2 bg-gray-300 rounded-lg p-1 shadow"}>
+              <button className="flex place-items-center gap-2 w-full" onClick={() => setSelectedFriend(key)}>
+                <img className="object-cover w-12 h-12 rounded-full" src={friend.image}/>
+                <p className="break-words w-[calc(100%-3rem-0.5rem)]">{friend.name}</p>
+              </button>
+            </li>
           })
         }
       </ul>
     </aside>
-    <div className="ml-[200px] flex m-3 gap-5">
-      <main className="gap-3 h-fit grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+    <div className="md:ml-[200px] ml-[calc(40%+1rem)] flex md:m-3 my-3 gap-5">
+      <main className="gap-3 h-fit md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 hidden md:grid">
         {
           friendSuggestions.map(suggestion => {
             return <>
@@ -32,7 +39,7 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
           })
         }
       </main>
-      <aside className="bg-white h-[calc(100vh-80px-2.75rem)] w-1/2 rounded-lg">
+      <aside className="bg-white h-[calc(100vh-80px-2.75rem)] md:w-1/2 w-full rounded-lg">
 
       </aside>
     </div>
