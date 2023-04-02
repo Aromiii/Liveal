@@ -97,6 +97,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
           image: true
         }
       }
+    },
+    orderBy: {
+      updatedAt: "desc"
     }
   });
 
