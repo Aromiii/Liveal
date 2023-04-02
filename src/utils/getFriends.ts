@@ -9,6 +9,7 @@ export default async function getFriends(id: string) {
       ]
     },
     select: {
+      blocked: true,
       user1: {
         select: {
           id: true,
@@ -28,11 +29,19 @@ export default async function getFriends(id: string) {
     }
   });
 
+  console.log(friends)
+
   const formattedFriends = friends.map(friend => {
     if (friend.user1.id == id) {
-      return friend.user2;
+      return {
+        blocked: friend.blocked,
+        ...friend.user2
+      }
     } else {
-      return friend.user1
+      return {
+        blocked: friend.blocked,
+        ...friend.user1
+      }
     }
   });
 

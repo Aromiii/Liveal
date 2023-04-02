@@ -8,12 +8,43 @@ import { useState } from "react";
 import Link from "next/link";
 
 const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  console.log(friends)
   const [selectedFriend, setSelectedFriend] = useState(0);
 
   const removeFriend = async (event: any) => {
     event.preventDefault();
 
     const response = await fetch("/api/user/friend", {
+      method: "DELETE",
+      credentials: "include",
+      body: JSON.stringify({
+        userId: friends[selectedFriend].id
+      })
+    });
+    const body = await response.json();
+    alert(body.message);
+  };
+
+  const blockFriend = async (event: any) => {
+    event.preventDefault();
+    console.log(friends[selectedFriend])
+
+    const response = await fetch("/api/user/friend/block", {
+      method: "PUT",
+      credentials: "include",
+      body: JSON.stringify({
+        userId: friends[selectedFriend].id
+      })
+    });
+    const body = await response.json();
+    alert(body.message);
+  };
+
+  const unblockFriend = async (event: any) => {
+    event.preventDefault();
+    console.log(friends[selectedFriend])
+
+    const response = await fetch("/api/user/friend/block", {
       method: "DELETE",
       credentials: "include",
       body: JSON.stringify({
@@ -67,9 +98,14 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
           <h1 className="m-2 font-bold text-lg break-words max-w-[80%]">{friends[selectedFriend].name}</h1>
         </div>
         <div className="m-2 mt-auto">
-          <button className="liveal-button bg-white text-black border w-full">
-            Block
-          </button>
+          {friends[selectedFriend].blocked ?
+            <button className="liveal-button bg-white text-black border w-full" onClick={unblockFriend}>
+              Unblock
+            </button> :
+            <button className="liveal-button bg-white text-black border w-full" onClick={blockFriend}>
+              Block
+            </button>
+          }
         </div>
         <div className="m-2 mt-1">
           <button className="liveal-button w-full" onClick={removeFriend}>

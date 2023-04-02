@@ -1,8 +1,8 @@
 import type { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../../server/auth";
+import { authOptions } from "../../../../server/auth";
 import { z } from "zod";
-import { prisma } from "../../../server/db";
+import { prisma } from "../../../../server/db";
 
 const handler = async (req: NextRequest, res: NextResponse) => {
   const session = await getServerSession(req, res, authOptions);
