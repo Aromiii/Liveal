@@ -66,11 +66,13 @@ model User {
 }
 
 model Friendship {
-  id      String @id @default(cuid())
-  user1   User   @relation("User1Friends", fields: [user1Id], references: [id])
-  user1Id String
-  user2   User   @relation("User2Friends", fields: [user2Id], references: [id])
-  user2Id String
+  id       String  @id @default(cuid())
+  user1    User    @relation("User1Friends", fields: [user1Id], references: [id])
+  user1Id  String
+  user2    User    @relation("User2Friends", fields: [user2Id], references: [id])
+  user2Id  String
+  accepted Boolean @default(false)
+  blocked  Boolean @default(false)
 }
 
 model VerificationToken {

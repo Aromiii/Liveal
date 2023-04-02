@@ -67,6 +67,11 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
           <h1 className="m-2 font-bold text-lg break-words max-w-[80%]">{friends[selectedFriend].name}</h1>
         </div>
         <div className="m-2 mt-auto">
+          <button className="liveal-button bg-white text-black border w-full">
+            Block
+          </button>
+        </div>
+        <div className="m-2 mt-1">
           <button className="liveal-button w-full" onClick={removeFriend}>
             Remove friend
           </button>
