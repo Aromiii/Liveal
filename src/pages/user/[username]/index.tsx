@@ -1,17 +1,17 @@
-import Navbar from "../../components/navs/navbar";
-import FriendsNav from "../../components/navs/friendsNav";
+import Navbar from "../../../components/navs/navbar";
+import FriendsNav from "../../../components/navs/friendsNav";
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { prisma } from "../../server/db";
+import { prisma } from "../../../server/db";
 import Link from "next/link";
-import Post from "../../components/feed/post";
-import SignInFooter from "../../components/signInFooter";
+import Post from "../../../components/feed/post";
+import SignInFooter from "../../../components/signInFooter";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../server/auth";
-import { getComments } from "../../utils/getComments";
-import { getLikes } from "../../utils/getLikes";
-import getFriends from "../../utils/getFriends";
+import { authOptions } from "../../../server/auth";
+import { getComments } from "../../../utils/getComments";
+import { getLikes } from "../../../utils/getLikes";
+import getFriends from "../../../utils/getFriends";
 
 const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
@@ -49,7 +49,7 @@ const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getSe
     <Navbar />
     <div className="pt-5 relative">
       <img className=" h-[30vh] object-cover w-full rounded-lg relative z-10"
-           src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.forestryengland.uk%2Fsites%2Fdefault%2Ffiles%2Fmedia%2FSavernake.jpg&f=1&nofb=1&ipt=bdec4b84b78ef7739a8e5d24a31ffe772381fae3ac10d3f2b9dfcd4068340f18&ipo=images" />
+           src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%3Fid%3DOIP.OtEQqkEb8CMbiWEmWYSgVAHaEK%26pid%3DApi&f=1&ipt=bf106f2e6831f40c3e1dd70b4e234149612cae230e4758981505cb011fd32f6f&ipo=images" />
       <div className="md:flex px-5 absolute w-full w-[calc(100%+2.5rem)] left-[-1.25rem] top-[60%] bg-gray-200">
         <div className="flex md:block w-full md:w-1/6 md:min-w-[150px] md:ml-4 md:z-20">
           <div className="w-full mr-auto md:block flex gap-5">

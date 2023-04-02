@@ -59,7 +59,7 @@ export default function Navbar() {
           </Link>
         </li>
         <li className="mr-auto">
-          <Link href="/">
+          <Link href="/user/friends">
             <Image src="/group.svg" width={50} height={50} />
           </Link>
         </li>
