@@ -24,6 +24,11 @@ export default function Navbar({ showBack = false, form = false, children }: {sh
               <Image src="/home.svg" width={50} height={50} />
             </Link>
           </li>
+          <li className="hidden md:block">
+            <Link href="/user/friends">
+              <Image src="/group.svg" width={50} height={50} />
+            </Link>
+          </li>
           <li className="h-[50px] hidden md:block">
             <button onClick={() => setShowSearch(!showSearch)}>
               <Image src="/search.svg" width={50} height={50} />
