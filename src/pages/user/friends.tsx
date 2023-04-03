@@ -121,6 +121,16 @@ export default Friends;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/signin",
+        permanent: true
+      }
+    }
+  }
+
   const friends = await getFriends(session.user.id);
 
   const friendSuggestions = await prisma.user.findMany({

@@ -56,7 +56,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   })
 
   const formattedFriends = friends.map(friend => {
-    if (friend.user1.id != session.user.id) {
+    if (friend.user1.id != session?.user.id) {
       return friend.user2
     } else {
       return friend.user1

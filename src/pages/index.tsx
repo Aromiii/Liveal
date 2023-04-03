@@ -61,17 +61,20 @@ const Home: NextPage = ({ posts, image, friends }: InferGetServerSidePropsType<t
   if (status == "unauthenticated") {
     return (
       <>
-        <Navbar />
-        <div className="flex mt-5 gap-5">
-          <main className="w-[90vw] mx-auto md:w-1/2">
-            {
-              posts.map((post) => <Post authorName={post.author.name} authorUsername={post.author.username}
-                                        authorImage={post.author.image} text={post.content} image={image}
-                                        createdAt={post.createdAt} comments={post.comments} postLikes={post.likes}/>)
-            }
-          </main>
-        </div>
-        <SignInFooter/>
+        <Navbar>
+          <div className="flex gap-5">
+            <main className="w-[90vw] mx-auto md:w-1/2">
+              <ul>
+                {
+                  posts.map((post) => <Post authorName={post.author.name} authorUsername={post.author.username}
+                                            authorImage={post.author.image} text={post.content} image={image}
+                                            createdAt={post.createdAt} comments={post.comments} postLikes={post.likes}/>)
+                }
+              </ul>
+            </main>
+          </div>
+          <SignInFooter/>
+        </Navbar>
       </>
     );
   }
@@ -104,7 +107,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   });
 
-  const friends = await getFriends(session.user.id);
+  const friends = await getFriends(session?.user.id);
   const likedPosts = await getLikes(session?.user.id, posts);
   const comments = await getComments(posts);
 

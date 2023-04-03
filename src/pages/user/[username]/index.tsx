@@ -149,7 +149,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const likedPosts = await getLikes(session?.user.id, posts);
   const comments = await getComments(posts);
 
-  if (friends.some(friend => friend.id == session.user.id && friend.blocked)) {
+  if (friends.some(friend => friend.id == session?.user.id && friend.blocked)) {
     return {
       redirect: {
         destination: "/",

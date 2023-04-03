@@ -4,14 +4,19 @@ import Image from "next/image";
 import { type ReactNode, useState } from "react";
 import { useRouter } from "next/router";
 
-export default function Navbar({ showBack = false, form = false, children }: {showBack?: boolean, form?: boolean, children: ReactNode}) {
+export default function Navbar({
+                                 showBack = false,
+                                 form = false,
+                                 children
+                               }: { showBack?: boolean, form?: boolean, children: ReactNode }) {
   const { data: session } = useSession();
   const [showSearch, setShowSearch] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
 
   return <div className="min-h-[calc(100vh-2.5rem)] w-full">
     <div className="h-[80px]">
-      <nav className="md:fixed top-0 bg-white h-[80px] place-items-center flex absolute justify-center w-full right-0 shadow-lg z-50 border-b">
+      <nav
+        className="md:fixed top-0 bg-white h-[80px] place-items-center flex absolute justify-center w-full right-0 shadow-lg z-50 border-b">
         <Link className="md:block hidden mr-auto mx-3" href="/">
           <Image src="/livealLogoWithText.svg" width={160} height={0} alt="Liveal logo" />
         </Link>
@@ -24,7 +29,7 @@ export default function Navbar({ showBack = false, form = false, children }: {sh
               <Image src="/home.svg" width={50} height={50} />
             </Link>
           </li>
-          <li className="hidden md:block">
+          <li className={session ? "md:block hidden" : "hidden"}>
             <Link href="/user/friends">
               <Image src="/group.svg" width={50} height={50} />
             </Link>
@@ -42,20 +47,23 @@ export default function Navbar({ showBack = false, form = false, children }: {sh
         </ul>
       </nav>
     </div>
-    <div className="w-full md:w-[60%] md:min-w-[700px] h-[80px] right-0 md:right-[20%] rounded-b-lg bg-white fixed md:top-[79px] top-0 z-50 shadow-lg" hidden={!showSearch}>
+    <div
+      className="w-full md:w-[60%] md:min-w-[700px] h-[80px] right-0 md:right-[20%] rounded-b-lg bg-white fixed md:top-[79px] top-0 z-50 shadow-lg"
+      hidden={!showSearch}>
       <form className="m-4">
         <input className="w-full bg-gray-300 rounded-lg h-full shadow p-3" placeholder=" Search for anything..." />
       </form>
     </div>
-    <Image src="/arrow_back.svg" className="absolute" width={50} height={50} onClick={() => router.back()} hidden={!showBack}/>
-    { form ?
+    <Image src="/arrow_back.svg" className="absolute" width={50} height={50} onClick={() => router.back()}
+           hidden={!showBack} />
+    {form ?
       <div className="h-[calc(100vh-160px-2.5rem)] flex place-content-center place-items-center">
         <div className="md:w-1/2 w-full bg-white rounded-lg p-5 shadow">
-          { children }
+          {children}
         </div>
-      </div>:
+      </div> :
       <div>
-        { children }
+        {children}
       </div>
     }
     <div className="h-[80px] md:hidden">
@@ -79,16 +87,27 @@ export default function Navbar({ showBack = false, form = false, children }: {sh
               </svg>
             </Link>
           </li>
-          <li className="mr-auto">
-            <Link href="/user/friends">
-              <Image src="/group.svg" width={50} height={50} />
-            </Link>
-          </li>
-          <li>
-            <Link href="/">
-              <Image src="/settings.svg" width={50} height={50} />
-            </Link>
-          </li>
+          {session ?
+            <>
+              <li className="mr-auto">
+                <Link href="/user/friends">
+                  <Image src="/group.svg" width={50} height={50} />
+                </Link>
+              </li>
+              <li>
+                <Link href="/">
+                  <Image src="/settings.svg" width={50} height={50} />
+                </Link>
+              </li>
+            </> :
+            <div className="w-[calc(100px+1.5rem)] ml-auto">
+              <Link href="/signin">
+                <div className="liveal-button w-full h-full text-center">
+                  Sign in
+                </div>
+              </Link>
+            </div>
+          }
         </ul>
       </nav>
     </div>
