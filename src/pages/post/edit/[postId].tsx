@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../../server/auth";
 import { useRouter } from "next/router";
 import BgWithLivealLogo from "../../../components/bgWithLivealLogo";
+import Navbar from "../../../components/navs/navbar";
 
 const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session } = useSession();
@@ -43,7 +44,7 @@ const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>
 
   if (session) {
     return <>
-      <BgWithLivealLogo showBack={true}>
+      <Navbar form={true} showBack={true}>
         <div className="flex place-items-center gap-2">
           <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={session?.user?.image} />
           <div className="w-[calc(100%-5rem)]">
@@ -60,7 +61,7 @@ const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>
             <button className="bg-red-500 rounded-lg p-2 text-white mt-4 text-xl left-0 px-5 ml-auto">Send</button>
           </div>
         </form>
-      </BgWithLivealLogo>
+      </Navbar>
     </>;
   }
 

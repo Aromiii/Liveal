@@ -7,16 +7,17 @@ import { authOptions } from "../../../server/auth";
 
 const Friends = ({ friends }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return <>
-    <Navbar/>
-    <main>
-      <ul className="bg-white p-3 pb-1 mt-2 rounded-lg">
-        {
-          friends.map(friend => {
-            return <ConnectionOrChatCard image={friend.image} text={friend.name} link={`/user/${friend.username}`}/>
-          })
-        }
-      </ul>
-    </main>
+    <Navbar>
+      <main>
+        <ul className="bg-white p-3 pb-1 rounded-lg">
+          {
+            friends.map(friend => {
+              return <ConnectionOrChatCard image={friend.image} text={friend.name} link={`/user/${friend.username}`}/>
+            })
+          }
+        </ul>
+      </main>
+    </Navbar>
   </>
 }
 

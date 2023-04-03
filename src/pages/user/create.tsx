@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../server/auth";
 import { prisma } from "../../server/db";
+import Navbar from "../../components/navs/navbar";
 
 const Create: NextPage = ({ user }: InferGetServerSidePropsType<GetServerSideProps>) => {
   const router = useRouter()
@@ -34,7 +35,7 @@ const Create: NextPage = ({ user }: InferGetServerSidePropsType<GetServerSidePro
 
     return (
       <>
-        <BgWithLivealLogo showBack={false}>
+        <Navbar form={true}>
           <h1 className="text-2xl text-center mb-5">Create your account</h1>
           <form className="flex flex-col gap-4" onSubmit={createAccount}>
             <div className="w-full gap-4 flex">
@@ -49,7 +50,7 @@ const Create: NextPage = ({ user }: InferGetServerSidePropsType<GetServerSidePro
               Create profile
             </button>
           </form>
-        </BgWithLivealLogo>
+        </Navbar>
       </>
     );
 };

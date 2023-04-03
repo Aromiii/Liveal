@@ -19,40 +19,41 @@ const Home: NextPage = ({ posts, image, friends }: InferGetServerSidePropsType<t
   if (status == "authenticated") {
     return (
       <>
-        <Navbar />
-        <div className="flex mt-5 gap-5">
-          <aside className="w-1/6 min-w-[150px] md:block hidden">
-            <Link href={`/user/${session?.user.username}`}>
-              <div className="bg-white rounded-lg flex place-items-center flex-col">
-                <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture"
-                     src={session.user.image} />
-                <h1 className="m-2 font-bold text-lg break-words max-w-[80%]">{session?.user?.name}</h1>
+        <Navbar>
+          <div className="flex gap-5">
+            <aside className="w-1/6 min-w-[150px] md:block hidden">
+              <Link href={`/user/${session?.user.username}`}>
+                <div className="bg-white rounded-lg flex place-items-center flex-col">
+                  <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture"
+                       src={session.user.image} />
+                  <h1 className="m-2 font-bold text-lg break-words max-w-[80%]">{session?.user?.name}</h1>
+                </div>
+              </Link>
+              <div className="hidden md:block mt-5">
+                <FriendsNav friends={friends}/>
               </div>
-            </Link>
-            <div className="hidden md:block mt-5">
-              <FriendsNav friends={friends}/>
-            </div>
-          </aside>
-          <main className="mx-auto md:w-1/2 w-full">
-            <ul>
-              {
-                posts.map((post) => <Post postId={post.id} authorName={post.author.name} liked={post.liked}
-                                          authorUsername={post.author.username}
-                                          authorImage={post.author.image} text={post.content} image={image}
-                                          createdAt={post.createdAt} comments={post.comments} postLikes={post.likes} />)
-              }
-            </ul>
-            <Link href="/post/new">
-              <svg className="shadow shadow-gray-500 bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"
-                   xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="48">
-                <path d="M450 856V606H200v-60h250V296h60v250h250v60H510v250h-60Z" />
-              </svg>
-            </Link>
-          </main>
-          <aside className="w-1/6 min-w-[150px] md:block hidden">
-            <ChatsNav />
-          </aside>
-        </div>
+            </aside>
+            <main className="mx-auto md:w-1/2 w-full">
+              <ul>
+                {
+                  posts.map((post) => <Post postId={post.id} authorName={post.author.name} liked={post.liked}
+                                            authorUsername={post.author.username}
+                                            authorImage={post.author.image} text={post.content} image={image}
+                                            createdAt={post.createdAt} comments={post.comments} postLikes={post.likes} />)
+                }
+              </ul>
+              <Link href="/post/new">
+                <svg className="shadow shadow-gray-500 bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"
+                     xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="48">
+                  <path d="M450 856V606H200v-60h250V296h60v250h250v60H510v250h-60Z" />
+                </svg>
+              </Link>
+            </main>
+            <aside className="w-1/6 min-w-[150px] md:block hidden">
+              <ChatsNav />
+            </aside>
+          </div>
+        </Navbar>
       </>
     );
   }
