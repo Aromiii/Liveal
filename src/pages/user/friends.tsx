@@ -6,23 +6,11 @@ import { authOptions } from "../../server/auth";
 import { prisma } from "../../server/db";
 import { useState } from "react";
 import Link from "next/link";
+import removeFriend from "../../utils/removeFriend";
+import addFriend from "../../utils/addFriend";
 
 const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [selectedFriend, setSelectedFriend] = useState(0);
-
-  const removeFriend = async (event: any) => {
-    event.preventDefault();
-
-    const response = await fetch("/api/user/friend", {
-      method: "DELETE",
-      credentials: "include",
-      body: JSON.stringify({
-        userId: friends[selectedFriend].id
-      })
-    });
-    const body = await response.json();
-    alert(body.message);
-  };
 
   const blockFriend = async (event: any) => {
     event.preventDefault();
@@ -57,7 +45,7 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
   return <>
     <Navbar>
       <aside className="bg-white top-[80px] absolute left-0 p-2 md:w-[200px] w-2/5 h-[calc(100vh-80px)]">
-        {!friends ?
+        {friends.length > 0 ?
           <ul>
             {
               friends.map((friend, key) => {
@@ -80,17 +68,20 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
             friendSuggestions.map(suggestion => {
               return <>
                 <Link href={`/user/${suggestion.username}`} className="w-full h-full">
-                  <div className="bg-white w-full rounded-lg flex place-items-center flex-col h-full">
-                    <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture"
+                  <div className="bg-white w-full rounded-lg flex place-items-center flex-col h-full p-2">
+                    <img className="w-24 h-24 rounded-full object-cover" alt="Profile picture"
                          src={suggestion.image} />
-                    <h1 className="m-2 font-bold text-lg break-words max-w-[80%]">{suggestion.name}</h1>
+                    <h1 className="my-2 font-bold text-lg break-words max-w-[80%]">{suggestion.name}</h1>
+                    <button className="liveal-button w-full" onClick={event => addFriend(event, suggestion.id)}>
+                      Add friend
+                    </button>
                   </div>
                 </Link>
               </>;
             })
           }
         </main>
-        {!friends ?
+        {friends.length > 0 ?
           <aside className="bg-white min-h-[calc(100vh-160px-2.5rem)] md:w-1/2 w-full rounded-lg relative flex flex-col">
             <img className="h-[15vh] object-cover w-full rounded-lg"
                  src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.forestryengland.uk%2Fsites%2Fdefault%2Ffiles%2Fmedia%2FSavernake.jpg&f=1&nofb=1&ipt=bdec4b84b78ef7739a8e5d24a31ffe772381fae3ac10d3f2b9dfcd4068340f18&ipo=images" />
@@ -111,7 +102,7 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
               }
             </div>
             <div className="m-2 mt-1">
-              <button className="liveal-button w-full" onClick={removeFriend}>
+              <button className="liveal-button w-full" onClick={(event) => removeFriend(event, friends[selectedFriend].id)}>
                 Remove friend
               </button>
             </div>

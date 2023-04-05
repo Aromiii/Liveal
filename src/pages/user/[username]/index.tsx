@@ -12,38 +12,12 @@ import { authOptions } from "../../../server/auth";
 import { getComments } from "../../../utils/getComments";
 import { getLikes } from "../../../utils/getLikes";
 import getFriends from "../../../utils/getFriends";
+import removeFriend from "../../../utils/removeFriend";
+import addFriend from "../../../utils/addFriend";
 
 const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { data: session } = useSession();
-
-  const addFriend = async (event: any) => {
-    event.preventDefault();
-
-    const response = await fetch("/api/user/friend", {
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify({
-        userId: user.id
-      })
-    });
-    const body = await response.json();
-    alert(body.message);
-  }
-
-  const removeFriend = async (event: any) => {
-    event.preventDefault();
-
-    const response = await fetch("/api/user/friend", {
-      method: "DELETE",
-      credentials: "include",
-      body: JSON.stringify({
-        userId: user.id
-      })
-    });
-    const body = await response.json();
-    alert(body.message);
-  }
 
   return <>
     <Navbar>
@@ -66,14 +40,17 @@ const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getSe
                     Edit profile
                   </Link> :
                   <div className="w-full">
-                    {friends.map(friend => { return friend.id }).includes(session?.user?.id) ?
-                      <button onClick={removeFriend} className="w-full liveal-button md:mt-3 h-full">Remove friend</button> :
-                      <button onClick={addFriend} className="w-full liveal-button md:mt-3 h-full">Add friend</button>
+                    {friends.map(friend => {return friend.id;}).includes(session?.user?.id) ?
+                      <button onClick={event => removeFriend(event, user.id)} className="w-full liveal-button md:mt-3 h-full">
+                        Remove friend
+                      </button> :
+                      <button onClick={event => addFriend(event, user.id);} className="w-full liveal-button md:mt-3 h-full">
+                        Add friend
+                      </button>
                     }
                   </div>
                 }
-                <Link href={`/user/${user.username}/friends`}
-                      className="shadow md:hidden h-full block p-2 px-5 md:mt-2 rounded-lg bg-white flex place-items-center place-content-center text-xl">
+                <Link href={`/user/${user.username}/friends`} className="shadow md:hidden h-full block p-2 px-5 md:mt-2 rounded-lg bg-white flex place-items-center place-content-center text-xl">
                   Friends
                 </Link>
               </div>
