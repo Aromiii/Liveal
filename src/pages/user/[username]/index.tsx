@@ -44,7 +44,7 @@ const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getSe
                       <button onClick={event => removeFriend(event, user.id)} className="w-full liveal-button md:mt-3 h-full">
                         Remove friend
                       </button> :
-                      <button onClick={event => addFriend(event, user.id);} className="w-full liveal-button md:mt-3 h-full">
+                      <button onClick={event => addFriend(event, user.id)} className="w-full liveal-button md:mt-3 h-full">
                         Add friend
                       </button>
                     }
