@@ -72,7 +72,7 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
                     <img className="w-24 h-24 rounded-full object-cover" alt="Profile picture"
                          src={suggestion.image} />
                     <h1 className="my-2 font-bold text-lg break-words max-w-[80%]">{suggestion.name}</h1>
-                    <button className="liveal-button w-full" onClick={event => addFriend(event, suggestion.id)}>
+                    <button className="liveal-button w-full mt-auto" onClick={event => addFriend(event, suggestion.id)}>
                       Add friend
                     </button>
                   </div>
@@ -82,7 +82,7 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
           }
         </main>
         {friends.length > 0 ?
-          <aside className="bg-white min-h-[calc(100vh-160px-2.5rem)] md:w-1/2 w-full rounded-lg relative flex flex-col">
+          <aside className="bg-white min-h-[calc(100vh-160px-2.5rem)] md:w-1/2 w-full rounded-lg relative flex flex-col ml-auto">
             <img className="h-[15vh] object-cover w-full rounded-lg"
                  src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.forestryengland.uk%2Fsites%2Fdefault%2Ffiles%2Fmedia%2FSavernake.jpg&f=1&nofb=1&ipt=bdec4b84b78ef7739a8e5d24a31ffe772381fae3ac10d3f2b9dfcd4068340f18&ipo=images" />
             <div
