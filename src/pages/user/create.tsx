@@ -78,7 +78,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       return {
         redirect: {
           destination: "/",
-          permanent: true
+          permanent: false
         }
       }
     }

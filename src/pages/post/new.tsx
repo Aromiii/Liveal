@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import BgWithLivealLogo from "../../components/bgWithLivealLogo";
 import { useRouter } from "next/router";
 import Navbar from "../../components/navs/navbar";
 

@@ -5,13 +5,12 @@ import { prisma } from "../../../server/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../../server/auth";
 import { useRouter } from "next/router";
-import BgWithLivealLogo from "../../../components/bgWithLivealLogo";
 import Navbar from "../../../components/navs/navbar";
 
 const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session } = useSession();
   const router = useRouter();
-  const [postText, setPostText] = useState("jsdjsdjf");
+  const [postText, setPostText] = useState("");
 
   const editPost = async (event) => {
     event.preventDefault();
@@ -98,7 +97,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     return {
       redirect: {
         destination: "/404",
-        permanent: true
+        permanent: false
       }
     }
   }
