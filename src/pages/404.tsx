@@ -1,14 +1,14 @@
-import BgWithLivealLogo from "../components/bgWithLivealLogo";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import Navbar from "../components/navs/navbar";
 
 const FourZeroFour = () => {
   const { data: session } = useSession()
   const router = useRouter()
 
   return <>
-    <BgWithLivealLogo showBack={false}>
+    <Navbar form={true} showBack={false}>
       <div className="h-28">
         <h1 className="text-2xl font-semibold text-center h-2/3">404 Page not found</h1>
         <ul className="flex gap-4 w-fit mx-auto">
@@ -29,7 +29,7 @@ const FourZeroFour = () => {
           </li>
         </ul>
       </div>
-    </BgWithLivealLogo>
+    </Navbar>
   </>;
 };
 

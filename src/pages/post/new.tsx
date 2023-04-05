@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import BgWithLivealLogo from "../../components/bgWithLivealLogo";
 import { useRouter } from "next/router";
+import Navbar from "../../components/navs/navbar";
 
 const New = () => {
   const router = useRouter()
@@ -37,7 +37,7 @@ const New = () => {
 
   if (status == "authenticated") {
     return <>
-      <BgWithLivealLogo showBack={true}>
+      <Navbar form={true} showBack={true}>
         <div className="flex place-items-center gap-2">
           <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={session?.user?.image} />
           <div className="w-[calc(100%-5rem)]">
@@ -55,7 +55,7 @@ const New = () => {
             </button>
           </div>
         </form>
-      </BgWithLivealLogo>
+      </Navbar>
     </>;
   }
 
