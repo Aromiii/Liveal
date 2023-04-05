@@ -30,6 +30,15 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     where: { username: context.query.username }
   })
 
+  if (!user) {
+    return {
+      redirect: {
+        destination: "/404",
+        permanent: true
+      }
+    };
+  }
+
   const friends = await prisma.friendship.findMany({
     where: {
       OR: [
@@ -40,6 +49,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     select: {
       user1: {
         select: {
+          id: true,
           name: true,
           username: true,
           image: true,
@@ -47,6 +57,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       },
       user2: {
         select: {
+          id: true,
           name: true,
           username: true,
           image: true,
@@ -56,11 +67,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   })
 
   const formattedFriends = friends.map(friend => {
-    if (friend.user1.id != session?.user.id) {
+    if (friend.user2.id != user.id) {
       return friend.user2
-    } else {
-      return friend.user1
     }
+    return friend.user1
   });
 
   return {
