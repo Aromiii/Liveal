@@ -1,7 +1,6 @@
 import type { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import Navbar from "../components/navs/navbar";
 import { useSession } from "next-auth/react";
-import ChatsNav from "../components/navs/chatsNav";
 import FriendsNav from "../components/navs/friendsNav";
 import Link from "next/link";
 import Post from "../components/feed/post";
@@ -50,7 +49,6 @@ const Home: NextPage = ({ posts, image, friends }: InferGetServerSidePropsType<t
               </Link>
             </main>
             <aside className="w-1/6 min-w-[150px] md:block hidden">
-              <ChatsNav />
             </aside>
           </div>
         </Navbar>
