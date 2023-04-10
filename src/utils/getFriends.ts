@@ -29,8 +29,6 @@ export default async function getFriends(id: string) {
     }
   });
 
-  console.log(friends)
-
   const formattedFriends = friends.map(friend => {
     if (friend.user1.id == id) {
       return {

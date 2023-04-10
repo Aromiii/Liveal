@@ -14,7 +14,6 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
 
   const blockFriend = async (event: any) => {
     event.preventDefault();
-    console.log(friends[selectedFriend]);
 
     const response = await fetch("/api/user/friend/block", {
       method: "PUT",
