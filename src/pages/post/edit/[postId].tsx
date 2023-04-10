@@ -10,9 +10,9 @@ import Navbar from "../../../components/navs/navbar";
 const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session } = useSession();
   const router = useRouter();
-  const [postText, setPostText] = useState("");
+  const [postText, setPostText] = useState(post.content);
 
-  const editPost = async (event) => {
+  const editPost = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     console.log(router.query);
