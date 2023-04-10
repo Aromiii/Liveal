@@ -1,6 +1,6 @@
 import { prisma } from "../server/db";
 
-export async function getComments(posts) {
+export async function getComments(posts: { id: string }[]) {
   const comments = await prisma.comment.findMany({
     where: {
       postId: {
@@ -24,11 +24,10 @@ export async function getComments(posts) {
     }
   });
 
-  const formattedComments = comments.map(comment => {
+  return comments.map(comment => {
     return {
       ...comment,
       updatedAt: comment.updatedAt.toLocaleString()
     };
   });
-  return formattedComments;
 }

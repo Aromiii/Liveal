@@ -1,4 +1,4 @@
-const addFriend = async (event: any, id: string) => {
+const addFriend = async (event: React.MouseEvent<HTMLButtonElement>, id: string) => {
   event.preventDefault();
 
   const response = await fetch("/api/user/friend", {

@@ -1,7 +1,7 @@
 import { prisma } from "../server/db";
 
-export async function getLikes(userId, posts) {
-  let formattedLikedPosts: string[];
+export async function getLikes(userId: string, posts: { id: string }[]) {
+  let formattedLikedPosts: string[] = [];
 
   if (userId) {
     const likedPosts = await prisma.like.findMany({
@@ -20,5 +20,6 @@ export async function getLikes(userId, posts) {
       return likedPost.postId;
     });
   }
+
   return formattedLikedPosts;
 }

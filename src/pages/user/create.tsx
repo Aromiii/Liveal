@@ -1,5 +1,4 @@
 import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType, type NextPage } from "next";
-import BgWithLivealLogo from "../../components/bgWithLivealLogo";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { getServerSession } from "next-auth/next";
