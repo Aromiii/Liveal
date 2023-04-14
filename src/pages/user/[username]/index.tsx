@@ -29,7 +29,7 @@ const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getSe
             <div className="w-full mr-auto md:block flex gap-5">
               <div
                 className="shadow w-[calc(60%-1.25rem)] md:w-full bg-white rounded-lg flex place-items-center flex-col z-30">
-                <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture" src={user.image} />
+                <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture" src={user.image || undefined} />
                 <h1 className="font-bold text-lg break-words max-w-[80%]">{user.name}</h1>
               </div>
               <div className=" w-2/5 md:w-full flex-col flex z-30 gap-4">
@@ -40,17 +40,17 @@ const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getSe
                     Edit profile
                   </Link> :
                   <div className="w-full">
-                    {friends.map(friend => {return friend.id;}).includes(session?.user?.id) ?
-                      <button onClick={event => removeFriend(event, user.id)} className="w-full liveal-button md:mt-3 h-full">
+                    {friends.map(friend => {return friend.id;}).includes(session?.user?.id || "") ?
+                      <button onClick={event => void removeFriend(event, user.id)} className="w-full liveal-button md:mt-3 h-full">
                         Remove friend
                       </button> :
-                      <button onClick={event => addFriend(event, user.id)} className="w-full liveal-button md:mt-3 h-full">
+                      <button onClick={event => void addFriend(event, user.id)} className="w-full liveal-button md:mt-3 h-full">
                         Add friend
                       </button>
                     }
                   </div>
                 }
-                <Link href={`/user/${user.username}/friends`} className="shadow md:hidden h-full block p-2 px-5 md:mt-2 rounded-lg bg-white flex place-items-center place-content-center text-xl">
+                <Link href={`/user/${user.username || ""}/friends`} className="shadow md:hidden h-full block p-2 px-5 md:mt-2 rounded-lg bg-white flex place-items-center place-content-center text-xl">
                   Friends
                 </Link>
               </div>
@@ -66,6 +66,7 @@ const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getSe
             }
             <ul>
               {
+                // eslint-disable-next-line react/jsx-key
                 posts.map(post => <Post authorName={user.name} authorUsername={user.username}
                                         authorImage={user.image} text={post.content} image={post.image}
                                         createdAt={post.createdAt} comments={post.comments} postId={post.id}
@@ -88,11 +89,16 @@ export default User;
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
   const response = await fetch("https://dog.ceo/api/breeds/image/random");
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const data = await response.json();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+  const image: string = data.message
+
+  const username: string = context.query.username?.toString() || ""
 
   const user = await prisma.user.findFirst({
     where: {
-      username: context.query.username
+      username: username
     }
   });
 
@@ -114,7 +120,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     },
     where: {
       author: {
-        username: context.query.username
+        username: username
       }
     },
     orderBy: {
@@ -123,7 +129,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   });
 
   const friends = await getFriends(user.id);
-  const likedPosts = await getLikes(session?.user.id, posts);
+  const likedPosts = await getLikes(session?.user.id || "", posts);
   const comments = await getComments(posts);
 
   if (friends.some(friend => friend.id == session?.user.id && friend.blocked)) {
@@ -140,7 +146,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       ...post,
       liked: likedPosts ? likedPosts.includes(post.id) : false,
       createdAt: post.createdAt.toString(),
-      image: data.message,
+      image: image,
       comments: comments.filter(comment => comment.postId === post.id)
     };
   });
