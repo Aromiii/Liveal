@@ -62,7 +62,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         }
       });
 
-      if (session.user.id != result.author.id) {
+      if (session.user.id != result?.author.id) {
         res.status(403).json({ message: "your not the author of the post" });
         return;
       }

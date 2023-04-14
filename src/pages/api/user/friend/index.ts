@@ -27,8 +27,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const result = await prisma.friendship.findFirst({
         where: {
           OR: [
-            { user1Id: session.user.id, user2Id: body.data.userId },
-            { user1Id: body.data.userId, user2Id: session.user.id }
+            { user1Id: session?.user.id, user2Id: body.data.userId },
+            { user1Id: body.data.userId, user2Id: session?.user.id }
           ]
         }
       });
@@ -40,7 +40,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       await prisma.friendship.create({
         data: {
-          user1Id: session.user.id,
+          user1Id: session?.user.id || "",
           user2Id: body.data.userId
         }
       });
@@ -60,8 +60,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       await prisma.friendship.deleteMany({
         where: {
           OR: [
-            { user1Id: session.user.id, user2Id: body.data.userId },
-            { user1Id: body.data.userId, user2Id: session.user.id }
+            { user1Id: session?.user.id, user2Id: body.data.userId },
+            { user1Id: body.data.userId, user2Id: session?.user.id }
           ]
         }
       });
