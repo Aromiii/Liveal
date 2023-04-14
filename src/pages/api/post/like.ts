@@ -18,9 +18,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const body = schema.safeParse(req.body);
 
-  console.log(body)
-  console.log(req.body)
-
   if (!body.success) {
     res.status(400).json({ message: "Data you provided is not in correct format" });
     return;
