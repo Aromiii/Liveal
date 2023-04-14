@@ -18,6 +18,7 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
     const response = await fetch("/api/user/friend/block", {
       method: "PUT",
       credentials: "include",
+      headers:{'content-type': 'application/json'},
       body: JSON.stringify({
         userId: friends[selectedFriend].id
       })
@@ -33,6 +34,7 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
     const response = await fetch("/api/user/friend/block", {
       method: "DELETE",
       credentials: "include",
+      headers:{'content-type': 'application/json'},
       body: JSON.stringify({
         userId: friends[selectedFriend].id
       })

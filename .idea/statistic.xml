@@ -4,9 +4,9 @@
     <option name="fileTypes" value="class;svn-base;svn-work;Extra;gif;png;jpg;jpeg;bmp;tga;tiff;ear;war;zip;jar;iml;iws;ipr;bz2;gz;pyc;json;ttf;" />
     <option name="excludedDirectories">
       <list>
-        <option value="$PROJECT_DIR$/.vscode" />
-        <option value="$PROJECT_DIR$/.next" />
         <option value="$PROJECT_DIR$/.idea" />
+        <option value="$PROJECT_DIR$/.next" />
+        <option value="$PROJECT_DIR$/.vscode" />
         <option value="$PROJECT_DIR$/node_modules" />
       </list>
     </option>

@@ -19,6 +19,7 @@ const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>
     const response = await fetch("/api/post", {
       method: "PUT",
       credentials: "include",
+      headers:{'content-type': 'application/json'},
       body: JSON.stringify({
         postText: postText,
         postId: router.query.postId

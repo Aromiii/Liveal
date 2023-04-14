@@ -4,6 +4,7 @@ const addFriend = async (event: React.MouseEvent<HTMLButtonElement>, id: string)
   const response = await fetch("/api/user/friend", {
     method: "POST",
     credentials: "include",
+    headers:{'content-type': 'application/json'},
     body: JSON.stringify({
       userId: id
     })

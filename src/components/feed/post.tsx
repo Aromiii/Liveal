@@ -25,6 +25,7 @@ export default function Post(props: { postId: string, postLikes: number, authorN
     const response = await fetch("/api/post/comment", {
       method: "POST",
       credentials: "include",
+      headers:{'content-type': 'application/json'},
       body: JSON.stringify({
         text: commentText,
         postId: props.postId
@@ -66,6 +67,7 @@ export default function Post(props: { postId: string, postLikes: number, authorN
     const response = await fetch("/api/post/like", {
       method: !liked ? "POST" : "DELETE",
       credentials: "include",
+      headers:{'content-type': 'application/json'},
       body: JSON.stringify({
         postId: props.postId
       })

@@ -18,6 +18,7 @@ const Create: NextPage = ({ user }: InferGetServerSidePropsType<GetServerSidePro
     const response = await fetch("/api/user", {
       method: "POST",
       credentials: "include",
+      headers:{'content-type': 'application/json'},
       body: JSON.stringify({
         displayName: displayName,
         username: username,

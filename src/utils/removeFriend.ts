@@ -4,6 +4,7 @@ const removeFriend = async (event: any, id: string) => {
   const response = await fetch("/api/user/friend", {
     method: "DELETE",
     credentials: "include",
+    headers:{'content-type': 'application/json'},
     body: JSON.stringify({
       userId: id
     })

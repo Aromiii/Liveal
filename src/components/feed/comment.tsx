@@ -11,6 +11,7 @@ const Comment = (props: { authorImage: string, authorName: string, authorUsernam
     const response = await fetch("/api/post/comment", {
       method: "DELETE",
       credentials: "include",
+      headers:{'content-type': 'application/json'},
       body: JSON.stringify({
         commentId: props.commentId
       })

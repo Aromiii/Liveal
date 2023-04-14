@@ -18,6 +18,7 @@ const Edit: NextPage = ({ user }: InferGetServerSidePropsType<GetServerSideProps
     const response = await fetch("/api/user", {
       method: "PUT",
       credentials: "include",
+      headers:{'content-type': 'application/json'},
       body: JSON.stringify({
         displayName: displayName,
         username: username,

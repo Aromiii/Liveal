@@ -20,6 +20,7 @@ const New = () => {
     const response = await fetch("/api/post", {
       method: "POST",
       credentials: "include",
+      headers:{'content-type': 'application/json'},
       body: JSON.stringify({
         postText: postText
       })
