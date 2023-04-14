@@ -25,7 +25,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     try {
-      await prisma.comment.create({
+      const comment = await prisma.comment.create({
         data: {
           content: body.data.text,
           userId: session.user.id,
@@ -33,7 +33,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         }
       });
 
-      res.status(200).json({ message: "Commented" });
+      res.status(200).json({ message: "Commented", id: comment.id });
       return;
 
     } catch (error) {

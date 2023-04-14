@@ -1,58 +1,67 @@
 import Link from "next/link";
-import { useState } from "react";
+import { FormEvent, MouseEvent, useState } from "react";
 import Comment from "./comment";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import type PostType from "../../types/post";
 
-export default function Post(props: { postId: string, postLikes: number, authorName: string | null, authorUsername: string | null, authorImage: string | null, text: string, image: string, createdAt: string, liked: boolean, comments: { updatedAt: string, id: string, author: { image: string | null, name: string | null, username: string | null }, content: string, postId: string }[] }) {
-  const router = useRouter()
+export default function Post(props: PostType) {
+  const router = useRouter();
   const { data: session } = useSession();
   const [liked, setLiked] = useState(props.liked);
   const [commentText, setCommentText] = useState("");
   const [likes, setLikes] = useState(props.postLikes);
   const [comments, setComments] = useState(props.comments);
 
-  const comment = async (event) => {
+  const comment = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!session) {
       if (confirm("You can't comment because you are not signed in\nDo you want to be redirected in to sign in page"))
-        router.push("/signin")
+        await router.push("/signin");
 
-      return
+      return;
     }
 
     const response = await fetch("/api/post/comment", {
       method: "POST",
       credentials: "include",
-      headers:{'content-type': 'application/json'},
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({
         text: commentText,
         postId: props.postId
       })
     });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const body: { message: string, id: string } = await response.json();
+    console.log(body);
 
     if (response.status == 200) {
       setComments([{
-        author: { image: session?.user?.image, name: session?.user?.name, username: session?.user.username },
-        content: commentText
+        author: {
+          image: session?.user?.image || null,
+          name: session?.user?.name || null,
+          username: session?.user.username || null
+        },
+        content: commentText,
+        updatedAt: new Date().toString(),
+        postId: props.postId,
+        id: body.id || ""
       }, ...comments]);
 
-      console.log(event.target.reset())
+      const target = event.target as HTMLFormElement
+      target.reset()
     }
-
-    const body = await response.json();
-    console.log(body);
   };
 
-  const like = async (event) => {
+  const like = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
     if (!session) {
       if (confirm("You can't like because you are not signed in\nDo you want to be redirected in to sign in page"))
-        router.push("/signin")
+        await router.push("/signin");
 
-      return
+      return;
     }
 
     setLiked(!liked);
@@ -67,23 +76,28 @@ export default function Post(props: { postId: string, postLikes: number, authorN
     const response = await fetch("/api/post/like", {
       method: !liked ? "POST" : "DELETE",
       credentials: "include",
-      headers:{'content-type': 'application/json'},
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({
         postId: props.postId
       })
     });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const body = await response.json();
     console.log(body);
   };
 
   return <li className="shadow bg-white rounded-lg mb-2 p-2">
     <div className="flex place-items-center gap-2">
-      <Link href={`/user/${props.authorUsername}`}>
-        <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={props.authorImage} />
+      <Link href={`/user/${props.authorUsername || ""}`}>
+        <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={props.authorImage || undefined} />
       </Link>
       <div className="w-[calc(100%-5rem)]">
         <p className="break-words font-semibold text-lg">{props.authorName}</p>
-        <h2 className="font-extralight">{new Intl.DateTimeFormat("eur", { year: new Date().getFullYear() === new Date(props.createdAt).getFullYear() ? undefined : 'numeric', month: 'long', day: 'numeric' }).format(new Date(props.createdAt))}</h2>
+        <h2 className="font-extralight">{new Intl.DateTimeFormat("eur", {
+          year: new Date().getFullYear() === new Date(props.createdAt).getFullYear() ? undefined : "numeric",
+          month: "long",
+          day: "numeric"
+        }).format(new Date(props.createdAt))}</h2>
       </div>
     </div>
     <img className="p-2 w-full max-h-[70vh] object-cover rounded-2xl" src={props.image} />
@@ -91,7 +105,7 @@ export default function Post(props: { postId: string, postLikes: number, authorN
       {props.text}
     </p>
     <div className="mx-2 mb-1 w-full flex place-items-center">
-      <button onClick={like} className="h-8 w-8">
+      <button onClick={event => void like(event)} className="h-8 w-8">
         <svg className={liked ? "hidden" : "h-full w-full"} xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960">
           <path
             d="M716 936H272V424l278-288 39 31q6 5 9 14t3 22v10l-45 211h299q24 0 42 18t18 42v81.839q0 7.161 1.5 14.661T915 595L789 885q-8.878 21.25-29.595 36.125Q738.689 936 716 936Zm-384-60h397l126-299v-93H482l53-249-203 214v427Zm0-427v427-427Zm-60-25v60H139v392h133v60H79V424h193Z" />
@@ -103,13 +117,14 @@ export default function Post(props: { postId: string, postLikes: number, authorN
         </svg>
       </button>
       <p className="ml-2 text-sm font-semibold">{likes}</p>
-      <form className="ml-auto mr-4 w-2/3 flex" onSubmit={comment}>
+      <form className="ml-auto mr-4 w-2/3 flex" onSubmit={event => void comment(event)}>
         <input onChange={event => setCommentText(event.target.value)} maxLength={200} type="text"
                className="bg-gray-200 rounded-l-lg p-2 w-full" placeholder=" Comment..." />
         <button className="bg-red-500 rounded-r-lg p-2 px-5 text-white text-l right-0">Send</button>
       </form>
     </div>
     <ul className="mt-2 p-1 rounded-lg flex flex-col gap-1">
+      {/* eslint-disable-next-line react/jsx-key */}
       {comments.map(comment => <Comment authorImage={comment.author.image} authorName={comment.author.name}
                                         authorUsername={comment.author.username} content={comment.content}
                                         postAuthorUsername={props.authorUsername} commentId={comment.id} />)}
