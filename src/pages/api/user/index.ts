@@ -1,10 +1,10 @@
-import type { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../server/auth";
 import { z } from "zod";
 import { prisma } from "../../../server/db";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-const handler = async (req: NextRequest, res: NextResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
@@ -28,7 +28,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
     })
       .refine((value) => {
         // Check if the resulting string is a valid URL path segment
-        const url = new URL(`http://example.com/${value}`);
+        const url = new URL(`https://example.com/${value}`);
         return url.pathname.slice(1) === value;
       }, {
         message: 'Value is not a valid URL path segment'
@@ -36,7 +36,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
     description: z.string().max(1000).optional()
   });
 
-  const body = schema.safeParse(JSON.parse(req.body));
+  const body = schema.safeParse(req.body);
 
   if (!body.success) {
     res.status(400).json({ message: "Data you provided is not in correct format" });
@@ -57,11 +57,11 @@ const handler = async (req: NextRequest, res: NextResponse) => {
   if (req.method == "POST") {
     const isProfileCreated = await prisma.user.findFirst({
       where: {
-        id: session.user.id
+        id: session?.user.id
       }
     });
 
-    if (isProfileCreated.profileCreated) {
+    if (isProfileCreated?.profileCreated) {
       res.status(409).json({ message: "Profile is already created" })
       return
     }
@@ -69,7 +69,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
     try {
       await prisma.user.update({
         where: {
-          id: session.user.id
+          id: session?.user.id
         },
         data: {
           name: body.data.displayName,
@@ -91,7 +91,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
     try {
       await prisma.user.update({
         where: {
-          id: session.user.id
+          id: session?.user.id
         },
         data: {
           name: body.data.displayName,
@@ -102,7 +102,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
     } catch (error) {
       res.status(400).json({ message: "Error occurred" });
       return;
-    };
+    }
 
     res.status(200).json({ message: "Profile updated" });
     return;

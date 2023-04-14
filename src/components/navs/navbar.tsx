@@ -26,22 +26,22 @@ export default function Navbar({
         <ul className="h-[70] mx-3 gap-3 place-items-center flex">
           <li className="hidden md:block">
             <Link href="/">
-              <Image src="/home.svg" width={50} height={50} />
+              <Image src="/home.svg" width={50} height={50} alt="home"/>
             </Link>
           </li>
           <li className={session ? "md:block hidden" : "hidden"}>
             <Link href="/user/friends">
-              <Image src="/group.svg" width={50} height={50} />
+              <Image src="/group.svg" width={50} height={50} alt="friends"/>
             </Link>
           </li>
           <li className="h-[50px] hidden md:block">
             <button onClick={() => setShowSearch(!showSearch)}>
-              <Image src="/search.svg" width={50} height={50} />
+              <Image src="/search.svg" width={50} height={50} alt="seacrh"/>
             </button>
           </li>
           <li>
-            <Link href={`/user/${session?.user.username}`}>
-              <img className="rounded-full h-[60px]" src={session?.user?.image} />
+            <Link href={`/user/${session?.user.username || ""}`}>
+              <img className="rounded-full h-[60px]" src={session?.user?.image || ""} />
             </Link>
           </li>
         </ul>
@@ -55,7 +55,7 @@ export default function Navbar({
       </form>
     </div>
     <Image src="/arrow_back.svg" className="absolute" width={50} height={50} onClick={() => router.back()}
-           hidden={!showBack} />
+           hidden={!showBack} alt="back"/>
     {form ?
       <div className="h-[calc(100vh-160px-2.5rem)] flex place-content-center place-items-center">
         <div className="md:w-1/2 w-full bg-white rounded-lg p-5 shadow">
@@ -71,12 +71,12 @@ export default function Navbar({
         <ul className="flex h-full place-items-center gap-3 p-3">
           <li>
             <Link href="/">
-              <Image src="/home.svg" width={50} height={50} />
+              <Image src="/home.svg" width={50} height={50} alt="home"/>
             </Link>
           </li>
           <li className="h-[50px] ml-auto">
             <button onClick={() => setShowSearch(!showSearch)}>
-              <Image src="/search.svg" width={50} height={50} />
+              <Image src="/search.svg" width={50} height={50} alt="search"/>
             </button>
           </li>
           <li className="mx-auto">
@@ -91,12 +91,12 @@ export default function Navbar({
             <>
               <li className="mr-auto">
                 <Link href="/user/friends">
-                  <Image src="/group.svg" width={50} height={50} />
+                  <Image src="/group.svg" width={50} height={50} alt="friends"/>
                 </Link>
               </li>
               <li>
                 <Link href="/">
-                  <Image src="/settings.svg" width={50} height={50} />
+                  <Image src="/settings.svg" width={50} height={50} alt="settings"/>
                 </Link>
               </li>
             </> :

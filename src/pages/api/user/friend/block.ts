@@ -1,10 +1,10 @@
-import type { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../server/auth";
 import { z } from "zod";
 import { prisma } from "../../../../server/db";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-const handler = async (req: NextRequest, res: NextResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getServerSession(req, res, authOptions);
 
   const schema = z.object({
@@ -18,7 +18,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
     };
   }
 
-  const body = schema.safeParse(JSON.parse(req.body));
+  const body = schema.safeParse(req.body);
 
   if (!body.success) {
     return {

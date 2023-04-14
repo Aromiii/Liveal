@@ -12,32 +12,36 @@ import addFriend from "../../utils/addFriend";
 const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [selectedFriend, setSelectedFriend] = useState(0);
 
-  const blockFriend = async (event: any) => {
+  const blockFriend = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
     const response = await fetch("/api/user/friend/block", {
       method: "PUT",
       credentials: "include",
+      headers:{'content-type': 'application/json'},
       body: JSON.stringify({
-        userId: friends[selectedFriend].id
+        userId: friends[selectedFriend]?.id
       })
     });
-    const body = await response.json();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const body: { message: string } = await response.json();
     alert(body.message);
   };
 
-  const unblockFriend = async (event: any) => {
+  const unblockFriend = async (event: { preventDefault: () => void; }) => {
     event.preventDefault();
     console.log(friends[selectedFriend]);
 
     const response = await fetch("/api/user/friend/block", {
       method: "DELETE",
       credentials: "include",
+      headers:{'content-type': 'application/json'},
       body: JSON.stringify({
-        userId: friends[selectedFriend].id
+        userId: friends[selectedFriend]?.id
       })
     });
-    const body = await response.json();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const body: { message: string } = await response.json();
     alert(body.message);
   };
 
@@ -48,7 +52,7 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
           <ul>
             {
               friends.map((friend, key) => {
-                return <li
+                return <li key={key}
                   className={selectedFriend == key ? "mb-2 bg-gray-300 rounded-lg p-1 shadow shadow-red-500" : "mb-2 bg-gray-300 rounded-lg p-1 shadow"}>
                   <button className="flex place-items-center gap-2 w-full" onClick={() => setSelectedFriend(key)}>
                     <img className="object-cover w-12 h-12 rounded-full" src={friend.image} />
@@ -66,12 +70,12 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
           {
             friendSuggestions.map(suggestion => {
               return <>
-                <Link href={`/user/${suggestion.username}`} className="w-full h-full">
+                <Link href={`/user/${suggestion.username || ""}`} className="w-full h-full">
                   <div className="bg-white w-full rounded-lg flex place-items-center flex-col h-full p-2">
                     <img className="w-24 h-24 rounded-full object-cover" alt="Profile picture"
-                         src={suggestion.image} />
+                         src={suggestion.image || undefined} />
                     <h1 className="my-2 font-bold text-lg break-words max-w-[80%]">{suggestion.name}</h1>
-                    <button className="liveal-button w-full mt-auto" onClick={event => addFriend(event, suggestion.id)}>
+                    <button className="liveal-button w-full mt-auto" onClick={event => void addFriend(event, suggestion.id)}>
                       Add friend
                     </button>
                   </div>
@@ -87,21 +91,21 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
             <div
               className="bg-white md:w-1/2 w-[calc(100%-2.5rem)] rounded-lg flex place-items-center flex-col absolute top-5 left-5 shadow md:min-w-[120px]">
               <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture"
-                   src={friends[selectedFriend].image} />
-              <h1 className="m-2 font-bold text-lg break-words max-w-[80%]">{friends[selectedFriend].name}</h1>
+                   src={friends[selectedFriend]?.image} />
+              <h1 className="m-2 font-bold text-lg break-words max-w-[80%]">{friends[selectedFriend]?.name}</h1>
             </div>
             <div className="m-2 mt-auto">
-              {friends[selectedFriend].blocked ?
-                <button className="liveal-button bg-white text-black border w-full" onClick={unblockFriend}>
+              {friends[selectedFriend]?.blocked ?
+                <button className="liveal-button bg-white text-black border w-full" onClick={event => void unblockFriend(event)}>
                   Unblock
                 </button> :
-                <button className="liveal-button bg-white text-black border w-full" onClick={blockFriend}>
+                <button className="liveal-button bg-white text-black border w-full" onClick={event => void blockFriend(event)}>
                   Block
                 </button>
               }
             </div>
             <div className="m-2 mt-1">
-              <button className="liveal-button w-full" onClick={(event) => removeFriend(event, friends[selectedFriend].id)}>
+              <button className="liveal-button w-full" onClick={event => void removeFriend(event, friends[selectedFriend]?.id || "")}>
                 Remove friend
               </button>
             </div>
@@ -152,4 +156,4 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       friends: friends
     }
   };
-};
+}

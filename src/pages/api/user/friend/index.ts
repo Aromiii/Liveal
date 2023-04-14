@@ -1,10 +1,10 @@
-import type { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../server/auth";
 import { z } from "zod";
 import { prisma } from "../../../../server/db";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-const handler = async (req: NextRequest, res: NextResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
@@ -15,7 +15,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
     userId: z.string()
   });
 
-  const body = schema.safeParse(JSON.parse(req.body));
+  const body = schema.safeParse(req.body);
 
   if (!body.success) {
     res.status(400).json({ message: "Data you provided is not in correct format" });
@@ -27,8 +27,8 @@ const handler = async (req: NextRequest, res: NextResponse) => {
       const result = await prisma.friendship.findFirst({
         where: {
           OR: [
-            { user1Id: session.user.id, user2Id: body.data.userId },
-            { user1Id: body.data.userId, user2Id: session.user.id }
+            { user1Id: session?.user.id, user2Id: body.data.userId },
+            { user1Id: body.data.userId, user2Id: session?.user.id }
           ]
         }
       });
@@ -40,7 +40,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
 
       await prisma.friendship.create({
         data: {
-          user1Id: session.user.id,
+          user1Id: session?.user.id || "",
           user2Id: body.data.userId
         }
       });
@@ -60,8 +60,8 @@ const handler = async (req: NextRequest, res: NextResponse) => {
       await prisma.friendship.deleteMany({
         where: {
           OR: [
-            { user1Id: session.user.id, user2Id: body.data.userId },
-            { user1Id: body.data.userId, user2Id: session.user.id }
+            { user1Id: session?.user.id, user2Id: body.data.userId },
+            { user1Id: body.data.userId, user2Id: session?.user.id }
           ]
         }
       });

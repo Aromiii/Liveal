@@ -1,6 +1,8 @@
 import { prisma } from "../server/db";
+import type Friend from "../types/friend";
+import { z } from "zod";
 
-export default async function getFriends(id: string) {
+export default async function getFriends(id: string): Promise<Friend[]> {
   const friends = await prisma.friendship.findMany({
     where: {
       OR: [
@@ -29,19 +31,23 @@ export default async function getFriends(id: string) {
     }
   });
 
-  const formattedFriends = friends.map(friend => {
+  return friends.map(friend => {
     if (friend.user1.id == id) {
       return {
-        blocked: friend.blocked,
-        ...friend.user2
+        id: friend.user2.id,
+        name: friend.user2.name || "Error",
+        username: friend.user2.username || "Error",
+        image: friend.user2.image || "Error",
+        blocked: friend.blocked || true
       }
     } else {
       return {
-        blocked: friend.blocked,
-        ...friend.user1
+        id: friend.user1.id,
+        name: friend.user1.name || "Error",
+        username: friend.user1.username || "Error",
+        image: friend.user1.image || "Error",
+        blocked: friend.blocked || true
       }
     }
   });
-
-  return formattedFriends;
 }

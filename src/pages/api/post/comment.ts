@@ -1,10 +1,10 @@
-import type { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../server/auth";
 import { z } from "zod";
 import { prisma } from "../../../server/db";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-const handler = async (req: NextRequest, res: NextResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
@@ -17,7 +17,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
       text: z.string().min(1).max(200),
       postId: z.string()
     })
-      .safeParse(JSON.parse(req.body));
+      .safeParse(req.body);
 
     if (!body.success) {
       res.status(400).json({ message: "Data you provided is not in correct format" });
@@ -25,7 +25,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
     }
 
     try {
-      await prisma.comment.create({
+      const comment = await prisma.comment.create({
         data: {
           content: body.data.text,
           userId: session.user.id,
@@ -33,7 +33,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
         }
       });
 
-      res.status(200).json({ message: "Commented" });
+      res.status(200).json({ message: "Commented", id: comment.id });
       return;
 
     } catch (error) {
@@ -47,8 +47,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
   if (req.method == "DELETE") {
     const body = z.object({
       commentId: z.string()
-    })
-      .safeParse(JSON.parse(req.body));
+    }).safeParse(req.body);
 
     if (!body.success) {
       res.status(400).json({ message: "Data you provided is not in correct format" });

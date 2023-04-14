@@ -1,10 +1,10 @@
-import type { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../server/auth";
 import { prisma } from "../../../server/db";
 import { z } from "zod";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-const handler = async (req: NextRequest, res: NextResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
@@ -18,7 +18,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
         postText: z.string().min(1).max(5000)
       });
 
-      const body = schema.parse(JSON.parse(req.body));
+      const body = schema.parse(req.body);
 
       const post = await prisma.post.create({
         data: {
@@ -47,7 +47,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
         postId: z.string()
       });
 
-      const body = schema.parse(JSON.parse(req.body));
+      const body = schema.parse(req.body);
 
       const result = await prisma.post.findFirst({
         select: {
@@ -62,7 +62,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
         }
       });
 
-      if (session.user.id != result.author.id) {
+      if (session.user.id != result?.author.id) {
         res.status(403).json({ message: "your not the author of the post" });
         return;
       }
