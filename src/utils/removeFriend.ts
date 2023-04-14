@@ -1,4 +1,6 @@
-const removeFriend = async (event: any, id: string) => {
+import { MouseEvent } from "react";
+
+const removeFriend = async (event: MouseEvent<HTMLButtonElement>, id: string) => {
   event.preventDefault();
 
   const response = await fetch("/api/user/friend", {
@@ -9,7 +11,8 @@ const removeFriend = async (event: any, id: string) => {
       userId: id
     })
   });
-  const body = await response.json();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const body: {message: string} = await response.json();
   alert(body.message);
 };
 

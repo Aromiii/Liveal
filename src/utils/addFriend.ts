@@ -9,7 +9,9 @@ const addFriend = async (event: React.MouseEvent<HTMLButtonElement>, id: string)
       userId: id
     })
   });
-  const body = await response.json();
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const body: {message: string} = await response.json();
   alert(body.message);
 };
 

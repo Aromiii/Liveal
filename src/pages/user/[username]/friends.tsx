@@ -12,7 +12,8 @@ const Friends = ({ friends }: InferGetServerSidePropsType<typeof getServerSidePr
         <ul className="bg-white p-3 pb-1 rounded-lg">
           {
             friends.map(friend => {
-              return <ConnectionOrChatCard image={friend.image} text={friend.name} link={`/user/${friend.username}`}/>
+              // eslint-disable-next-line react/jsx-key
+              return <ConnectionOrChatCard image={friend.image || ""} text={friend.name || ""} link={`/user/${friend.username || ""}`}/>
             })
           }
         </ul>
@@ -24,10 +25,8 @@ const Friends = ({ friends }: InferGetServerSidePropsType<typeof getServerSidePr
 export default Friends;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
   const user = await prisma.user.findFirst({
-    where: { username: context.query.username }
+    where: { username: context.query.username?.toString() || "", }
   })
 
   if (!user) {

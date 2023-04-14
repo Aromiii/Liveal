@@ -18,7 +18,7 @@ const FourZeroFour = () => {
             </Link>
           </li>
           <li>
-            <Link href={`/user/${session?.user.username}`}>
+            <Link href={session ? `/user/${session.user.username || ""}` : "/"}>
               <p className="text-lg hover:text-red-500 hover:underline hover:text-xl transition">Profile</p>
             </Link>
           </li>

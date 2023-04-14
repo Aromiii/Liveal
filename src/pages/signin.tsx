@@ -9,9 +9,9 @@ const Signin = () => {
 
   if (status == "authenticated") {
     if (!session?.user.profileCreated)
-      router.replace("/user/create");
+      void router.replace("/user/create");
     else
-      router.replace("/")
+      void router.replace("/")
   }
 
   if (status == "unauthenticated") {
