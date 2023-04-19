@@ -4,7 +4,7 @@ import { SessionProvider } from "next-auth/react";
 
 import "../styles/globals.css";
 
-const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { session, ...pageProps } }) => {
+const Liveal: AppType<{ session: Session | null }> = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
     <SessionProvider session={session}>
       <div className="bg-gray-200 p-5 min-h-screen">
@@ -14,4 +14,4 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
   );
 };
 
-export default MyApp;
+export default Liveal;

@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 const Signin = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
+  console.log(status, session)
 
   if (status == "authenticated") {
     if (!session?.user.profileCreated)
