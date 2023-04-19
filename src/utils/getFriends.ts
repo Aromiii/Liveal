@@ -1,6 +1,5 @@
 import { prisma } from "../server/db";
 import type Friend from "../types/friend";
-import { z } from "zod";
 
 export default async function getFriends(id: string): Promise<Friend[]> {
   const friends = await prisma.friendship.findMany({
@@ -46,7 +45,7 @@ export default async function getFriends(id: string): Promise<Friend[]> {
         name: friend.user1.name || "Error",
         username: friend.user1.username || "Error",
         image: friend.user1.image || "Error",
-        blocked: friend.blocked || true
+        blocked: friend.blocked != undefined ? friend.blocked : true
       }
     }
   });
