@@ -58,7 +58,7 @@ model User {
   email          String       @unique
   emailVerified  DateTime?
   image          String?
-  description    String?      @db.VarChar(1001)
+  description    String?      @db.VarChar(1000)
   profileCreated Boolean      @default(false)
   accounts       Account[]
   sessions       Session[]
@@ -92,7 +92,7 @@ model VerificationToken {
 
 model Post {
   id        String    @id @default(cuid())
-  content   String
+  content   String    @db.VarChar(3000)
   image     String?
   public    Boolean   @default(false)
   likes     Int       @default(0)
@@ -108,7 +108,7 @@ model Post {
 
 model Comment {
   id        String   @id @default(cuid())
-  content   String
+  content   String   @db.VarChar(200)
   author    User     @relation(fields: [userId], references: [id])
   post      Post     @relation(fields: [postId], references: [id])
   userId    String

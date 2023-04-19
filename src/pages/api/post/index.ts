@@ -15,7 +15,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method == "POST") {
     try {
       const schema = z.object({
-        postText: z.string().min(1).max(5000)
+        postText: z.string().min(1).max(3000)
       });
 
       const body = schema.parse(req.body);

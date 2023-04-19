@@ -48,7 +48,7 @@ const New = () => {
         </div>
         <img className="p-2 w-full max-h-[70vh] object-cover rounded-2xl" />
         <form className="w-full" onSubmit={event => void sendPost(event)}>
-            <textarea onChange={event => handelPostTextInput(event)}
+            <textarea maxLength={3000} onChange={event => handelPostTextInput(event)}
                       className="max-h-[50vh] w-full p-2 border border-gray-200 rounded-lg resize-none overflow-hidden" />
           <div className="w-full place-items-center flex">
             <button className="ml-auto mt-4 liveal-button">

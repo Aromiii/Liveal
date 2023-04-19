@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { type ReactNode, useState } from "react";
 import { useRouter } from "next/router";
 
-export default function Navbar({
-                                 showBack = false,
-                                 form = false,
-                                 children
-                               }: { showBack?: boolean, form?: boolean, children: ReactNode }) {
+export default function Navbar({ showBack = false, form = false, children }: {
+  showBack?: boolean,
+  form?: boolean,
+  children: ReactNode
+}) {
   const { data: session } = useSession();
   const [showSearch, setShowSearch] = useState(false);
   const router = useRouter();
@@ -26,17 +26,22 @@ export default function Navbar({
         <ul className="h-[70] mx-3 gap-3 place-items-center flex">
           <li className="hidden md:block">
             <Link href="/">
-              <Image src="/home.svg" width={50} height={50} alt="home"/>
+              <Image src="/home.svg" width={50} height={50} alt="home" />
             </Link>
           </li>
           <li className={session ? "md:block hidden" : "hidden"}>
             <Link href="/user/friends">
-              <Image src="/group.svg" width={50} height={50} alt="friends"/>
+              <Image src="/group.svg" width={50} height={50} alt="friends" />
             </Link>
           </li>
           <li className="h-[50px] hidden md:block">
             <button onClick={() => setShowSearch(!showSearch)}>
-              <Image src="/search.svg" width={50} height={50} alt="seacrh"/>
+              <Image src="/search.svg" width={50} height={50} alt="seacrh" />
+            </button>
+          </li>
+          <li className="h-[50px] hidden md:block">
+            <button onClick={() => void signOut({ redirect: false })}>
+              <Image src="/logout.svg" width={50} height={50} alt="settings" />
             </button>
           </li>
           <li>
@@ -55,7 +60,7 @@ export default function Navbar({
       </form>
     </div>
     <Image src="/arrow_back.svg" className="absolute" width={50} height={50} onClick={() => router.back()}
-           hidden={!showBack} alt="back"/>
+           hidden={!showBack} alt="back" />
     {form ?
       <div className="h-[calc(100vh-160px-2.5rem)] flex place-content-center place-items-center">
         <div className="md:w-1/2 w-full bg-white rounded-lg p-5 shadow">
@@ -66,17 +71,25 @@ export default function Navbar({
         {children}
       </div>
     }
+    <footer className="fixed hidden md:flex h-20 z-50 w-screen bottom-0 left-0 bg-red-500 place-items-center">
+      <h1 className="text-white text-xl p-5 mr-auto hidden md:block">
+        Don&apos;t be alone - Be connected to your community
+      </h1>
+      <Link href="/signin" className="text-[120%] w-fit m-10 p-2 px-5 rounded-lg bg-white text-black">
+        Sign in
+      </Link>
+    </footer>
     <div className="h-[80px] md:hidden">
       <nav className="fixed bottom-0 bg-white h-[80px] w-full right-0 shadow-lg z-50">
         <ul className="flex h-full place-items-center gap-3 p-3">
           <li>
             <Link href="/">
-              <Image src="/home.svg" width={50} height={50} alt="home"/>
+              <Image src="/home.svg" width={50} height={50} alt="home" />
             </Link>
           </li>
           <li className="h-[50px] ml-auto">
             <button onClick={() => setShowSearch(!showSearch)}>
-              <Image src="/search.svg" width={50} height={50} alt="search"/>
+              <Image src="/search.svg" width={50} height={50} alt="search" />
             </button>
           </li>
           <li className="mx-auto">
@@ -91,13 +104,13 @@ export default function Navbar({
             <>
               <li className="mr-auto">
                 <Link href="/user/friends">
-                  <Image src="/group.svg" width={50} height={50} alt="friends"/>
+                  <Image src="/group.svg" width={50} height={50} alt="friends" />
                 </Link>
               </li>
               <li>
-                <Link href="/">
-                  <Image src="/settings.svg" width={50} height={50} alt="settings"/>
-                </Link>
+                <button onClick={() => void signOut({ redirect: false })}>
+                  <Image src="/logout.svg" width={50} height={50} alt="settings" />
+                </button>
               </li>
             </> :
             <div className="w-[calc(100px+1.5rem)] ml-auto">

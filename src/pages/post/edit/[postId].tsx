@@ -57,7 +57,7 @@ const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>
         <form className="w-full" onSubmit={event => void editPost(event)}>
             <textarea onChange={event => handelPostTextInput(event)}
                       className="max-h-[50vh] w-full p-2 border border-gray-200 rounded-lg resize-none overflow-hidden"
-                      defaultValue={postText} />
+                      defaultValue={postText} maxLength={3000} />
           <div className="w-full place-items-center flex">
             <button className="bg-red-500 rounded-lg p-2 text-white mt-4 text-xl left-0 px-5 ml-auto">Send</button>
           </div>

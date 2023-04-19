@@ -7,7 +7,6 @@ import Post from "../components/feed/post";
 import { prisma } from "../server/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../server/auth";
-import SignInFooter from "../components/signInFooter";
 import { getLikes } from "../utils/getLikes";
 import { getComments } from "../utils/getComments";
 import getFriends from "../utils/getFriends";
@@ -76,7 +75,6 @@ const Home = ({ posts, image, friends }: InferGetServerSidePropsType<typeof getS
               </ul>
             </main>
           </div>
-          <SignInFooter />
         </Navbar>
       </>
     );

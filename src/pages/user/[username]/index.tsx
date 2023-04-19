@@ -4,7 +4,6 @@ import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "nex
 import { prisma } from "../../../server/db";
 import Link from "next/link";
 import Post from "../../../components/feed/post";
-import SignInFooter from "../../../components/signInFooter";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { getServerSession } from "next-auth/next";
@@ -78,7 +77,6 @@ const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getSe
             <FriendsNav friends={friends} />
           </div>
         </div>
-        <SignInFooter />
       </div>
     </Navbar>
   </>;
