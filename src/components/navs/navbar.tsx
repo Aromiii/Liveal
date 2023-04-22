@@ -71,14 +71,17 @@ export default function Navbar({ showBack = false, form = false, children }: {
         {children}
       </div>
     }
-    <footer className="fixed hidden md:flex h-20 z-50 w-screen bottom-0 left-0 bg-red-500 place-items-center">
-      <h1 className="text-white text-xl p-5 mr-auto hidden md:block">
-        Don&apos;t be alone - Be connected to your community
-      </h1>
-      <Link href="/signin" className="text-[120%] w-fit m-10 p-2 px-5 rounded-lg bg-white text-black">
-        Sign in
-      </Link>
-    </footer>
+    {!session ?
+      <footer className="fixed hidden md:flex h-20 z-50 w-screen bottom-0 left-0 bg-red-500 place-items-center">
+        <h1 className="text-white text-xl p-5 mr-auto hidden md:block">
+          Don&apos;t be alone - Be connected to your community
+        </h1>
+        <Link href="/signin" className="text-[120%] w-fit m-10 p-2 px-5 rounded-lg bg-white text-black">
+          Sign in
+        </Link>
+      </footer>:
+      null
+    }
     <div className="h-[80px] md:hidden">
       <nav className="fixed bottom-0 bg-white h-[80px] w-full right-0 shadow-lg z-50">
         <ul className="flex h-full place-items-center gap-3 p-3">
