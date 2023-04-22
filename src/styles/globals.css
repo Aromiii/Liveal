@@ -4,6 +4,24 @@
 
 @layer components {
     .liveal-button {
-        @apply bg-red-500 rounded-lg p-2 text-white text-xl px-5 shadow
+        @apply bg-red-500 dark:bg-red-700 rounded-lg p-2 text-white text-xl px-5 shadow
+    }
+
+    .bg-color {
+        @apply bg-gray-200 dark:bg-gray-700
+    }
+
+    .base-color {
+        @apply bg-white dark:bg-gray-900 dark:text-white
+    }
+}
+
+@layer base {
+    svg {
+        @apply fill-black dark:fill-white
+    }
+
+    input, textarea {
+        @apply bg-gray-200 dark:bg-gray-500 text-white
     }
 }

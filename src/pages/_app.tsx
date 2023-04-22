@@ -7,7 +7,7 @@ import "../styles/globals.css";
 const Liveal: AppType<{ session: Session | null }> = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
     <SessionProvider session={session}>
-      <div className="bg-gray-200 p-5 min-h-screen">
+      <div className="bg-color p-5 min-h-screen">
         <Component {...pageProps} />
       </div>
     </SessionProvider>

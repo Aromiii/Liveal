@@ -21,7 +21,7 @@ const Home = ({ posts, image, friends }: InferGetServerSidePropsType<typeof getS
           <div className="flex gap-5">
             <aside className="w-1/6 min-w-[150px] md:block hidden">
               <Link href={`/user/${session.user.username || ""}`}>
-                <div className="bg-white rounded-lg flex place-items-center flex-col">
+                <div className="base-color rounded-lg flex place-items-center flex-col">
                   <img className="w-24 h-24 rounded-full object-cover m-2" alt="Profile picture"
                        src={session.user.image || undefined} />
                   <h1 className="m-2 font-bold text-lg break-words max-w-[80%]">{session.user.name}</h1>

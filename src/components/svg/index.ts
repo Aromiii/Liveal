@@ -1,0 +1,8 @@
+export {default as GroupSvg} from "./group.svg"
+export {default as MenuSvg} from "./menu.svg"
+export {default as DeleteSvg} from "./delete.svg"
+export {default as ArrowBackSvg} from "./arrow_back.svg"
+export {default as HomeSvg} from "./home.svg"
+export {default as LogoutSvg} from "./logout.svg"
+export {default as SearchSvg} from "./search.svg"
+export {default as SettingsSvg} from "./settings.svg"
