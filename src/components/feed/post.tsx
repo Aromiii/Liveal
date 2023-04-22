@@ -86,7 +86,7 @@ export default function Post(props: PostType) {
     console.log(body);
   };
 
-  return <li className="shadow bg-white rounded-lg mb-2 p-2">
+  return <li className="shadow base-color rounded-lg mb-2 p-2">
     <div className="flex place-items-center gap-2">
       <Link href={`/user/${props.authorUsername || ""}`}>
         <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={props.authorImage || undefined} />
@@ -119,7 +119,7 @@ export default function Post(props: PostType) {
       <p className="ml-2 text-sm font-semibold">{likes}</p>
       <form className="ml-auto mr-4 w-2/3 flex" onSubmit={event => void comment(event)}>
         <input onChange={event => setCommentText(event.target.value)} maxLength={200} type="text"
-               className="bg-gray-200 rounded-l-lg p-2 w-full" placeholder=" Comment..." />
+               className="rounded-l-lg p-2 w-full" placeholder=" Comment..." />
         <button className="bg-red-500 rounded-r-lg p-2 px-5 text-white text-l right-0">Send</button>
       </form>
     </div>

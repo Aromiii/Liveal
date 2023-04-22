@@ -3,7 +3,7 @@ import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { type ReactNode, useState } from "react";
 import { useRouter } from "next/router";
-import { GroupSvg, HomeSvg, LogoutSvg, SearchSvg } from "../svg";
+import { ArrowBackSvg, GroupSvg, HomeSvg, LogoutSvg, SearchSvg } from "../svg";
 
 export default function Navbar({ showBack = false, form = false, children }: {
   showBack?: boolean,
@@ -57,14 +57,15 @@ export default function Navbar({ showBack = false, form = false, children }: {
       className="w-full md:w-[60%] md:min-w-[700px] h-[80px] right-0 md:right-[20%] rounded-b-lg base-color fixed md:top-[79px] top-0 z-50 shadow-lg"
       hidden={!showSearch}>
       <form className="m-4">
-        <input className="w-full bg-gray-300 rounded-lg h-full shadow p-3" placeholder=" Search for anything..." />
+        <input className="w-full rounded-lg h-full shadow p-3" placeholder=" Search for anything..." />
       </form>
     </div>
-    <Image src="/arrow_back.svg" className="absolute" width={50} height={50} onClick={() => router.back()}
-           hidden={!showBack} alt="back" />
+    <button className="absolute" hidden={!showBack} onClick={() => router.back()}>
+      <ArrowBackSvg/>
+    </button>
     {form ?
       <div className="h-[calc(100vh-160px-2.5rem)] flex place-content-center place-items-center">
-        <div className="md:w-1/2 w-full bg-white rounded-lg p-5 shadow">
+        <div className="md:w-1/2 w-full base-color rounded-lg p-5 shadow">
           {children}
         </div>
       </div> :

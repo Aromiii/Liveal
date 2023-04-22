@@ -4,7 +4,7 @@ import type Friend from "../../types/friend";
 const FriendsNav = (props: { friends: Friend[] }) => {
   return <>
     <aside className="shadow hidden md:block">
-      <div className="bg-white rounded-lg px-4 p-1">
+      <div className="base-color rounded-lg px-4 p-1">
         <h1 className="m-0.5 mx-3 text-lg font-semibold">
           Friends
         </h1>
