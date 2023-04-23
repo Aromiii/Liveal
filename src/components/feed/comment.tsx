@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
 import { useState } from "react";
 import { DeleteSvg } from "../svg";
 
