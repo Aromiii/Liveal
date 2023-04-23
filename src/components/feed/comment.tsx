@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
+import { DeleteSvg } from "../svg";
 
 const Comment = (props: { authorImage: string | null, authorName: string | null, authorUsername: string | null, content: string, postAuthorUsername: string | null, commentId: string }) => {
   const { data: session } = useSession()
@@ -34,9 +35,9 @@ const Comment = (props: { authorImage: string | null, authorName: string | null,
         <p className="font-semibold w-full break-words">{props.authorName}</p>
         <p className="m-0.5 rounded-lg break-words whitespace-pre-line">{props.content}</p>
       </div>
-      <div className={props.authorUsername == session?.user.username ? "ml-auto w-[40px]" : "hidden"}>
-        <button className="ml-auto" onClick={() => void deleteComment()}>
-          <Image src="/delete.svg" width={30} height={30} alt="delete"/>
+      <div className={props.authorUsername == session?.user.username ? "ml-auto w-[30px]" : "hidden"}>
+        <button onClick={() => void deleteComment()}>
+          <DeleteSvg viewBox="0 0 48 48" className="h-[30px] w-[30px]"/>
         </button>
       </div>
     </li>
