@@ -112,12 +112,18 @@ export default function Post(props: PostType) {
       <div className="w-[calc(100%-5rem)]">
         <div className="flex">
           <p className="break-words max-w-[calc(100%-60px)] font-semibold text-lg mr-auto">{props.authorName}</p>
-          <Link href={`/post/edit/${props.postId}`}>
-            <SettingsSvg className="h-[30px] w-[30px]"/>
-          </Link>
-          <button onClick={event => void deletePost(event)}>
-            <DeleteSvg viewBox="0 0 48 48" className="h-[30px] w-[30px]"/>
-          </button>
+          {props.authorUsername == session?.user.username ?
+            <div className="flex">
+              <Link href={`/post/edit/${props.postId}`}>
+                <SettingsSvg className="h-[30px] w-[30px]"/>
+              </Link>
+              <button onClick={event => void deletePost(event)}>
+                <DeleteSvg viewBox="0 0 48 48" className="h-[30px] w-[30px]"/>
+              </button>
+            </div>
+            :
+            null
+          }
         </div>
         <h2 className="font-extralight">{new Intl.DateTimeFormat("eur", {
           year: new Date().getFullYear() === new Date(props.createdAt).getFullYear() ? undefined : "numeric",
