@@ -88,6 +88,47 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   }
 
+  if (req.method == "DELETE") {
+    try {
+      const schema = z.object({
+        postId: z.string()
+      });
+
+      const body = schema.parse(req.body);
+
+      const result = await prisma.post.findFirst({
+        select: {
+          author: {
+            select: {
+              id: true
+            }
+          }
+        },
+        where: {
+          id: body.postId
+        }
+      });
+
+      if (session.user.id != result?.author.id) {
+        res.status(403).json({ message: "Your not the author of the post" });
+        return;
+      }
+
+      await prisma.post.delete({
+        where: {
+          id: body.postId
+        },
+      });
+
+      res.status(200).json({ message: "Post removed" });
+      return;
+
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({ message: "Bad request" });
+    }
+  }
+
   res.status(405).json({ message: "method not allowed" });
   return;
 };
