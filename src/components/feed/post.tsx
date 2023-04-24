@@ -132,8 +132,12 @@ export default function Post(props: PostType) {
         }).format(new Date(props.createdAt))}</h2>
       </div>
     </div>
-    <img className="p-2 w-full max-h-[70vh] object-cover rounded-2xl" src={props.image} />
-    <p className="p-2 break-words whitespace-pre-line">
+    {props.image ?
+      <img className="p-2 w-full max-h-[70vh] object-cover rounded-2xl" src={props.image} />
+      :
+      null
+    }
+    <p className="p-2 py-3 break-words whitespace-pre-line">
       {props.text}
     </p>
     <div className="mx-2 mb-1 w-full flex place-items-center">
