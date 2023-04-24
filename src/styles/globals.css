@@ -4,7 +4,7 @@
 
 @layer components {
     .liveal-button {
-        @apply bg-red-500 dark:bg-red-700 rounded-lg p-2 text-white text-xl px-5 shadow
+        @apply bg-red-500 rounded-lg p-2 text-white text-xl px-5 shadow
     }
 
     .bg-color {
