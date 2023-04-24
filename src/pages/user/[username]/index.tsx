@@ -67,7 +67,7 @@ const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getSe
               {
                 // eslint-disable-next-line react/jsx-key
                 posts.map(post => <Post authorName={user.name} authorUsername={user.username}
-                                        authorImage={user.image} text={post.content} image={post.image}
+                                        authorImage={user.image} text={post.content}
                                         createdAt={post.createdAt} comments={post.comments} postId={post.id}
                                         postLikes={post.likes} liked={post.liked} />)
               }
@@ -86,12 +86,6 @@ export default User;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
-  const response = await fetch("https://dog.ceo/api/breeds/image/random");
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const data = await response.json();
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-  const image: string = data.message
-
   const username: string = context.query.username?.toString() || ""
 
   const user = await prisma.user.findFirst({
@@ -130,21 +124,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const likedPosts = await getLikes(session?.user.id || "", posts);
   const comments = await getComments(posts);
 
-  if (friends.some(friend => friend.id == session?.user.id && friend.blocked)) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: true
-      }
-    };
-  }
-
   const formattedPosts = posts.map(post => {
     return {
       ...post,
       liked: likedPosts ? likedPosts.includes(post.id) : false,
       createdAt: post.createdAt.toString(),
-      image: image,
       comments: comments.filter(comment => comment.postId === post.id)
     };
   });

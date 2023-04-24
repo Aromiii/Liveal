@@ -11,7 +11,7 @@ import { getLikes } from "../utils/getLikes";
 import { getComments } from "../utils/getComments";
 import getFriends from "../utils/getFriends";
 
-const Home = ({ posts, image, friends }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Home = ({ posts, friends }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session, status } = useSession();
 
   if (status == "authenticated") {
@@ -37,7 +37,7 @@ const Home = ({ posts, image, friends }: InferGetServerSidePropsType<typeof getS
                   // eslint-disable-next-line react/jsx-key
                   posts.map((post) => <Post postId={post.id} authorName={post.author.name} liked={post.liked}
                                             authorUsername={post.author.username}
-                                            authorImage={post.author.image} text={post.content} image={image}
+                                            authorImage={post.author.image} text={post.content}
                                             createdAt={post.createdAt} comments={post.comments}
                                             postLikes={post.likes} />)
                 }
@@ -68,7 +68,7 @@ const Home = ({ posts, image, friends }: InferGetServerSidePropsType<typeof getS
                 {
                   // eslint-disable-next-line react/jsx-key
                   posts.map((post) => <Post authorName={post.author.name} authorUsername={post.author.username}
-                                            authorImage={post.author.image} text={post.content} image={image}
+                                            authorImage={post.author.image} text={post.content}
                                             createdAt={post.createdAt} comments={post.comments} postLikes={post.likes}
                                             liked={false} postId={post.id} />)
                 }
@@ -85,12 +85,6 @@ export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOptions);
-
-  const response = await fetch("https://dog.ceo/api/breeds/image/random");
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const data = await response.json();
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-  const image: string = data.message;
 
   const posts = await prisma.post.findMany({
     select: {
@@ -131,7 +125,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     props: {
       friends: friends,
       posts: formattedPosts,
-      image: image
     }
   };
 }

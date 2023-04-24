@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { FormEvent, MouseEvent, useState } from "react";
+import { useState } from "react";
 import Comment from "./comment";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import type PostType from "../../types/post";
+import { DeleteSvg, SettingsSvg } from "../svg";
 
 export default function Post(props: PostType) {
   const router = useRouter();
@@ -12,6 +13,23 @@ export default function Post(props: PostType) {
   const [commentText, setCommentText] = useState("");
   const [likes, setLikes] = useState(props.postLikes);
   const [comments, setComments] = useState(props.comments);
+
+  const deletePost = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+
+    const response = await fetch("/api/post", {
+      method: "DELETE",
+      credentials: "include",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        postId: props.postId
+      })
+    });
+
+    if (response.status < 300) {
+      void router.reload()
+    }
+  }
 
   const comment = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -92,7 +110,21 @@ export default function Post(props: PostType) {
         <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={props.authorImage || undefined} />
       </Link>
       <div className="w-[calc(100%-5rem)]">
-        <p className="break-words font-semibold text-lg">{props.authorName}</p>
+        <div className="flex">
+          <p className="break-words max-w-[calc(100%-60px)] font-semibold text-lg mr-auto">{props.authorName}</p>
+          {props.authorUsername == session?.user.username ?
+            <div className="flex">
+              <Link href={`/post/edit/${props.postId}`}>
+                <SettingsSvg className="h-[30px] w-[30px]"/>
+              </Link>
+              <button onClick={event => void deletePost(event)}>
+                <DeleteSvg viewBox="0 0 48 48" className="h-[30px] w-[30px]"/>
+              </button>
+            </div>
+            :
+            null
+          }
+        </div>
         <h2 className="font-extralight">{new Intl.DateTimeFormat("eur", {
           year: new Date().getFullYear() === new Date(props.createdAt).getFullYear() ? undefined : "numeric",
           month: "long",
@@ -100,8 +132,12 @@ export default function Post(props: PostType) {
         }).format(new Date(props.createdAt))}</h2>
       </div>
     </div>
-    <img className="p-2 w-full max-h-[70vh] object-cover rounded-2xl" src={props.image} />
-    <p className="p-2 break-words whitespace-pre-line">
+    {props.image ?
+      <img className="p-2 w-full max-h-[70vh] object-cover rounded-2xl" src={props.image} />
+      :
+      null
+    }
+    <p className="p-2 py-3 break-words whitespace-pre-line">
       {props.text}
     </p>
     <div className="mx-2 mb-1 w-full flex place-items-center">

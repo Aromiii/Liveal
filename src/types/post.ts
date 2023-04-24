@@ -5,7 +5,7 @@ export default interface Post {
   authorUsername: string | null,
   authorImage: string | null,
   text: string,
-  image: string,
+  image?: string,
   createdAt: string,
   liked: boolean,
   comments: {

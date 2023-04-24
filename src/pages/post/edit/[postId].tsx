@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react";
-import { type ChangeEvent, useState } from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { prisma } from "../../../server/db";
 import { getServerSession } from "next-auth/next";
@@ -11,6 +11,15 @@ const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>
   const { data: session } = useSession();
   const router = useRouter();
   const [postText, setPostText] = useState(post.content);
+
+  useEffect(() => {
+    const textarea = document.getElementById("textarea")
+
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, [])
 
   const editPost = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -55,7 +64,7 @@ const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>
         </div>
         <img className="p-2 w-full max-h-[70vh] object-cover rounded-2xl" />
         <form className="w-full" onSubmit={event => void editPost(event)}>
-            <textarea onChange={event => handelPostTextInput(event)}
+            <textarea id="textarea" onChange={event => handelPostTextInput(event)}
                       className="max-h-[50vh] w-full p-2 border border-gray-200 rounded-lg resize-none overflow-hidden"
                       defaultValue={postText} maxLength={3000} />
           <div className="w-full place-items-center flex">
