@@ -15,6 +15,10 @@ const Edit = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) 
   const updateAccount = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (!confirm("Do you want to update your account")) {
+      return
+    }
+
     const response = await fetch("/api/user", {
       method: "PUT",
       credentials: "include",
@@ -25,9 +29,12 @@ const Edit = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) 
         description: desc
       })
     });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const body: {message: string} = await response.json();
-    alert(body.message);
+
+    if (response.status > 299) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const body: {message: string} = await response.json();
+      alert(body.message);
+    }
 
     if (response.status < 299) {
       await router.replace("/")

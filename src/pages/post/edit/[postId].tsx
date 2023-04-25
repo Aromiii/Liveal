@@ -41,8 +41,7 @@ const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>
       alert(error.message);
       return;
     }
-
-    alert("Post updated");
+    
     location.replace("/");
   };
 

@@ -32,7 +32,6 @@ const New = () => {
       return;
     }
 
-    alert("Post created");
     location.replace("/");
   };
 
