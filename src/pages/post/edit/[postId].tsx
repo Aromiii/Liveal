@@ -5,7 +5,7 @@ import { prisma } from "../../../server/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../../server/auth";
 import { useRouter } from "next/router";
-import Navbar from "../../../components/navs/navbar";
+import Navbar, { showNotification } from "../../../components/navs/navbar";
 
 const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session } = useSession();
@@ -41,8 +41,9 @@ const PostId = ({ post }: InferGetServerSidePropsType<typeof getServerSideProps>
       alert(error.message);
       return;
     }
-    
-    location.replace("/");
+
+    showNotification("Post edited")
+    void router.push("/")
   };
 
   const handelPostTextInput = (event: ChangeEvent<HTMLTextAreaElement>) => {

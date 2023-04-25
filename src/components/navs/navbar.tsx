@@ -5,6 +5,23 @@ import { type ReactNode, useState } from "react";
 import { useRouter } from "next/router";
 import { ArrowBackSvg, GroupSvg, HomeSvg, LogoutSvg, SearchSvg } from "../svg";
 
+export const showNotification = (text: string) => {
+  if (document) {
+    const element = document.getElementById("notification")
+
+    if (!element) {
+      return
+    }
+
+    element.hidden = false
+    element.innerText = text
+
+    setTimeout(() => {
+      element.hidden = true
+    }, 5000)
+  }
+}
+
 export default function Navbar({ showBack = false, form = false, children }: {
   showBack?: boolean,
   form?: boolean,
@@ -52,6 +69,8 @@ export default function Navbar({ showBack = false, form = false, children }: {
           </li>
         </ul>
       </nav>
+    </div>
+    <div id="notification" className="w-[300px] p-2 backdrop-blur-sm fixed top-[110px] bg-red-500 left-1/2 transform -translate-x-1/2 rounded-full bg-opacity-60 text-white text-center" hidden={true}>
     </div>
     <div
       className="w-full md:w-[60%] md:min-w-[700px] h-[80px] right-0 md:right-[20%] rounded-b-lg base-color fixed md:top-[79px] top-0 z-50 shadow-lg"
