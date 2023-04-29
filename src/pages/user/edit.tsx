@@ -4,9 +4,11 @@ import { authOptions } from "../../server/auth";
 import { prisma } from "../../server/db";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/router";
-import Navbar from "../../components/navs/navbar";
+import Navbar, { showNotification } from "../../components/navs/navbar";
+import { useSession } from "next-auth/react";
 
 const Edit = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const { data: session } = useSession()
   const router = useRouter();
   const [displayName, setDisplayName] = useState(user.name);
   const [username, setUsername] = useState(user.username);
@@ -33,11 +35,11 @@ const Edit = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) 
     if (response.status > 299) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const body: {message: string} = await response.json();
-      alert(body.message);
+      showNotification(body.message)
     }
 
     if (response.status < 299) {
-      await router.replace("/")
+      await router.replace(`/user/${session?.user.username || ""}`)
     }
   };
 
