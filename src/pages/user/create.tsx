@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../server/auth";
 import { prisma } from "../../server/db";
-import Navbar from "../../components/navs/navbar";
+import Navbar, { showNotification } from "../../components/navs/navbar";
 
 const Create = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
@@ -26,9 +26,11 @@ const Create = ({ user }: InferGetServerSidePropsType<typeof getServerSideProps>
       })
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const body: { message: string } = await response.json();
-    alert(body.message);
+    if (response.status > 299) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const body: {message: string} = await response.json();
+      showNotification(body.message)
+    }
 
     if (response.status < 299) {
       await router.replace("/");

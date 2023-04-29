@@ -1,7 +1,7 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import Navbar from "../../components/navs/navbar";
+import Navbar, { showNotification } from "../../components/navs/navbar";
 
 const New = () => {
   const router = useRouter();
@@ -32,8 +32,8 @@ const New = () => {
       return;
     }
 
-    alert("Post created");
-    location.replace("/");
+    showNotification("Posted")
+    void router.push("/")
   };
 
   if (status == "authenticated") {

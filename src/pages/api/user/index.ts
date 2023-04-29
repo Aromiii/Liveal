@@ -43,15 +43,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const isUsernameTaken = await prisma.user.findFirst({
-    where: {
-      username: body.data.username
-    }
-  });
+  if (body.data.username != session?.user.username) {
+    const isUsernameTaken = await prisma.user.findFirst({
+      where: {
+        username: body.data.username
+      }
+    });
 
-  if (isUsernameTaken) {
-    res.status(400).json({ message: "Username is taken" });
-    return;
+    if (isUsernameTaken) {
+      res.status(400).json({ message: "Username is taken" });
+      return;
+    }
   }
 
   if (req.method == "POST") {
