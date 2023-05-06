@@ -1,48 +1,33 @@
-//#[macro_use] extern crate rocket;
+#[macro_use] extern crate rocket;
 
-use mysql::*;
-use mysql::prelude::*;
+use sqlx::*;
 
 mod rate_post;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug)]
 struct Post {
     id: String,
     content: String,
     likes: i32,
 }
 
+#[get("/")]
+async fn index(pool: &rocket::State<MySqlPool>) -> String {
+    let data = sqlx::query!("SELECT content, id, likes FROM Post")
+        .fetch_all(pool.inner())
+        .await.expect("Unable to query Post table");
 
-/*#[get("/")]
-fn index() -> String {
-    format!("Hello from Liveal's rust api")
+    format!("{:?}", data)
 }
 
 #[launch]
-fn rocket() -> _ {
-    let url = "mysql://c7q9azit0y937s1axvs2:pscale_pw_kkxyCU9eJkkwzzgXFzee6tZV3nB1dMLOtANqA63utns@aws.connect.psdb.cloud/liveal";
-    let pool = Pool::new(url)?;
+async fn rocket() -> _ {
+    let database_url = "mysql://127.0.0.1:3306";
+    let pool = sqlx::MySqlPool::connect(database_url)
+        .await
+        .expect("Failed to connect to database");
 
-    let mut db = pool.get_conn()?;
-
-    rocket::build().mount("/", routes![index])
-}*/
-
-fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
-    let url = "mysql://127.0.0.1:3306";
-    let pool = Pool::new(url)?;
-
-    let mut db = pool.get_conn()?;
-
-    let selected_posts = db
-        .query_map(
-            "SELECT id, content, likes FROM Post",
-            |(id, content, likes)| {
-                Post { id, content, likes }
-            },
-        );
-
-    println!("{:?}", selected_posts);
-
-    Ok(())
+    rocket::build()
+        .manage::<MySqlPool>(pool)
+        .mount("/", routes![index])
 }
