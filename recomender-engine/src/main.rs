@@ -1,4 +1,5 @@
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
 
 use sqlx::*;
 
@@ -17,7 +18,17 @@ async fn index(pool: &rocket::State<MySqlPool>) -> String {
         .fetch_all(pool.inner())
         .await.expect("Unable to query Post table");
 
-    format!("{:?}", data)
+    let mut posts: Vec<Post> = vec![];
+
+    for i in data.iter() {
+        posts.push(Post {
+            id: String::from_utf8((*i.id).to_vec()).unwrap(),
+            content: String::from_utf8((*i.content).to_vec()).unwrap(),
+            likes: i.likes,
+        })
+    }
+
+    format!("{:#?}", posts)
 }
 
 #[launch]
