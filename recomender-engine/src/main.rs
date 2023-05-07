@@ -1,21 +1,16 @@
 #[macro_use]
 extern crate rocket;
 
+mod rate_post;
+
 use sqlx::*;
 
-mod rate_post;
-mod get_posts;
-
-#[derive(Debug)]
-pub struct Post {
-    id: String,
-    content: String,
-    likes: i32,
-}
+mod db;
+use db::types::Post;
 
 #[get("/")]
 async fn index(pool: &rocket::State<MySqlPool>) -> String {
-    let posts = get_posts::get_posts(pool).await;
+    let posts: Vec<Post> = db::get_posts(pool).await;
 
     format!("{:#?}", posts)
 }
@@ -23,7 +18,7 @@ async fn index(pool: &rocket::State<MySqlPool>) -> String {
 #[launch]
 async fn rocket() -> _ {
     let database_url = "mysql://127.0.0.1:3306";
-    let pool = sqlx::MySqlPool::connect(database_url)
+    let pool = MySqlPool::connect(database_url)
         .await
         .expect("Failed to connect to database");
 

@@ -1,11 +1,5 @@
 use sqlx::MySqlPool;
-
-#[derive(Debug)]
-pub struct Post {
-    id: String,
-    content: String,
-    likes: i32,
-}
+use crate::db::types::Post;
 
 pub async fn get_posts(pool: &rocket::State<MySqlPool>) -> Vec<Post> {
     let data = sqlx::query!("SELECT content, id, likes FROM Post")
@@ -24,3 +18,5 @@ pub async fn get_posts(pool: &rocket::State<MySqlPool>) -> Vec<Post> {
 
     return posts;
 }
+
+pub mod types;
