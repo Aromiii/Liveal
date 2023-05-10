@@ -1,31 +1,28 @@
 #[macro_use]
-extern crate rocket; 
-use sqlx::*;
-use rocket::http::CookieJar;
+extern crate rocket;
+use rocket::http::{CookieJar, Status};
+use rocket::serde::json::{json, serde_json};
+use sqlx::MySqlPool;
+use crate::db::types::Post;
 
 mod engine;
 mod db;
 mod auth;
 
 #[get("/")]
-async fn index(cookies: &CookieJar<'_>, pool: &rocket::State<MySqlPool>) -> String {
-    if !auth::check(cookies.get("next-auth.session-token")).await {
-        return format!("Not authenticated")
+async fn index<'a>(cookies: &CookieJar<'_>, pool: &rocket::State<MySqlPool>) -> (Status, serde_json::value::Value) {
+    if !auth::check(cookies.get("__Secure-next-auth.session-token")).await {
+        return (Status::Unauthorized, json!({ "message": "Header next-auth.session-token not provided or its invalid" }));
     }
 
     let posts = db::get_posts(pool).await;
 
-    format!("{:#?}", posts)
+    (Status::Ok, json!(posts))
 }
 
 #[launch]
 async fn rocket() -> _ {
-    let database_url = "mysql://127.0.0.1:3306";
-    let pool = MySqlPool::connect(database_url)
-        .await
-        .expect("Failed to connect to database");
-
     rocket::build()
-        .manage::<MySqlPool>(pool)
+        .manage::<MySqlPool>(db::create_pool().await)
         .mount("/", routes![index])
 }
