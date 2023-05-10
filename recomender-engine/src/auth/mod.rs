@@ -1,4 +1,5 @@
 use rocket::http::Cookie;
+use rocket::serde::json::{serde_json, Value};
 
 async fn get_session(cookie: &Cookie<'_>) -> String {
     let url = "https://liveal.vercel.app/api/auth/session";
@@ -17,17 +18,29 @@ async fn get_session(cookie: &Cookie<'_>) -> String {
     return response;
 }
 
-pub async fn check(cookie: Option<&Cookie<'_>>) -> bool {
+pub async fn check(cookie: Option<&Cookie<'_>>) -> Value {
     return match cookie {
-        None => { false }
+        None => { Value::Null }
         Some(cookie) => {
             let session = get_session(cookie).await;
 
             if session == "{}" {
-                return false
+                return Value::Null;
             }
 
-            true
+            // Parse the JSON string
+            let parsed_session: Result<Value, serde_json::Error> = serde_json::from_str(&session);
+
+            // Check if parsing was successful
+            match parsed_session {
+                Ok(parsed_json) => {
+                    parsed_json
+                }
+                Err(e) => {
+                    println!("Error parsing JSON: {}", e);
+                    Value::Null
+                }
+            }
         }
     }
 }

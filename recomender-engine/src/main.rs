@@ -1,5 +1,7 @@
 #[macro_use]
 extern crate rocket;
+
+use rocket::serde::json::Value;
 use rocket::http::{CookieJar, Status};
 use rocket::serde::json::{json, serde_json};
 use sqlx::MySqlPool;
@@ -10,12 +12,13 @@ mod db;
 mod auth;
 
 #[get("/")]
-async fn index<'a>(cookies: &CookieJar<'_>, pool: &rocket::State<MySqlPool>) -> (Status, serde_json::value::Value) {
-    if !auth::check(cookies.get("__Secure-next-auth.session-token")).await {
+async fn index<'a>(cookies: &CookieJar<'_>, pool: &rocket::State<MySqlPool>) -> (Status, Value) {
+    let session = auth::check(cookies.get("__Secure-next-auth.session-token")).await;
+    if session == Value::Null {
         return (Status::Unauthorized, json!({ "message": "Header next-auth.session-token not provided or its invalid" }));
     }
 
-    let posts = db::get_posts(pool).await;
+    let posts = engine::get_posts(pool, session.get("user").unwrap().get("id").unwrap().to_string()).await;
 
     (Status::Ok, json!({ "message": "Successfully requested posts", "data": posts }))
 }
