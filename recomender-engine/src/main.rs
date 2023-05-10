@@ -17,7 +17,7 @@ async fn index<'a>(cookies: &CookieJar<'_>, pool: &rocket::State<MySqlPool>) -> 
 
     let posts = db::get_posts(pool).await;
 
-    (Status::Ok, json!(posts))
+    (Status::Ok, json!({ "message": "Successfully requested posts", "data": posts }))
 }
 
 #[launch]

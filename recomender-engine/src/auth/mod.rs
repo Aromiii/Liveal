@@ -22,7 +22,7 @@ pub async fn check(cookie: Option<&Cookie<'_>>) -> bool {
         None => { false }
         Some(cookie) => {
             let session = get_session(cookie).await;
-            println!("{:#?}", session);
+
             if session == "{}" {
                 return false
             }
