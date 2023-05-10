@@ -1,41 +1,19 @@
 #[macro_use]
-extern crate rocket;
+extern crate rocket; 
+use sqlx::*;
+use rocket::http::CookieJar;
 
 mod engine;
-
-
-use rocket::Request;
-use sqlx::*;
-
 mod db;
-use db::types::Post;
-use crate::auth::check;
-
-mod auth {
-    async fn get_session() {
-        let url = "http://localhost:3000/api/auth/session";
-
-        let client = reqwest::Client::new();
-        let response = client
-            .get(url)
-            .send()
-            .await
-            .expect("failed to get response")
-            .text()
-            .await
-            .expect("failed to get payload");
-
-        println!("{:#?}", response)
-    }
-
-    pub async fn check() {
-        get_session().await;
-    }
-}
+mod auth;
 
 #[get("/")]
-async fn index(pool: &rocket::State<MySqlPool>) -> String {
-    let posts: Vec<Post> = db::get_posts(pool).await;
+async fn index(cookies: &CookieJar<'_>, pool: &rocket::State<MySqlPool>) -> String {
+    if !auth::check(cookies.get("next-auth.session-token")).await {
+        return format!("Not authenticated")
+    }
+
+    let posts = db::get_posts(pool).await;
 
     format!("{:#?}", posts)
 }
