@@ -6,14 +6,14 @@ use rocket::http::{CookieJar, Status};
 use rocket::serde::json::{json, serde_json};
 use sqlx::MySqlPool;
 use db::types::Post;
-use crate::db::types::PostWithAverage;
+use crate::db::types::PostWithRating;
 
 mod engine;
 mod db;
 mod auth;
 
 #[get("/")]
-async fn index<'a>(cookies: &CookieJar<'_>, pool: &rocket::State<MySqlPool>, top_posts: &rocket::State<Vec<PostWithAverage>>) -> (Status, Value) {
+async fn index<'a>(cookies: &CookieJar<'_>, pool: &rocket::State<MySqlPool>, top_posts: &rocket::State<Vec<PostWithRating>>) -> (Status, Value) {
     let session = auth::check(cookies.get("__Secure-next-auth.session-token")).await;
     if session == Value::Null {
         return (Status::Unauthorized, json!({ "message": "Header next-auth.session-token not provided or its invalid" }));
@@ -28,6 +28,6 @@ async fn index<'a>(cookies: &CookieJar<'_>, pool: &rocket::State<MySqlPool>, top
 async fn rocket() -> _ {
     rocket::build()
         .manage::<MySqlPool>(db::create_pool().await)
-        .manage::<Vec<PostWithAverage>>(engine::generate_top_posts().await)
+        .manage::<Vec<PostWithRating>>(engine::generate_top_posts().await)
         .mount("/", routes![index])
 }

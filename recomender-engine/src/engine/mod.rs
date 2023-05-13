@@ -1,18 +1,23 @@
 use sqlx::{MySql, MySqlPool, Pool, pool};
 use crate::db;
-use crate::db::types::{Post, PostWithAverage};
+use crate::db::types::{Post, PostWithRating};
 
-pub async fn get_posts(pool: &rocket::State<MySqlPool>, top_posts: Vec<PostWithAverage>, user_id: String) -> Vec<Post> {
-    let posts = db::get_all_posts(pool).await;
+pub async fn get_posts(pool: &rocket::State<MySqlPool>, top_posts: Vec<PostWithRating>, user_id: String) -> Vec<Post> {
+    println!("{}", user_id);
+    let data: Vec<Post> = sqlx::query_as!(Post, "SELECT p.id, p.content, p.likes FROM Post p JOIN Friendship f1 ON f1.user1Id = p.userId OR f1.user2Id = p.userId JOIN Friendship f2 ON (f2.user1Id = p.userId OR f2.user2Id = p.userId) AND (f2.user1Id = ? OR f2.user2Id = ?) WHERE p.userId != ? ", &user_id, &user_id, &user_id)
+        .fetch_all(pool.inner())
+        .await.unwrap();
 
-    return posts;
+    println!("{:#?}", data);
+
+    return data;
 }
 
 // TODO get pool somehow to fetch data from the db
-pub async fn generate_top_posts() -> Vec<PostWithAverage> {
+pub async fn generate_top_posts() -> Vec<PostWithRating> {
     let pool = db::create_pool().await;
 
-    let data: Vec<PostWithAverage> = sqlx::query_as!(PostWithAverage, "SELECT content, id, likes, (rating * ((SELECT COUNT(*) FROM Comment WHERE postId = Post.id) * 1.5) * likes) / 2 AS average FROM Post ORDER BY average DESC LIMIT 1000;")
+    let data= sqlx::query_as!(PostWithRating, "SELECT content, id, likes, (rating + ((SELECT COUNT(*) FROM Comment WHERE postId = Post.id) * 1.5) + likes) AS rating FROM Post ORDER BY rating DESC LIMIT 1000;")
         .fetch_all(&pool)
         .await
         .unwrap();
