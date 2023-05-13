@@ -19,7 +19,7 @@ async fn index<'a>(cookies: &CookieJar<'_>, pool: &rocket::State<MySqlPool>, top
         return (Status::Unauthorized, json!({ "message": "Header next-auth.session-token not provided or its invalid" }));
     }
 
-    let posts = engine::get_posts(pool, top_posts.to_vec(), session.get("user").unwrap().get("id").unwrap().to_string()).await;
+    let posts = engine::get_posts(pool, top_posts.to_vec(), session.get("user").unwrap().get("id").unwrap().as_str().unwrap()).await;
 
     (Status::Ok, json!({ "message": "Successfully requested posts", "data": posts }))
 }
