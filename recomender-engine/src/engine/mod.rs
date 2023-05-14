@@ -2,14 +2,15 @@ use sqlx::{MySql, MySqlPool, Pool, pool};
 use crate::db;
 use crate::db::types::{Post, PostWithRating};
 
-pub async fn get_posts(pool: &rocket::State<MySqlPool>, top_posts: Vec<PostWithRating>, user_id: &str) -> Vec<Post> {
-    let data = sqlx::query_as!(Post, "SELECT p.id, p.content, p.likes FROM Post p JOIN Friendship f1 ON f1.user1Id = p.userId OR f1.user2Id = p.userId JOIN Friendship f2 ON (f2.user1Id = p.userId OR f2.user2Id = p.userId) AND (f2.user1Id = ? OR f2.user2Id = ?) WHERE p.userId != ?", user_id, user_id, user_id)
+pub async fn get_posts(pool: &rocket::State<MySqlPool>, mut top_posts: Vec<PostWithRating>, user_id: &str) -> Vec<PostWithRating> {
+    let mut posts = sqlx::query_as!(PostWithRating, "SELECT p.id, p.content, p.likes, (rating + ((SELECT COUNT(*) FROM Comment WHERE postId = p.id) * 1.5) + likes) AS rating FROM Post p JOIN Friendship f1 ON f1.user1Id = p.userId OR f1.user2Id = p.userId JOIN Friendship f2 ON (f2.user1Id = p.userId OR f2.user2Id = p.userId) AND (f2.user1Id = ? OR f2.user2Id = ?) WHERE p.userId != ? ORDER BY rating DESC", user_id, user_id, user_id)
         .fetch_all(pool.inner())
         .await.unwrap();
 
-    println!("{:#?}", data);
+    posts.append(&mut top_posts);
+    posts.sort_by(|a, b| b.rating.unwrap().total_cmp(&a.rating.unwrap()));
 
-    return data;
+    return posts;
 }
 
 // TODO get pool somehow to fetch data from the db
