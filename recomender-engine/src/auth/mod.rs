@@ -2,7 +2,7 @@ use rocket::http::Cookie;
 use rocket::serde::json::{serde_json, Value};
 
 async fn get_session(cookie: &Cookie<'_>) -> String {
-    let url = "https://liveal.vercel.app/api/auth/session";
+    let url = "https://liveal.aromiii.com/api/auth/session";
 
     let client = reqwest::Client::new();
     let response = client

@@ -1,3 +1,4 @@
+use rocket::log::private::kv::ToValue;
 use sqlx::{MySql, MySqlPool, Pool, pool};
 use crate::db;
 use crate::db::types::{Post, PostWithRating};
@@ -9,6 +10,7 @@ pub async fn get_posts(pool: &rocket::State<MySqlPool>, mut top_posts: Vec<PostW
 
     posts.append(&mut top_posts);
     posts.sort_by(|a, b| b.rating.unwrap().total_cmp(&a.rating.unwrap()));
+    posts.dedup_by(|a, b| a.id == b.id);
 
     return posts;
 }
