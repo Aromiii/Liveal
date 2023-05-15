@@ -73,9 +73,9 @@ model Friendship {
   id       String   @id @default(cuid())
   accepted Boolean? @default(false)
   blocked  Boolean? @default(false)
-  user1    User     @relation("User1Friends", fields: [user1Id], references: [id])
+  user1    User     @relation("User1Friends", fields: [user1Id], references: [id], onDelete: Cascade)
   user1Id  String
-  user2    User     @relation("User2Friends", fields: [user2Id], references: [id])
+  user2    User     @relation("User2Friends", fields: [user2Id], references: [id], onDelete: Cascade)
   user2Id  String
 
   @@index([user1Id])
@@ -100,7 +100,7 @@ model Post {
   comments  Int       @default(0)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  author    User      @relation(fields: [userId], references: [id])
+  author    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   Comment   Comment[]
   Like      Like[]
@@ -111,8 +111,8 @@ model Post {
 model Comment {
   id        String   @id @default(cuid())
   content   String   @db.VarChar(200)
-  author    User     @relation(fields: [userId], references: [id])
-  post      Post     @relation(fields: [postId], references: [id])
+  author    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   userId    String
   postId    String
   createdAt DateTime @default(now())
@@ -124,8 +124,8 @@ model Comment {
 }
 
 model Like {
-  author    User     @relation(fields: [userId], references: [id])
-  post      Post     @relation(fields: [postId], references: [id])
+  author    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   userId    String
   postId    String
   createdAt DateTime @default(now())
