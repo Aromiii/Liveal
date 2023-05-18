@@ -96,9 +96,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
             "cookie": `__Secure-next-auth.session-token=${context.req.cookies['next-auth.session-token']};`
         }
     })
-    console.log(await result.json())
+    const kissa = await result.json()
 
-    const posts = await prisma.post.findMany({
+    const posts = kissa.data /*await prisma.post.findMany({
         select: {
             id: true,
             content: true,
@@ -115,7 +115,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         orderBy: {
             updatedAt: "desc"
         }
-    });
+    });*/
+
+    console.log(posts)
 
     const friends = await getFriends(session?.user.id || "");
     const likedPosts = await getLikes(session?.user.id || "", posts);
@@ -127,8 +129,12 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
             likes: post.likes,
             liked: likedPosts ? likedPosts.includes(post.id) : false,
             content: post.content,
-            createdAt: post.createdAt.toString(),
-            author: post.author,
+            createdAt: new Date().toString(),
+            author: {
+                image: post.user_image,
+                username: post.username,
+                name: post.name
+            },
             comments: comments.filter(comment => comment.postId === post.id)
         };
     });

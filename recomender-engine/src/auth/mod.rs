@@ -1,5 +1,5 @@
 use rocket::http::Cookie;
-use rocket::serde::json::{serde_json, Value};
+use rocket::serde::json::{Value};
 
 async fn get_session(cookie: &Cookie<'_>) -> String {
     let url = "https://liveal.aromiii.com/api/auth/session";
