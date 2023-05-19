@@ -4,13 +4,14 @@ import {useSession} from "next-auth/react";
 import FriendsNav from "../components/navs/friendsNav";
 import Link from "next/link";
 import Post from "../components/feed/post";
-import {prisma} from "../server/db";
 import {getServerSession} from "next-auth/next";
 import {authOptions} from "../server/auth";
 import {getLikes} from "../utils/getLikes";
 import {getComments} from "../utils/getComments";
 import getFriends from "../utils/getFriends";
 import {serverEnv} from "../env/schema.mjs";
+import {z} from "zod";
+import type PostType from "../types/post"
 
 const Home = ({posts, friends}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const {data: session, status} = useSession();
@@ -89,47 +90,57 @@ export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
     const session = await getServerSession(context.req, context.res, authOptions);
-    console.log(context.req.cookies['next-auth.session-token'])
 
     const result = await fetch(serverEnv.RECOMENDER_URL, {
         headers: {
             "cookie": `__Secure-next-auth.session-token=${context.req.cookies['next-auth.session-token']};`
         }
-    })
-    const kissa = await result.json()
-
-    const posts = kissa.data /*await prisma.post.findMany({
-        select: {
-            id: true,
-            content: true,
-            createdAt: true,
-            likes: true,
-            author: {
-                select: {
-                    username: true,
-                    name: true,
-                    image: true
-                }
+    }).catch(reason => {
+        return {
+            redirect: {
+                destination: "/404",
+                permanent: false
             }
-        },
-        orderBy: {
-            updatedAt: "desc"
-        }
-    });*/
+        };
+    })
 
-    console.log(posts)
+    const body = await result.json();
+
+    const postsSchema = z.array(
+        z.object({
+            id: z.string(),
+            likes: z.number(),
+            content: z.string(),
+            created_at: z.string(),
+            username: z.string(),
+            user_image: z.string().url(),
+            name: z.string(),
+            rating: z.number()
+        })
+    );
+
+    const posts = postsSchema.safeParse(body.data);
+
+    if (!posts.success) {
+        return {
+            redirect: {
+                destination: "/404",
+                permanent: false
+            }
+        };
+    }
 
     const friends = await getFriends(session?.user.id || "");
-    const likedPosts = await getLikes(session?.user.id || "", posts);
-    const comments = await getComments(posts);
+    const likedPosts = await getLikes(session?.user.id || "", posts.data);
+    const comments = await getComments(posts.data);
 
-    const formattedPosts = posts.map(post => {
+    const formattedPosts = posts.data.map(post => {
         return {
             id: post.id,
             likes: post.likes,
             liked: likedPosts ? likedPosts.includes(post.id) : false,
             content: post.content,
-            createdAt: new Date().toString(),
+            createdAt: post.created_at,
             author: {
                 image: post.user_image,
                 username: post.username,

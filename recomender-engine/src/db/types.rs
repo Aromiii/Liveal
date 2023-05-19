@@ -1,5 +1,5 @@
 use rocket::serde::{Serialize, Deserialize};
-use rocket::time::Time;
+use rocket::time::{PrimitiveDateTime};
 use sqlx::FromRow;
 
 #[derive(Debug, Serialize, Deserialize, Clone, FromRow)]
@@ -10,6 +10,7 @@ pub struct Post {
     pub(crate) username: Option<String>,
     pub(crate) name: Option<String>,
     pub(crate) user_image: Option<String>,
+    pub(crate) created_at: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -21,4 +22,5 @@ pub struct PostWithRating {
     pub(crate) username: Option<String>,
     pub(crate) name: Option<String>,
     pub(crate) user_image: Option<String>,
+    pub(crate) created_at: Option<String>,
 }
