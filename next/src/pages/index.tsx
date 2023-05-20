@@ -11,7 +11,6 @@ import {getComments} from "../utils/getComments";
 import getFriends from "../utils/getFriends";
 import {serverEnv} from "../env/schema.mjs";
 import {z} from "zod";
-import type PostType from "../types/post"
 
 const Home = ({posts, friends}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const {data: session, status} = useSession();
@@ -96,6 +95,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
             "cookie": `__Secure-next-auth.session-token=${context.req.cookies['next-auth.session-token']};`
         }
     }).catch(reason => {
+        console.error(reason)
         return {
             redirect: {
                 destination: "/404",
