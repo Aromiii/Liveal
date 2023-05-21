@@ -1,6 +1,6 @@
-use sqlx::{MySql, MySqlPool, Pool, pool};
+use sqlx::{MySqlPool};
 use crate::db;
-use crate::db::types::{Post, PostWithRating};
+use crate::db::types::{PostWithRating};
 use rand::thread_rng;
 use rand::seq::SliceRandom;
 

@@ -1,5 +1,4 @@
 use rocket::serde::{Serialize, Deserialize};
-use rocket::time::{PrimitiveDateTime};
 use sqlx::FromRow;
 
 #[derive(Debug, Serialize, Deserialize, Clone, FromRow)]

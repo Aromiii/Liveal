@@ -3,9 +3,8 @@ extern crate rocket;
 
 use rocket::serde::json::Value;
 use rocket::http::{CookieJar, Status};
-use rocket::serde::json::{json, serde_json};
+use rocket::serde::json::{json};
 use sqlx::MySqlPool;
-use db::types::Post;
 use crate::db::types::PostWithRating;
 
 mod engine;
