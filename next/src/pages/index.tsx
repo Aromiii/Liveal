@@ -116,7 +116,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
             username: z.string(),
             user_image: z.string().url(),
             name: z.string(),
-            rating: z.number()
+            rating: z.number(),
+            user_id: z.string(),
         })
     );
 
@@ -146,6 +147,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
             content: post.content,
             createdAt: post.created_at,
             author: {
+                id: post.user_id,
                 image: post.user_image,
                 username: post.username,
                 name: post.name

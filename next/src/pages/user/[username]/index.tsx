@@ -23,7 +23,7 @@ const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getSe
       <div className="relative">
         <img className=" h-[30vh] object-cover w-full rounded-lg relative z-10"
              src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%3Fid%3DOIP.OtEQqkEb8CMbiWEmWYSgVAHaEK%26pid%3DApi&f=1&ipt=bf106f2e6831f40c3e1dd70b4e234149612cae230e4758981505cb011fd32f6f&ipo=images" />
-        <div className="md:flex px-5 absolute w-full w-[calc(100%+2.5rem)] left-[-1.25rem] top-[60%] bg-color">
+        <div className="md:flex px-5 absolute w-[calc(100%+2.5rem)] left-[-1.25rem] top-[60%] bg-color">
           <div className="flex md:block w-full md:w-1/6 md:min-w-[150px] md:ml-4 md:z-20">
             <div className="w-full mr-auto md:block flex gap-5">
               <div
