@@ -49,7 +49,7 @@ const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getSe
                     }
                   </div>
                 }
-                <Link href={`/user/${user.username || ""}/friends`} className="shadow md:hidden h-full block p-2 px-5 md:mt-2 rounded-lg base-color flex place-items-center place-content-center text-xl">
+                <Link href={`/user/${user.username || ""}/friends`} className="shadow md:hidden h-full p-2 px-5 md:mt-2 rounded-lg base-color flex place-items-center place-content-center text-xl">
                   Friends
                 </Link>
               </div>

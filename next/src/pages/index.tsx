@@ -88,15 +88,61 @@ const Home = ({posts, friends}: InferGetServerSidePropsType<typeof getServerSide
 export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-    const session = await getServerSession(context.req, context.res, authOptions);
-
-    let result: Response;
     try {
-        result = await fetch(env.RECOMENDER_URL, {
+        const session = await getServerSession(context.req, context.res, authOptions);
+
+        const postsSchema = z.array(
+            z.object({
+                id: z.string(),
+                likes: z.number(),
+                content: z.string(),
+                created_at: z.string(),
+                username: z.string(),
+                user_image: z.string().url(),
+                name: z.string(),
+                rating: z.number(),
+                user_id: z.string(),
+            })
+        );
+
+        const result = await fetch(`${env.RECOMENDER_URL}?page=1`, {
             headers: {
                 "cookie": `__Secure-next-auth.session-token=${context.req.cookies['next-auth.session-token'] || ""};`
-            }
+            },
+
         })
+
+        const body = await result.json();
+        const posts = postsSchema.safeParse(body.data)
+
+
+        const friends = await getFriends(session?.user.id || "");
+        const likedPosts = await getLikes(session?.user.id || "", posts.data);
+        const comments = await getComments(posts.data);
+
+        const formattedPosts = posts.data.map(post => {
+            return {
+                id: post.id,
+                likes: post.likes,
+                liked: likedPosts ? likedPosts.includes(post.id) : false,
+                content: post.content,
+                createdAt: post.created_at,
+                author: {
+                    id: post.user_id,
+                    image: post.user_image,
+                    username: post.username,
+                    name: post.name
+                },
+                comments: comments.filter(comment => comment.postId === post.id)
+            };
+        });
+
+        return {
+            props: {
+                friends: friends,
+                posts: formattedPosts,
+            }
+        };
     } catch (error) {
         console.error(error)
         return {
@@ -106,60 +152,4 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
             }
         };
     }
-
-    const postsSchema = z.array(
-        z.object({
-            id: z.string(),
-            likes: z.number(),
-            content: z.string(),
-            created_at: z.string(),
-            username: z.string(),
-            user_image: z.string().url(),
-            name: z.string(),
-            rating: z.number(),
-            user_id: z.string(),
-        })
-    );
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const body = await result.json();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const posts = postsSchema.safeParse(body.data)
-
-    if (!posts.success) {
-        return {
-            redirect: {
-                destination: "/404",
-                permanent: false
-            }
-        };
-    }
-
-    const friends = await getFriends(session?.user.id || "");
-    const likedPosts = await getLikes(session?.user.id || "", posts.data);
-    const comments = await getComments(posts.data);
-
-    const formattedPosts = posts.data.map(post => {
-        return {
-            id: post.id,
-            likes: post.likes,
-            liked: likedPosts ? likedPosts.includes(post.id) : false,
-            content: post.content,
-            createdAt: post.created_at,
-            author: {
-                id: post.user_id,
-                image: post.user_image,
-                username: post.username,
-                name: post.name
-            },
-            comments: comments.filter(comment => comment.postId === post.id)
-        };
-    });
-
-    return {
-        props: {
-            friends: friends,
-            posts: formattedPosts,
-        }
-    };
 }

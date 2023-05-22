@@ -1,7 +1,7 @@
 import {prisma} from "../server/db";
 import type Friend from "../types/friend";
 
-export default async function getFriends(id: string): Promise<Friend[] | null> {
+export default async function getFriends(id: string): Promise<Friend[]> {
   try {
     const friends = await prisma.friendship.findMany({
       where: {

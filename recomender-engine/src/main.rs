@@ -11,14 +11,14 @@ mod engine;
 mod db;
 mod auth;
 
-#[get("/")]
-async fn index<'a>(cookies: &CookieJar<'_>, pool: &rocket::State<MySqlPool>, top_posts: &rocket::State<Vec<PostWithRating>>) -> (Status, Value) {
+#[get("/?<page>")]
+async fn index<'a>(cookies: &CookieJar<'_>, page: u32, pool: &rocket::State<MySqlPool>, top_posts: &rocket::State<Vec<PostWithRating>>) -> (Status, Value) {
     let session = auth::check(cookies.get("__Secure-next-auth.session-token")).await;
     if session == Value::Null {
         return (Status::Ok, json!({ "message": "Credentials were invalid so generic posts are returned", "data": top_posts.to_vec() }));
     }
 
-    let posts = engine::get_posts(pool, top_posts.to_vec(), session.get("user").unwrap().get("id").unwrap().as_str().unwrap()).await;
+    let posts = engine::get_posts(pool,top_posts.to_vec(),session.get("user").unwrap().get("id").unwrap().as_str().unwrap(), page).await;
 
     (Status::Ok, json!({ "message": "Successfully requested posts", "data": posts }))
 }
