@@ -22,4 +22,5 @@ pub struct PostWithRating {
     pub(crate) name: Option<String>,
     pub(crate) user_image: Option<String>,
     pub(crate) created_at: Option<String>,
+    pub(crate) user_id: String,
 }
