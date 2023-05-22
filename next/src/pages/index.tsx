@@ -9,8 +9,8 @@ import {authOptions} from "../server/auth";
 import {getLikes} from "../utils/getLikes";
 import {getComments} from "../utils/getComments";
 import getFriends from "../utils/getFriends";
-import {serverEnv} from "../env/schema.mjs";
 import {z} from "zod";
+import {env} from "../env/server.mjs";
 
 const Home = ({posts, friends}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const {data: session, status} = useSession();
@@ -90,21 +90,22 @@ export default Home;
 export async function getServerSideProps(context: GetServerSidePropsContext) {
     const session = await getServerSession(context.req, context.res, authOptions);
 
-    const result = await fetch(serverEnv.RECOMENDER_URL, {
-        headers: {
-            "cookie": `__Secure-next-auth.session-token=${context.req.cookies['next-auth.session-token']};`
-        }
-    }).catch(reason => {
-        console.error(reason)
+    let result: Response;
+    try {
+        result = await fetch(env.RECOMENDER_URL, {
+            headers: {
+                "cookie": `__Secure-next-auth.session-token=${context.req.cookies['next-auth.session-token'] || ""};`
+            }
+        })
+    } catch (error) {
+        console.error(error)
         return {
             redirect: {
                 destination: "/404",
                 permanent: false
             }
         };
-    })
-
-    const body = await result.json();
+    }
 
     const postsSchema = z.array(
         z.object({
@@ -119,7 +120,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         })
     );
 
-    const posts = postsSchema.safeParse(body.data);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const body = await result.json();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const posts = postsSchema.safeParse(body.data)
 
     if (!posts.success) {
         return {
