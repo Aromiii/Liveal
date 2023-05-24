@@ -53,7 +53,7 @@ const Friends = ({ friends, friendSuggestions }: InferGetServerSidePropsType<typ
             {
               friends.map((friend, key) => {
                 return <li key={key}
-                  className={selectedFriend == key ? "mb-2 bg-gray-300 dark:bg-gray-500 rounded-lg p-1 shadow shadow-red-500" : "mb-2 bg-gray-300 rounded-lg p-1 shadow"}>
+                  className={selectedFriend == key ? "mb-2 bg-gray-300 dark:bg-gray-500 rounded-lg p-1 shadow shadow-red-500" : "mb-2 bg-gray-300 dark:bg-gray-500 rounded-lg p-1 shadow"}>
                   <button className="flex place-items-center gap-2 w-full" onClick={() => setSelectedFriend(key)}>
                     <img className="object-cover w-12 h-12 rounded-full" src={friend.image} />
                     <p className="break-words w-[calc(100%-3rem-0.5rem)]">{friend.name}</p>
