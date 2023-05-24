@@ -1,12 +1,10 @@
 use rocket::http::Cookie;
 use rocket::serde::json::{Value, serde_json};
 
-async fn get_session(cookie: &Cookie<'_>) -> String {
-    let url = "https://liveal.aromiii.com/api/auth/session";
-
+async fn get_session(cookie: &Cookie<'_>, auth_url: &str) -> String {
     let client = reqwest::Client::new();
     let response = client
-        .get(url)
+        .get(auth_url)
         .header(reqwest::header::COOKIE, cookie.to_string())
         .send()
         .await
@@ -18,11 +16,11 @@ async fn get_session(cookie: &Cookie<'_>) -> String {
     return response;
 }
 
-pub async fn check(cookie: Option<&Cookie<'_>>) -> Value {
+pub async fn check(cookie: Option<&Cookie<'_>>, auth_url: &str) -> Value {
     return match cookie {
         None => { Value::Null }
         Some(cookie) => {
-            let session = get_session(cookie).await;
+            let session = get_session(cookie, auth_url).await;
 
             if session == "{}" {
                 return Value::Null;

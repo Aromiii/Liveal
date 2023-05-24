@@ -10,10 +10,11 @@ use crate::db::types::PostWithRating;
 mod engine;
 mod db;
 mod auth;
+mod env;
 
 #[get("/?<page>")]
-async fn index<'a>(cookies: &CookieJar<'_>, page: u32, pool: &rocket::State<MySqlPool>, top_posts: &rocket::State<Vec<PostWithRating>>) -> (Status, Value) {
-    let session = auth::check(cookies.get("__Secure-next-auth.session-token")).await;
+async fn index<'a>(cookies: &CookieJar<'_>, page: u32, pool: &rocket::State<MySqlPool>, top_posts: &rocket::State<Vec<PostWithRating>>, config: &rocket::State<env::Config>) -> (Status, Value) {
+    let session = auth::check(cookies.get("__Secure-next-auth.session-token"), &config.auth_url).await;
     if session == Value::Null {
         return (Status::Ok, json!({ "message": "Credentials were invalid so generic posts are returned", "data": top_posts.to_vec() }));
     }
@@ -25,8 +26,11 @@ async fn index<'a>(cookies: &CookieJar<'_>, page: u32, pool: &rocket::State<MySq
 
 #[launch]
 async fn rocket() -> _ {
+    let config = env::Config::from_env().expect("Failed to load configuration");
+
     rocket::build()
-        .manage::<MySqlPool>(db::create_pool().await)
-        .manage::<Vec<PostWithRating>>(engine::generate_top_posts().await)
+        .manage(config.clone())
+        .manage::<MySqlPool>(db::create_pool(&config.db_url).await)
+        .manage::<Vec<PostWithRating>>(engine::generate_top_posts(&config.db_url).await)
         .mount("/", routes![index])
 }
