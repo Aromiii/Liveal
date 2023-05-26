@@ -9,7 +9,11 @@ const PERSONAL_POSTS_SIZE: u32 = 5;
 const TOP_POSTS_SIZE: u32 = PAGE_SIZE - PERSONAL_POSTS_SIZE;
 
 pub async fn get_generic_posts(top_posts: Vec<PostWithRating>, page_number: u32) -> Vec<PostWithRating> {
-    return top_posts[(page_number * TOP_POSTS_SIZE) as usize..(page_number * TOP_POSTS_SIZE + TOP_POSTS_SIZE) as usize].to_vec()
+    if (page_number * TOP_POSTS_SIZE + TOP_POSTS_SIZE) < top_posts.len() as u32 {
+        return top_posts[(page_number * TOP_POSTS_SIZE) as usize..(page_number * TOP_POSTS_SIZE + TOP_POSTS_SIZE) as usize].to_vec()
+    }
+
+    return top_posts[0..TOP_POSTS_SIZE as usize].to_vec()
 }
 
 pub async fn get_customised_posts(pool: &rocket::State<MySqlPool>, top_posts: Vec<PostWithRating>, user_id: &str, page_number: u32) -> Vec<PostWithRating> {
