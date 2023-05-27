@@ -66,10 +66,7 @@ const User = ({ user, posts, friends }: InferGetServerSidePropsType<typeof getSe
             <ul>
               {
                 // eslint-disable-next-line react/jsx-key
-                posts.map(post => <Post authorName={user.name} authorUsername={user.username}
-                                        authorImage={user.image} text={post.content}
-                                        createdAt={post.createdAt} comments={post.comments} postId={post.id}
-                                        postLikes={post.likes} liked={post.liked} />)
+                posts.map(post => <Post post={post}/>)
               }
             </ul>
           </main>
@@ -108,7 +105,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       likes: true,
       id: true,
       content: true,
-      createdAt: true
+      createdAt: true,
     },
     where: {
       author: {
@@ -127,6 +124,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const formattedPosts = posts.map(post => {
     return {
       ...post,
+      author: {
+        ...user
+      },
       liked: likedPosts ? likedPosts.includes(post.id) : false,
       createdAt: post.createdAt.toString(),
       comments: comments.filter(comment => comment.postId === post.id)

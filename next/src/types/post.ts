@@ -1,10 +1,12 @@
 export default interface Post {
-  postId: string,
-  postLikes: number,
-  authorName: string | null,
-  authorUsername: string | null,
-  authorImage: string | null,
-  text: string,
+  id: string,
+  likes: number,
+  author: {
+    name: string | null,
+    username: string | null,
+    image: string | null,
+  },
+  content: string,
   image?: string,
   createdAt: string,
   liked: boolean,

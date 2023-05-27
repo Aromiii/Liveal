@@ -11,6 +11,7 @@ import {getComments} from "../utils/getComments";
 import getFriends from "../utils/getFriends";
 import {z} from "zod";
 import {env} from "../env/server.mjs";
+import type PostType from "../types/post"
 
 const Home = ({posts, friends}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const {data: session, status} = useSession();
@@ -36,12 +37,7 @@ const Home = ({posts, friends}: InferGetServerSidePropsType<typeof getServerSide
                             <ul>
                                 {
                                     // eslint-disable-next-line react/jsx-key
-                                    posts.map((post) => <Post postId={post.id} authorName={post.author.name}
-                                                              liked={post.liked}
-                                                              authorUsername={post.author.username}
-                                                              authorImage={post.author.image} text={post.content}
-                                                              createdAt={post.createdAt} comments={post.comments}
-                                                              postLikes={post.likes}/>)
+                                    posts.map((post: PostType) => <Post post={post}/>)
                                 }
                             </ul>
                             <Link href="/post/new">
@@ -69,12 +65,7 @@ const Home = ({posts, friends}: InferGetServerSidePropsType<typeof getServerSide
                             <ul>
                                 {
                                     // eslint-disable-next-line react/jsx-key
-                                    posts.map((post) => <Post authorName={post.author.name}
-                                                              authorUsername={post.author.username}
-                                                              authorImage={post.author.image} text={post.content}
-                                                              createdAt={post.createdAt} comments={post.comments}
-                                                              postLikes={post.likes}
-                                                              liked={false} postId={post.id}/>)
+                                    posts.map((post) => <Post post={post}/>)
                                 }
                             </ul>
                         </main>
@@ -112,15 +103,17 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
         })
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const body = await result.json();
-        const posts = postsSchema.safeParse(body.data)
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const posts = postsSchema.parse(body.data)
 
 
         const friends = await getFriends(session?.user.id || "");
-        const likedPosts = await getLikes(session?.user.id || "", posts.data);
-        const comments = await getComments(posts.data);
+        const likedPosts = await getLikes(session?.user.id || "", posts);
+        const comments = await getComments(posts);
 
-        const formattedPosts = posts.data.map(post => {
+        const formattedPosts = posts.map(post => {
             return {
                 id: post.id,
                 likes: post.likes,

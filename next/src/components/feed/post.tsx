@@ -1,18 +1,18 @@
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
 import Comment from "./comment";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import type PostType from "../../types/post";
 import { DeleteSvg, SettingsSvg } from "../svg";
 
-export default function Post(props: PostType) {
+export default function Post(props: { post: PostType }) {
   const router = useRouter();
   const { data: session } = useSession();
-  const [liked, setLiked] = useState(props.liked);
+  const [liked, setLiked] = useState(props.post.liked);
   const [commentText, setCommentText] = useState("");
-  const [likes, setLikes] = useState(props.postLikes);
-  const [comments, setComments] = useState(props.comments);
+  const [likes, setLikes] = useState(props.post.likes);
+  const [comments, setComments] = useState(props.post.comments);
 
   const deletePost = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -22,7 +22,7 @@ export default function Post(props: PostType) {
       credentials: "include",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        postId: props.postId
+        postId: props.post.id
       })
     });
 
@@ -47,7 +47,7 @@ export default function Post(props: PostType) {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         text: commentText,
-        postId: props.postId
+        postId: props.post.id
       })
     });
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -63,7 +63,7 @@ export default function Post(props: PostType) {
         },
         content: commentText,
         updatedAt: new Date().toString(),
-        postId: props.postId,
+        postId: props.post.id,
         id: body.id || ""
       }, ...comments]);
 
@@ -96,7 +96,7 @@ export default function Post(props: PostType) {
       credentials: "include",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        postId: props.postId
+        postId: props.post.id
       })
     });
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -106,15 +106,15 @@ export default function Post(props: PostType) {
 
   return <li className="shadow base-color rounded-lg mb-2 p-2">
     <div className="flex place-items-center gap-2">
-      <Link href={`/user/${props.authorUsername || ""}`}>
-        <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={props.authorImage || undefined} />
+      <Link href={`/user/${props.post.author.username || ""}`}>
+        <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={props.post.author.image || undefined} />
       </Link>
       <div className="w-[calc(100%-5rem)]">
         <div className="flex">
-          <p className="break-words max-w-[calc(100%-60px)] font-semibold text-lg mr-auto">{props.authorName}</p>
-          {props.authorUsername == session?.user.username ?
+          <p className="break-words max-w-[calc(100%-60px)] font-semibold text-lg mr-auto">{props.post.author.name}</p>
+          {props.post.author.username == session?.user.username ?
             <div className="flex">
-              <Link href={`/post/edit/${props.postId}`}>
+              <Link href={`/post/edit/${props.post.id}`}>
                 <SettingsSvg className="h-[30px] w-[30px]"/>
               </Link>
               <button onClick={event => void deletePost(event)}>
@@ -126,19 +126,19 @@ export default function Post(props: PostType) {
           }
         </div>
         <h2 className="font-extralight">{new Intl.DateTimeFormat("eur", {
-          year: new Date().getFullYear() === new Date(props.createdAt).getFullYear() ? undefined : "numeric",
+          year: new Date().getFullYear() === new Date(props.post.createdAt).getFullYear() ? undefined : "numeric",
           month: "long",
           day: "numeric"
-        }).format(new Date(props.createdAt))}</h2>
+        }).format(new Date(props.post.createdAt))}</h2>
       </div>
     </div>
-    {props.image ?
-      <img className="p-2 w-full max-h-[70vh] object-cover rounded-2xl" src={props.image} />
+    {props.post.image ?
+      <img className="p-2 w-full max-h-[70vh] object-cover rounded-2xl" src={props.post.image} />
       :
       null
     }
     <p className="p-2 py-3 break-words whitespace-pre-line">
-      {props.text}
+      {props.post.content}
     </p>
     <div className="mx-2 mb-1 w-full flex place-items-center">
       <button onClick={event => void like(event)} className="h-8 w-8">
@@ -163,7 +163,7 @@ export default function Post(props: PostType) {
       {/* eslint-disable-next-line react/jsx-key */}
       {comments.map(comment => <Comment authorImage={comment.author.image} authorName={comment.author.name}
                                         authorUsername={comment.author.username} content={comment.content}
-                                        postAuthorUsername={props.authorUsername} commentId={comment.id} />)}
+                                        postAuthorUsername={props.post.author.username} commentId={comment.id} />)}
     </ul>
   </li>;
 }
