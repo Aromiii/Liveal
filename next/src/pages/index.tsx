@@ -12,9 +12,26 @@ import getFriends from "../utils/getFriends";
 import {z} from "zod";
 import {env} from "../env/server.mjs";
 import type PostType from "../types/post"
+import {useInfiniteQuery} from "@tanstack/react-query";
 
 const Home = ({posts, friends}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const {data: session, status} = useSession();
+    const {
+        data,
+        fetchNextPage,
+        fetchPreviousPage,
+    } = useInfiniteQuery({
+        queryFn: async ({ pageParam = 1 }): Promise<PostType> => {
+            const result = await fetch(`https://api.liveal.aromiii.com/?page=${pageParam}`, {
+                headers: {
+                    "cookie": `__Secure-next-auth.session-token=${context.req.cookies['next-auth.session-token'] || ""};`
+                },
+
+            })
+        },
+        getNextPageParam: (lastPage, allPages) => lastPage.nextCursor,
+        getPreviousPageParam: (firstPage, allPages) => firstPage.prevCursor,
+    })
 
     if (status == "authenticated") {
         return (
