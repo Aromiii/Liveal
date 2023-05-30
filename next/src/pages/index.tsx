@@ -16,21 +16,18 @@ import {useInfiniteQuery} from "@tanstack/react-query";
 
 const Home = ({posts, friends}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const {data: session, status} = useSession();
+
     const {
         data,
         fetchNextPage,
         fetchPreviousPage,
     } = useInfiniteQuery({
-        queryFn: async ({ pageParam = 1 }): Promise<PostType> => {
-            const result = await fetch(`https://api.liveal.aromiii.com/?page=${pageParam}`, {
-                headers: {
-                    "cookie": `__Secure-next-auth.session-token=${context.req.cookies['next-auth.session-token'] || ""};`
-                },
-
-            })
-        },
-        getNextPageParam: (lastPage, allPages) => lastPage.nextCursor,
-        getPreviousPageParam: (firstPage, allPages) => firstPage.prevCursor,
+        queryKey: ['posts'],
+        queryFn: async ({ pageParam = 0 }) => {
+            const result = await fetch(`http://localhost:8000/?page=${pageParam}`)
+            const posts = await result.json()
+            return posts.data
+        }
     })
 
     if (status == "authenticated") {

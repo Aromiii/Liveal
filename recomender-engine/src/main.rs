@@ -6,6 +6,8 @@ use rocket::http::{CookieJar, Status};
 use rocket::serde::json::{json};
 use sqlx::MySqlPool;
 use crate::db::types::PostWithRating;
+use rocket_cors::{AllowedOrigins, CorsOptions};
+
 
 mod engine;
 mod db;
@@ -25,11 +27,21 @@ async fn index<'a>(cookies: &CookieJar<'_>, page: u32, pool: &rocket::State<MySq
     (Status::Ok, json!({ "message": "Successfully requested posts", "data": posts }))
 }
 
+fn cors_options() -> CorsOptions {
+    CorsOptions {
+        allowed_origins: AllowedOrigins::all(),
+        allow_credentials: true,
+        ..Default::default()
+    }
+}
+
+
 #[launch]
 async fn rocket() -> _ {
     let config = env::Config::from_env().expect("Failed to load configuration");
 
     rocket::build()
+        .attach(cors_options().to_cors().expect("Failed to attach CORS"))
         .manage(config.clone())
         .manage::<MySqlPool>(db::create_pool(&config.db_url).await)
         .manage::<Vec<PostWithRating>>(engine::generate_top_posts(&config.db_url).await)
