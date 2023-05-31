@@ -13,22 +13,31 @@ import {z} from "zod";
 import {env} from "../env/server.mjs";
 import type PostType from "../types/post"
 import {useInfiniteQuery} from "@tanstack/react-query";
+import {useState} from "react";
 
-const Home = ({posts, friends}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const {data: session, status} = useSession();
+    const [posts, setPosts] = useState(ogPosts)
+    let nextPage = 2
 
     const {
         data,
         fetchNextPage,
-        fetchPreviousPage,
     } = useInfiniteQuery({
         queryKey: ['posts'],
+        getNextPageParam: () => {
+            nextPage++
+            return nextPage
+        },
         queryFn: async ({ pageParam = 0 }) => {
             const result = await fetch(`http://localhost:8000/?page=${pageParam}`)
-            const posts = await result.json()
-            return posts.data
+            const body = await result.json()
+            setPosts(posts => [...posts, ...body.data])
+            return body.data
         }
     })
+
+    console.log(data)
 
     if (status == "authenticated") {
         return (
@@ -54,6 +63,9 @@ const Home = ({posts, friends}: InferGetServerSidePropsType<typeof getServerSide
                                     posts.map((post: PostType) => <Post post={post}/>)
                                 }
                             </ul>
+                            <button onClick={() => fetchNextPage()}>
+                                get more
+                            </button>
                             <Link href="/post/new">
                                 <svg
                                     className="shadow shadow-gray-500 bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"
@@ -110,7 +122,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
             })
         );
 
-        const result = await fetch(`${env.RECOMENDER_URL}?page=1`, {
+        const result = await fetch(`${env.RECOMENDER_URL}?page=0`, {
             headers: {
                 "cookie": `__Secure-next-auth.session-token=${context.req.cookies['next-auth.session-token'] || ""};`
             },
@@ -147,7 +159,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         return {
             props: {
                 friends: friends,
-                posts: formattedPosts,
+                ogPosts: formattedPosts,
             }
         };
     } catch (error) {
