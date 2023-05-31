@@ -12,3 +12,10 @@ pub struct PostWithRating {
     pub(crate) created_at: Option<String>,
     pub(crate) user_id: String,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Like {
+    pub(crate) user_id: String,
+    pub(crate) post_id: String,
+    pub(crate) created_at: Option<String>,
+}
