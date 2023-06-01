@@ -57,12 +57,13 @@ export default function Post(props: { post: PostType }) {
     if (response.status == 200) {
       setComments([{
         author: {
+          id: session.user.id,
           image: session?.user?.image || null,
           name: session?.user?.name || null,
           username: session?.user.username || null
         },
         content: commentText,
-        updatedAt: new Date().toString(),
+        createdAt: new Date().toString(),
         postId: props.post.id,
         id: body.id || ""
       }, ...comments]);
@@ -104,8 +105,6 @@ export default function Post(props: { post: PostType }) {
     console.log(body);
   };
 
-  console.log(props.post.author)
-
   return <li className="shadow base-color rounded-lg mb-2 p-2">
     <div className="flex place-items-center gap-2">
       <Link href={`/user/${props.post.author.username ? props.post.author.username : "error"}`}>
@@ -131,7 +130,7 @@ export default function Post(props: { post: PostType }) {
           year: new Date().getFullYear() === new Date(props.post.createdAt).getFullYear() ? undefined : "numeric",
           month: "long",
           day: "numeric"
-        }).format(new Date(props.post.createdAt))}</h2>
+        }).format(new Date(props.post.createdAt ? props.post.createdAt : props.post.created_at))}</h2>
       </div>
     </div>
     {props.post.image ?

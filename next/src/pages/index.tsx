@@ -43,7 +43,7 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
 
     console.log(posts)
 
-    if (session) {
+    if (status == "authenticated") {
         return (
             <>
                 <Navbar>
@@ -62,11 +62,13 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
                         </aside>
                         <main className="mx-auto md:w-1/2 w-full">
                             <ul>
-                                {posts ?
+                                {
                                     // eslint-disable-next-line react/jsx-key
-                                    posts.map((post: PostType) => <Post post={post}/>)
-                                    :
-                                    null
+                                    posts.map((post: PostType, key) => {
+                                        console.log(key)
+                                        console.log(new Date(post.createdAt))
+                                        return <Post post={post}/>
+                                    })
                                 }
                             </ul>
                             <button onClick={() => fetchNextPage()}>
@@ -119,20 +121,33 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
                 id: z.string(),
                 likes: z.number(),
                 content: z.string(),
+                liked: z.boolean(),
                 created_at: z.string(),
-                username: z.string(),
-                user_image: z.string().url(),
-                name: z.string(),
                 rating: z.number(),
-                user_id: z.string(),
+                author: z.object({
+                    name: z.string(),
+                    username: z.string(),
+                    image: z.string().url(),
+                    id: z.string(),
+                }),
+                comments: z.array(z.object({
+                    post_id: z.string(),
+                    content: z.string(),
+                    created_at: z.string(),
+                    author: z.object({
+                        name: z.string(),
+                        username: z.string(),
+                        image: z.string().url(),
+                        id: z.string(),
+                    })
+                }))
             })
         );
 
         const result = await fetch(`${env.RECOMENDER_URL}?page=0`, {
             headers: {
-                "cookie": `__Secure-next-auth.session-token=${context.req.cookies['next-auth.session-token'] || ""};`
+                "cookie": `next-auth.session-token=${context.req.cookies['next-auth.session-token'] || ""};`
             },
-
         })
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -142,23 +157,22 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 
         const friends = await getFriends(session?.user.id || "");
-        const likedPosts = await getLikes(session?.user.id || "", posts);
-        const comments = await getComments(posts);
-
         const formattedPosts = posts.map(post => {
+            console.log(new Date(post.created_at))
             return {
                 id: post.id,
                 likes: post.likes,
-                liked: likedPosts ? likedPosts.includes(post.id) : false,
+                liked: post.liked,
                 content: post.content,
                 createdAt: post.created_at,
-                author: {
-                    id: post.user_id,
-                    image: post.user_image,
-                    username: post.username,
-                    name: post.name
-                },
-                comments: comments.filter(comment => comment.postId === post.id)
+                author: post.author,
+                comments: post.comments.map(comment => {
+                    return {
+                        ...comment,
+                        postId: comment.post_id,
+                        createdAt: comment.created_at,
+                    }
+                })
             };
         });
 

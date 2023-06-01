@@ -14,7 +14,7 @@ pub async fn get_likes(post_ids: &Vec<String>, pool: &MySqlPool) -> Vec<Like> {
     let post_ids: Vec<&str> = post_ids.iter().map(|id| id.as_str()).collect();
 
     let placeholders = post_ids.iter().map(|_| "?").collect::<Vec<&str>>().join(",");
-    let query_str = format!("SELECT userId AS user_id, postId AS post_id, DATE_FORMAT(createdAt, '%Y-%m-%d %H:%i:%s') AS created_at FROM `Like` WHERE postId IN ({})", placeholders);
+    let query_str = format!("SELECT userId AS user_id, postId AS post_id, DATE_FORMAT(createdAt, '%Y-%m-%d') AS created_at FROM `Like` WHERE postId IN ({})", placeholders);
 
     let mut query = query_as::<MySql, Like>(&query_str);
     for id in post_ids {
@@ -32,7 +32,7 @@ pub async fn get_comments(post_ids: &Vec<String>, pool: &MySqlPool) -> Vec<Comme
     let post_ids: Vec<&str> = post_ids.iter().map(|id| id.as_str()).collect();
 
     let placeholders = post_ids.iter().map(|_| "?").collect::<Vec<&str>>().join(",");
-    let query_str = format!("SELECT c.userId AS user_id, c.content, c.postId AS post_id, DATE_FORMAT(c.createdAt, '%Y-%m-%d %H:%i:%s') AS created_at, u.image, u.name, u.username FROM `Comment` AS c JOIN `User` AS u ON c.userId = u.id WHERE c.postId IN ({})", placeholders);
+    let query_str = format!("SELECT c.userId AS user_id, c.content, c.postId AS post_id, DATE_FORMAT(createdAt, '%Y-%m-%d') AS created_at, u.image, u.name, u.username FROM `Comment` AS c JOIN `User` AS u ON c.userId = u.id WHERE c.postId IN ({})", placeholders);
 
     let mut query = query_as::<MySql, RawComment>(&query_str);
     for id in post_ids {

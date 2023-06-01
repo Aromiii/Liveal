@@ -16,7 +16,8 @@ mod env;
 
 #[get("/?<page>")]
 async fn index<'a>(cookies: &CookieJar<'_>, page: u32, pool: &rocket::State<MySqlPool>, top_posts: &rocket::State<Vec<Post>>, config: &rocket::State<env::Config>) -> (Status, Value) {
-    let session = auth::check(cookies.get("__Secure-next-auth.session-token"), &config.auth_url).await;
+    let session = auth::check(cookies.get("next-auth.session-token"), &config.auth_url).await;
+    println!("{:#?}", session);
     if session == Value::Null {
         let generic_posts = engine::get_generic_posts(top_posts.to_vec(), page).await;
         return (Status::Ok, json!({ "message": "Credentials were invalid so generic posts are returned", "data": generic_posts }));
