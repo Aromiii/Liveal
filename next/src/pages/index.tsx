@@ -29,9 +29,12 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
             nextPage++
             return nextPage
         },
-        queryFn: async ({ pageParam = 0 }) => {
-            const result = await fetch(`http://localhost:8000/?page=${pageParam}`)
+        queryFn: async ({pageParam = 0}) => {
+            const result = await fetch(`http://localhost:8000/?page=${pageParam}`, {
+                credentials: "include"
+            })
             const body = await result.json()
+
             setPosts(posts => [...posts, ...body.data])
             return body.data
         }

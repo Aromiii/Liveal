@@ -5,7 +5,7 @@ use rocket::serde::json::Value;
 use rocket::http::{CookieJar, Status};
 use rocket::serde::json::{json};
 use sqlx::MySqlPool;
-use crate::db::types::PostWithRating;
+use crate::db::types::Post;
 use rocket_cors::{AllowedOrigins, CorsOptions};
 
 
@@ -15,7 +15,7 @@ mod auth;
 mod env;
 
 #[get("/?<page>")]
-async fn index<'a>(cookies: &CookieJar<'_>, page: u32, pool: &rocket::State<MySqlPool>, top_posts: &rocket::State<Vec<PostWithRating>>, config: &rocket::State<env::Config>) -> (Status, Value) {
+async fn index<'a>(cookies: &CookieJar<'_>, page: u32, pool: &rocket::State<MySqlPool>, top_posts: &rocket::State<Vec<Post>>, config: &rocket::State<env::Config>) -> (Status, Value) {
     let session = auth::check(cookies.get("__Secure-next-auth.session-token"), &config.auth_url).await;
     if session == Value::Null {
         let generic_posts = engine::get_generic_posts(top_posts.to_vec(), page).await;
@@ -44,6 +44,6 @@ async fn rocket() -> _ {
         .attach(cors_options().to_cors().expect("Failed to attach CORS"))
         .manage(config.clone())
         .manage::<MySqlPool>(db::create_pool(&config.db_url).await)
-        .manage::<Vec<PostWithRating>>(engine::generate_top_posts(&config.db_url).await)
+        .manage::<Vec<Post>>(engine::generate_top_posts(&config.db_url).await)
         .mount("/", routes![index])
 }
