@@ -21,11 +21,8 @@ pub struct PostWithAllData {
     pub(crate) likes: i32,
     pub(crate) liked: bool,
     pub(crate) rating: Option<f64>,
-    pub(crate) username: Option<String>,
-    pub(crate) name: Option<String>,
-    pub(crate) user_image: Option<String>,
+    pub(crate) author: Author,
     pub(crate) created_at: Option<String>,
-    pub(crate) user_id: String,
     pub(crate) comments: Vec<Comment>
 }
 
@@ -39,8 +36,27 @@ pub struct Like {
 
 #[derive(Debug, FromRow, Serialize, Deserialize, Clone)]
 pub struct Comment {
+    pub(crate) post_id: String,
+    pub(crate) content: String,
+    pub(crate) created_at: Option<String>,
+    pub(crate) author: Author
+}
+
+#[derive(Debug, FromRow, Serialize, Deserialize, Clone)]
+pub struct RawComment {
     pub(crate) user_id: String,
     pub(crate) post_id: String,
     pub(crate) content: String,
     pub(crate) created_at: Option<String>,
+    pub(crate) image: String,
+    pub(crate) name: String,
+    pub(crate) username: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Author {
+    pub(crate) id: String,
+    pub(crate) image: String,
+    pub(crate) name: String,
+    pub(crate) username: String
 }

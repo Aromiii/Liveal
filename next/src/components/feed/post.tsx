@@ -104,10 +104,12 @@ export default function Post(props: { post: PostType }) {
     console.log(body);
   };
 
+  console.log(props.post.author)
+
   return <li className="shadow base-color rounded-lg mb-2 p-2">
     <div className="flex place-items-center gap-2">
-      <Link href={`/user/${props.post.author.username || ""}`}>
-        <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={props.post.author.image || undefined} />
+      <Link href={`/user/${props.post.author.username ? props.post.author.username : "error"}`}>
+        <img className="rounded-full object-cover h-16 w-16" alt="Profile picture" src={props.post.author.image ? props.post.author.image: "error"} />
       </Link>
       <div className="w-[calc(100%-5rem)]">
         <div className="flex">

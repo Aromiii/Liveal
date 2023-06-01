@@ -1,6 +1,6 @@
 use std::env;
 use sqlx::{MySql, MySqlPool, Pool, query_as};
-use crate::db::types::{Comment, Like};
+use crate::db::types::{Comment, Like, RawComment, Author};
 
 pub async fn create_pool(database_url: &str) -> Pool<MySql> {
     let pool = MySqlPool::connect(&*database_url)
@@ -32,16 +32,31 @@ pub async fn get_comments(post_ids: &Vec<String>, pool: &MySqlPool) -> Vec<Comme
     let post_ids: Vec<&str> = post_ids.iter().map(|id| id.as_str()).collect();
 
     let placeholders = post_ids.iter().map(|_| "?").collect::<Vec<&str>>().join(",");
-    let query_str = format!("SELECT userId AS user_id, content, postId AS post_id, DATE_FORMAT(createdAt, '%Y-%m-%d %H:%i:%s') AS created_at FROM `Comment` WHERE postId IN ({})", placeholders);
+    let query_str = format!("SELECT c.userId AS user_id, c.content, c.postId AS post_id, DATE_FORMAT(c.createdAt, '%Y-%m-%d %H:%i:%s') AS created_at, u.image, u.name, u.username FROM `Comment` AS c JOIN `User` AS u ON c.userId = u.id WHERE c.postId IN ({})", placeholders);
 
-    let mut query = query_as::<MySql, Comment>(&query_str);
+    let mut query = query_as::<MySql, RawComment>(&query_str);
     for id in post_ids {
         query = query.bind(id);
     }
 
-    let comments = query
+    let raw_comments = query
         .fetch_all(pool)
         .await.unwrap();
+
+    let mut comments: Vec<Comment> = vec![];
+    for raw in raw_comments {
+        comments.push(Comment {
+            post_id: raw.post_id,
+            content: raw.content,
+            created_at: raw.created_at,
+            author: Author {
+                id: raw.user_id,
+                image: raw.image,
+                name: raw.name,
+                username: raw.username,
+            },
+        })
+    }
 
     comments
 }

@@ -34,15 +34,16 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
                 credentials: "include"
             })
             const body = await result.json()
+            console.log(body)
 
             setPosts(posts => [...posts, ...body.data])
             return body.data
         }
     })
 
-    console.log(data)
+    console.log(posts)
 
-    if (status == "authenticated") {
+    if (session) {
         return (
             <>
                 <Navbar>
@@ -61,9 +62,11 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
                         </aside>
                         <main className="mx-auto md:w-1/2 w-full">
                             <ul>
-                                {
+                                {posts ?
                                     // eslint-disable-next-line react/jsx-key
                                     posts.map((post: PostType) => <Post post={post}/>)
+                                    :
+                                    null
                                 }
                             </ul>
                             <button onClick={() => fetchNextPage()}>

@@ -1,6 +1,6 @@
 use sqlx::{MySqlPool};
 use crate::db;
-use crate::db::types::{Post, PostWithAllData};
+use crate::db::types::{Author, Post, PostWithAllData};
 use rand::thread_rng;
 use rand::seq::SliceRandom;
 
@@ -39,17 +39,28 @@ pub async fn get_customised_posts(pool: &rocket::State<MySqlPool>, top_posts: Ve
             likes: value.likes,
             liked: false,
             rating: value.rating,
-            username: value.username,
-            name: value.name,
-            user_image: value.user_image,
+            author: Author {
+                username: match value.username {
+                    None => {"error".to_string()},
+                    Some(x) => {x}
+                },
+                name: match value.name {
+                    None => {"error".to_string()},
+                    Some(x) => {x}
+                },
+                image: match value.user_image {
+                    None => {"error".to_string()},
+                    Some(x) => {x}
+                },
+                id: value.user_id.clone(),
+            },
             created_at: value.created_at,
-            user_id: value.user_id.clone(),
             comments: vec![]
         };
 
         for like in &likes {
             if value.id == like.post_id && value.user_id == user_id {
-                post_with_all.liked == true;
+                post_with_all.liked = true;
             }
         }
 
@@ -64,7 +75,7 @@ pub async fn get_customised_posts(pool: &rocket::State<MySqlPool>, top_posts: Ve
 
     posts_with_all.shuffle(&mut thread_rng());
 
-    return posts_with_all;
+    posts_with_all
 }
 
 pub async fn generate_top_posts(db_url: &str) -> Vec<Post> {
