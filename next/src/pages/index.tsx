@@ -19,11 +19,12 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
     let nextPage = 2
 
     const {
-        fetchNextPage
+        fetchNextPage,
+        isFetching
     } = useInfiniteQuery({
         queryKey: ['posts'],
         getNextPageParam: () => {
-            nextPage++
+            nextPage += 1
             return nextPage
         },
         queryFn: async ({pageParam = 0}) => {
@@ -43,16 +44,13 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
     useEffect(() => {
         const observerOptions = {
             root: null,
-            rootMargin: '0px',
-            threshold: 1.0,
+            rootMargin: '500px',
+            threshold: [0, 1]
         };
 
         const observer = new IntersectionObserver(handleIntersection, observerOptions);
         if (observerRef.current) observer.observe(observerRef.current);
 
-        return () => {
-            if (observerRef.current) observer.unobserve(observerRef.current);
-        };
     }, []);
 
     const handleIntersection = (entries) => {
@@ -83,15 +81,22 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
                             <ul>
                                 {
                                     // eslint-disable-next-line react/jsx-key
-                                    posts.map((post: PostType, key) => {
-                                        console.log(key)
-                                        console.log(new Date(post.createdAt))
-                                        return <Post post={post}/>
-                                    })
+                                    posts.map((post: PostType, key) => <Post post={post}/>)
                                 }
                             </ul>
-                            <div ref={observerRef} className="text-center dark:text-white text-black font-semibold m-2 mt-4">
-                                Loading more posts...
+                            <div ref={observerRef}
+                                 className="text-center dark:text-white text-black font-semibold m-2">
+                                {isFetching ?
+                                    <p>Loading more posts...</p>
+                                    :
+                                    <>
+                                        <p>Error in fetching more posts</p>
+                                        <button
+                                            className="dark:bg-white bg-gray-500 dark:text-black text-white p-2 rounded-lg m-2"
+                                            onClick={() => void fetchNextPage()}>Try to fetch more
+                                        </button>
+                                    </>
+                                }
                             </div>
                             <Link href="/post/new">
                                 <svg
