@@ -17,11 +17,27 @@ pub async fn get_generic_posts(top_posts: Vec<Post>, page_number: u32) -> Vec<Po
 }
 
 pub async fn get_customised_posts(pool: &rocket::State<MySqlPool>, top_posts: Vec<Post>, user_id: &str, page_number: u32) -> Vec<PostWithAllData> {
-    let mut posts = sqlx::query_as!(Post, "SELECT Post.id, Post.content, Post.likes, User.id as user_id, User.username, User.name, User.image AS user_image, DATE_FORMAT(createdAt, '%Y-%m-%d') AS created_at, (rating + ((SELECT COUNT(*) FROM Comment WHERE postId = Post.id) * 1.5) + Post.likes) AS rating FROM Post JOIN User ON Post.userId = User.id JOIN Friendship f1 ON f1.user1Id = Post.userId OR f1.user2Id = Post.userId JOIN Friendship f2 ON (f2.user1Id = Post.userId OR f2.user2Id = Post.userId) AND (f2.user1Id = ? OR f2.user2Id = ?) WHERE Post.userId != ? ORDER BY rating DESC LIMIT ? OFFSET ?", user_id, user_id, user_id, PERSONAL_POSTS_SIZE, page_number * PERSONAL_POSTS_SIZE)
+    let result = sqlx::query_as!(Post, "SELECT Post.id, Post.content, Post.likes, User.id as user_id, User.username, User.name, User.image AS user_image, DATE_FORMAT(createdAt, '%Y-%m-%d') AS created_at, (rating + ((SELECT COUNT(*) FROM Comment WHERE postId = Post.id) * 1.5) + Post.likes) AS rating FROM Post JOIN User ON Post.userId = User.id JOIN Friendship f1 ON f1.user1Id = Post.userId OR f1.user2Id = Post.userId JOIN Friendship f2 ON (f2.user1Id = Post.userId OR f2.user2Id = Post.userId) AND (f2.user1Id = ? OR f2.user2Id = ?) WHERE Post.userId != ? ORDER BY rating DESC LIMIT ? OFFSET ?", user_id, user_id, user_id, PERSONAL_POSTS_SIZE, page_number * PERSONAL_POSTS_SIZE)
         .fetch_all(pool.inner())
-        .await.unwrap();
+        .await;
 
-    posts.append(&mut top_posts[(page_number * TOP_POSTS_SIZE) as usize..(page_number * TOP_POSTS_SIZE + TOP_POSTS_SIZE) as usize].to_vec());
+    let mut posts = match result {
+        Ok(posts) => posts,
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            return vec![]
+        }
+    };
+
+    let mut paginated_top_posts = match top_posts.get((page_number * TOP_POSTS_SIZE) as usize..(page_number * TOP_POSTS_SIZE + TOP_POSTS_SIZE) as usize) {
+        Some(v) => v.to_vec(),
+        None => {
+            eprintln!("Error: Couldn't get top posts from memory. Array out of bounds", );
+            return vec![]
+        }
+    };
+
+    posts.append(&mut paginated_top_posts);
     posts.sort_by(|a, b| b.rating.unwrap().total_cmp(&a.rating.unwrap()));
     posts.retain(|x| x.user_id != user_id);
     posts.dedup_by(|a, b| a.id == b.id);
@@ -83,8 +99,7 @@ pub async fn generate_top_posts(db_url: &str) -> Vec<Post> {
 
     let data = sqlx::query_as!(Post, "SELECT Post.id, Post.content, Post.likes, User.username, User.id as user_id, User.name, User.image AS user_image, DATE_FORMAT(createdAt, '%Y-%m-%d') AS created_at, (rating + ((SELECT COUNT(*) FROM Comment WHERE postId = Post.id) * 1.5) + Post.likes) AS rating FROM Post JOIN User ON Post.userId = User.id ORDER BY rating DESC LIMIT 1000;")
         .fetch_all(&pool)
-        .await
-        .unwrap();
+        .await.expect("Error in top posts query");
 
 
     return data;

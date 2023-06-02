@@ -41,8 +41,6 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
         }
     })
 
-    console.log(posts)
-
     if (status == "authenticated") {
         return (
             <>

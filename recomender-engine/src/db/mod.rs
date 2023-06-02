@@ -23,7 +23,7 @@ pub async fn get_likes(post_ids: &Vec<String>, pool: &MySqlPool) -> Vec<Like> {
 
     let likes = query
         .fetch_all(pool)
-        .await.unwrap();
+        .await.expect("Error in likes query");
 
     likes
 }
@@ -41,7 +41,7 @@ pub async fn get_comments(post_ids: &Vec<String>, pool: &MySqlPool) -> Vec<Comme
 
     let raw_comments = query
         .fetch_all(pool)
-        .await.unwrap();
+        .await.expect("Error in comments query");
 
     let mut comments: Vec<Comment> = vec![];
     for raw in raw_comments {
