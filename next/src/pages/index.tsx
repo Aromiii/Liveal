@@ -6,14 +6,12 @@ import Link from "next/link";
 import Post from "../components/feed/post";
 import {getServerSession} from "next-auth/next";
 import {authOptions} from "../server/auth";
-import {getLikes} from "../utils/getLikes";
-import {getComments} from "../utils/getComments";
 import getFriends from "../utils/getFriends";
 import {z} from "zod";
 import {env} from "../env/server.mjs";
 import type PostType from "../types/post"
 import {useInfiniteQuery} from "@tanstack/react-query";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 
 const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const {data: session, status} = useSession();
@@ -21,8 +19,7 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
     let nextPage = 2
 
     const {
-        data,
-        fetchNextPage,
+        fetchNextPage
     } = useInfiniteQuery({
         queryKey: ['posts'],
         getNextPageParam: () => {
@@ -37,9 +34,33 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
             console.log(body)
 
             setPosts(posts => [...posts, ...body.data])
-            return body.data
         }
     })
+
+
+    const observerRef = useRef(null);
+
+    useEffect(() => {
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 1.0,
+        };
+
+        const observer = new IntersectionObserver(handleIntersection, observerOptions);
+        if (observerRef.current) observer.observe(observerRef.current);
+
+        return () => {
+            if (observerRef.current) observer.unobserve(observerRef.current);
+        };
+    }, []);
+
+    const handleIntersection = (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && entry.target === observerRef.current) {
+            void fetchNextPage()
+        }
+    };
 
     if (status == "authenticated") {
         return (
@@ -69,9 +90,9 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
                                     })
                                 }
                             </ul>
-                            <button onClick={() => fetchNextPage()}>
-                                get more
-                            </button>
+                            <div ref={observerRef} className="text-center dark:text-white text-black font-semibold m-2 mt-4">
+                                Loading more posts...
+                            </div>
                             <Link href="/post/new">
                                 <svg
                                     className="shadow shadow-gray-500 bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"

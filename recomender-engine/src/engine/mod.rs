@@ -21,7 +21,7 @@ pub async fn get_customised_posts(pool: &rocket::State<MySqlPool>, top_posts: Ve
         .fetch_all(pool.inner())
         .await;
 
-    let mut posts = match result {
+    let mut posts: Vec<Post> = match result {
         Ok(posts) => posts,
         Err(e) => {
             eprintln!("Error: {}", e);
@@ -30,10 +30,10 @@ pub async fn get_customised_posts(pool: &rocket::State<MySqlPool>, top_posts: Ve
     };
 
     let mut paginated_top_posts = match top_posts.get((page_number * TOP_POSTS_SIZE) as usize..(page_number * TOP_POSTS_SIZE + TOP_POSTS_SIZE) as usize) {
-        Some(v) => v.to_vec(),
+        Some(v) => v.to_vec() as Vec<Post>,
         None => {
-            eprintln!("Error: Couldn't get top posts from memory. Array out of bounds", );
-            return vec![]
+            eprintln!("Error: Couldn't get top posts from memory. Array out of bounds");
+            top_posts[0..TOP_POSTS_SIZE as usize].to_vec()
         }
     };
 
