@@ -39,23 +39,25 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
     })
 
 
-    const observerRef = useRef(null);
+    const observerRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         const observerOptions = {
             root: null,
             rootMargin: '500px',
-            threshold: [0, 1]
+            threshold: 0
         };
+
 
         const observer = new IntersectionObserver(handleIntersection, observerOptions);
         if (observerRef.current) observer.observe(observerRef.current);
 
     }, []);
 
-    const handleIntersection = (entries) => {
+    const handleIntersection: IntersectionObserverCallback = (entries) => {
         const [entry] = entries;
-        if (entry.isIntersecting && entry.target === observerRef.current) {
+        console.log(entry)
+        if (entry?.isIntersecting && entry.target === observerRef.current) {
             void fetchNextPage()
         }
     };
