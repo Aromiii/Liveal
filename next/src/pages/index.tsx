@@ -12,10 +12,11 @@ import {env} from "../env/server.mjs";
 import type PostType from "../types/post"
 import {useInfiniteQuery} from "@tanstack/react-query";
 import {useEffect, useRef, useState} from "react";
+import {clientEnv, serverEnv} from "../env/schema.mjs";
 
 const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const {data: session, status} = useSession();
-    const [posts, setPosts] = useState(ogPosts)
+    const [posts, setPosts] = useState<PostType[]>(ogPosts)
     let nextPage = 2
 
     const {
@@ -28,13 +29,17 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
             return nextPage
         },
         queryFn: async ({pageParam = 0}) => {
-            const result = await fetch(`http://localhost:8000/?page=${pageParam}`, {
-                credentials: "include"
-            })
-            const body = await result.json()
-            console.log(body)
+            try {
+                const result = await fetch(`${clientEnv.NEXT_PUBLIC_RECOMMENDER_URL}/?page=${pageParam}`, {
+                    credentials: "include"
+                })
+                const schema = z.custom<{ data: PostType[] }>()
+                const data = schema.parse(await result.json())
 
-            setPosts(posts => [...posts, ...body.data])
+                setPosts(posts => [...posts, ...data.data])
+            } catch (e) {
+                console.log(e)
+            }
         }
     })
 
@@ -170,7 +175,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
             })
         );
 
-        const result = await fetch(`${env.RECOMENDER_URL}?page=0`, {
+        const result = await fetch(`${serverEnv.RECOMMENDER_URL}/?page=0`, {
             headers: {
                 "cookie": `next-auth.session-token=${context.req.cookies['next-auth.session-token'] || ""};`
             },
@@ -183,7 +188,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 
         const friends = await getFriends(session?.user.id || "");
-        const formattedPosts = posts.map(post => {
+        const formattedPosts: PostType[] = posts.map(post => {
             console.log(new Date(post.created_at))
             return {
                 id: post.id,

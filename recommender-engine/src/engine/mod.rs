@@ -33,7 +33,9 @@ pub async fn get_customised_posts(pool: &rocket::State<MySqlPool>, top_posts: Ve
         Some(v) => v.to_vec() as Vec<Post>,
         None => {
             eprintln!("Error: Couldn't get top posts from memory. Array out of bounds");
-            top_posts[0..TOP_POSTS_SIZE as usize].to_vec()
+            let mut error_posts = top_posts;
+            error_posts.shuffle(&mut thread_rng());
+            error_posts[0..TOP_POSTS_SIZE as usize].to_vec()
         }
     };
 

@@ -1,5 +1,5 @@
 [package]
-name = "recomender-engine"
+name = "recommender-engine"
 version = "0.1.0"
 edition = "2021"
 
