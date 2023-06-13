@@ -46,14 +46,11 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
     const observerRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
-        const observerOptions = {
+        const observer = new IntersectionObserver(handleIntersection, {
             root: null,
             rootMargin: '500px',
             threshold: 0
-        };
-
-
-        const observer = new IntersectionObserver(handleIntersection, observerOptions);
+        });
         if (observerRef.current) observer.observe(observerRef.current);
 
     }, []);
@@ -189,7 +186,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
         const friends = await getFriends(session?.user.id || "");
         const formattedPosts: PostType[] = posts.map(post => {
-            console.log(new Date(post.created_at))
             return {
                 id: post.id,
                 likes: post.likes,
