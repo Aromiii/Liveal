@@ -36,6 +36,7 @@ pub struct Like {
 
 #[derive(Debug, FromRow, Serialize, Deserialize, Clone)]
 pub struct Comment {
+    pub(crate) id: String,
     pub(crate) post_id: String,
     pub(crate) content: String,
     pub(crate) created_at: Option<String>,
@@ -44,6 +45,7 @@ pub struct Comment {
 
 #[derive(Debug, FromRow, Serialize, Deserialize, Clone)]
 pub struct RawComment {
+    pub(crate) id: String,
     pub(crate) user_id: String,
     pub(crate) post_id: String,
     pub(crate) content: String,

@@ -8,7 +8,6 @@ import {getServerSession} from "next-auth/next";
 import {authOptions} from "../server/auth";
 import getFriends from "../utils/getFriends";
 import {z} from "zod";
-import {env} from "../env/server.mjs";
 import type PostType from "../types/post"
 import {useInfiniteQuery} from "@tanstack/react-query";
 import {useEffect, useRef, useState} from "react";
@@ -162,6 +161,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
                     id: z.string(),
                 }),
                 comments: z.array(z.object({
+                    id: z.string(),
                     post_id: z.string(),
                     content: z.string(),
                     created_at: z.string(),
@@ -199,7 +199,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
                 author: post.author,
                 comments: post.comments.map(comment => {
                     return {
-                        ...comment,
+                        id: comment.id,
+                        content: comment.content,
+                        author: comment.author,
                         postId: comment.post_id,
                         createdAt: comment.created_at,
                     }
