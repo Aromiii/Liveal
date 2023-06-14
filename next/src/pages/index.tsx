@@ -126,13 +126,27 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
             <>
                 <Navbar>
                     <div className="flex gap-5">
-                        <main className="w-[90vw] mx-auto md:w-1/2">
+                        <main className="w-[90vw] mx-auto md:w-1/2 mb-20">
                             <ul>
                                 {
                                     // eslint-disable-next-line react/jsx-key
                                     posts.map((post) => <Post post={post}/>)
                                 }
                             </ul>
+                            <div ref={observerRef}
+                                 className="text-center dark:text-white text-black font-semibold m-2">
+                                {isFetching ?
+                                    <p>Loading more posts...</p>
+                                    :
+                                    <>
+                                        <p>Error in fetching more posts</p>
+                                        <button
+                                            className="dark:bg-white bg-gray-500 dark:text-black text-white p-2 rounded-lg m-2"
+                                            onClick={() => void fetchNextPage()}>Try to fetch more
+                                        </button>
+                                    </>
+                                }
+                            </div>
                         </main>
                     </div>
                 </Navbar>
