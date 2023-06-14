@@ -6,15 +6,66 @@ import Link from "next/link";
 import Post from "../components/feed/post";
 import {getServerSession} from "next-auth/next";
 import {authOptions} from "../server/auth";
-import {getLikes} from "../utils/getLikes";
-import {getComments} from "../utils/getComments";
 import getFriends from "../utils/getFriends";
 import {z} from "zod";
-import {env} from "../env/server.mjs";
 import type PostType from "../types/post"
+import {useInfiniteQuery} from "@tanstack/react-query";
+import {useEffect, useRef, useState} from "react";
+import {clientEnv, serverEnv} from "../env/schema.mjs";
 
-const Home = ({posts, friends}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
     const {data: session, status} = useSession();
+    const [posts, setPosts] = useState<PostType[]>(ogPosts)
+    let nextPage = 2
+
+    console.log(posts)
+
+    const {
+        fetchNextPage,
+        isFetching
+    } = useInfiniteQuery({
+        queryKey: ['posts'],
+        getNextPageParam: () => {
+            nextPage += 1
+            return nextPage
+        },
+        queryFn: async ({pageParam = 1}: {pageParam?: number} = {}) => {
+            try {
+                const url = clientEnv.NEXT_PUBLIC_RECOMMENDER_URL || ""
+                const result = await fetch(`${url}/?page=${pageParam}`, {
+                    credentials: "include"
+                })
+
+                const schema = z.custom<{ data: PostType[] }>()
+                const data = schema.parse(await result.json())
+
+                setPosts(posts => [...posts, ...data.data])
+            } catch (e) {
+                console.log(e)
+            }
+        }
+    })
+
+
+    const observerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(handleIntersection, {
+            root: null,
+            rootMargin: '500px',
+            threshold: 0
+        });
+        if (observerRef.current) observer.observe(observerRef.current);
+
+    }, []);
+
+    const handleIntersection: IntersectionObserverCallback = (entries) => {
+        const [entry] = entries;
+        console.log(entry)
+        if (entry?.isIntersecting && entry.target === observerRef.current) {
+            void fetchNextPage()
+        }
+    };
 
     if (status == "authenticated") {
         return (
@@ -40,6 +91,20 @@ const Home = ({posts, friends}: InferGetServerSidePropsType<typeof getServerSide
                                     posts.map((post: PostType) => <Post post={post}/>)
                                 }
                             </ul>
+                            <div ref={observerRef}
+                                 className="text-center dark:text-white text-black font-semibold m-2">
+                                {isFetching ?
+                                    <p>Loading more posts...</p>
+                                    :
+                                    <>
+                                        <p>Error in fetching more posts</p>
+                                        <button
+                                            className="dark:bg-white bg-gray-500 dark:text-black text-white p-2 rounded-lg m-2"
+                                            onClick={() => void fetchNextPage()}>Try to fetch more
+                                        </button>
+                                    </>
+                                }
+                            </div>
                             <Link href="/post/new">
                                 <svg
                                     className="shadow shadow-gray-500 bg-red-500 rounded-full fill-white fixed bottom-[1rem] md:right-[28%] right-[10%]"
@@ -61,13 +126,27 @@ const Home = ({posts, friends}: InferGetServerSidePropsType<typeof getServerSide
             <>
                 <Navbar>
                     <div className="flex gap-5">
-                        <main className="w-[90vw] mx-auto md:w-1/2">
+                        <main className="w-[90vw] mx-auto md:w-1/2 mb-20">
                             <ul>
                                 {
                                     // eslint-disable-next-line react/jsx-key
                                     posts.map((post) => <Post post={post}/>)
                                 }
                             </ul>
+                            <div ref={observerRef}
+                                 className="text-center dark:text-white text-black font-semibold m-2">
+                                {isFetching ?
+                                    <p>Loading more posts...</p>
+                                    :
+                                    <>
+                                        <p>Error in fetching more posts</p>
+                                        <button
+                                            className="dark:bg-white bg-gray-500 dark:text-black text-white p-2 rounded-lg m-2"
+                                            onClick={() => void fetchNextPage()}>Try to fetch more
+                                        </button>
+                                    </>
+                                }
+                            </div>
                         </main>
                     </div>
                 </Navbar>
@@ -82,58 +161,27 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     try {
         const session = await getServerSession(context.req, context.res, authOptions);
 
-        const postsSchema = z.array(
-            z.object({
-                id: z.string(),
-                likes: z.number(),
-                content: z.string(),
-                created_at: z.string(),
-                username: z.string(),
-                user_image: z.string().url(),
-                name: z.string(),
-                rating: z.number(),
-                user_id: z.string(),
-            })
-        );
-
-        const result = await fetch(`${env.RECOMENDER_URL}?page=1`, {
-            headers: {
-                "cookie": `__Secure-next-auth.session-token=${context.req.cookies['next-auth.session-token'] || ""};`
-            },
-
-        })
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const body = await result.json();
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        const posts = postsSchema.parse(body.data)
-
-
-        const friends = await getFriends(session?.user.id || "");
-        const likedPosts = await getLikes(session?.user.id || "", posts);
-        const comments = await getComments(posts);
-
-        const formattedPosts = posts.map(post => {
-            return {
-                id: post.id,
-                likes: post.likes,
-                liked: likedPosts ? likedPosts.includes(post.id) : false,
-                content: post.content,
-                createdAt: post.created_at,
-                author: {
-                    id: post.user_id,
-                    image: post.user_image,
-                    username: post.username,
-                    name: post.name
+        const url = serverEnv.RECOMMENDER_URL || ""
+        let result: Response
+        if (context.req.cookies['next-auth.session-token']) {
+            result = await fetch(`${url}/?page=0`, {
+                headers: {
+                    "cookie": `next-auth.session-token=${context.req.cookies['next-auth.session-token']};`
                 },
-                comments: comments.filter(comment => comment.postId === post.id)
-            };
-        });
+            })
+        } else {
+            result = await fetch(`${url}/?page=0`)
+        }
+
+
+        const schema = z.custom<{ data: PostType[] }>()
+        const data = schema.parse(await result.json())
+        const friends = await getFriends(session?.user.id || "");
 
         return {
             props: {
                 friends: friends,
-                posts: formattedPosts,
+                ogPosts: data.data,
             }
         };
     } catch (error) {
