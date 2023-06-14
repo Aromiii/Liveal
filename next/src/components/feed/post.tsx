@@ -1,14 +1,14 @@
 import Link from "next/link";
-import React, { useState } from "react";
+import React, {useState} from "react";
 import Comment from "./comment";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import {useSession} from "next-auth/react";
+import {useRouter} from "next/router";
 import type PostType from "../../types/post";
-import { DeleteSvg, SettingsSvg } from "../svg";
+import {DeleteSvg, SettingsSvg} from "../svg";
 
 export default function Post(props: { post: PostType }) {
   const router = useRouter();
-  const { data: session } = useSession();
+  const {data: session} = useSession();
   const [liked, setLiked] = useState(props.post.liked);
   const [commentText, setCommentText] = useState("");
   const [likes, setLikes] = useState(props.post.likes);
@@ -114,23 +114,27 @@ export default function Post(props: { post: PostType }) {
         <div className="flex">
           <p className="break-words max-w-[calc(100%-60px)] font-semibold text-lg mr-auto">{props.post.author.name}</p>
           {props.post.author.username == session?.user.username ?
-            <div className="flex">
-              <Link href={`/post/edit/${props.post.id}`}>
-                <SettingsSvg className="h-[30px] w-[30px]"/>
-              </Link>
-              <button onClick={event => void deletePost(event)}>
-                <DeleteSvg viewBox="0 0 48 48" className="h-[30px] w-[30px]"/>
-              </button>
-            </div>
-            :
-            null
+              <div className="flex">
+                <Link href={`/post/edit/${props.post.id}`}>
+                  <SettingsSvg className="h-[30px] w-[30px]"/>
+                </Link>
+                <button onClick={event => void deletePost(event)}>
+                  <DeleteSvg viewBox="0 0 48 48" className="h-[30px] w-[30px]"/>
+                </button>
+              </div>
+              :
+              null
           }
         </div>
-        <h2 className="font-extralight">{new Intl.DateTimeFormat("eur", {
-          year: new Date().getFullYear() === new Date(props.post.createdAt).getFullYear() ? undefined : "numeric",
-          month: "long",
-          day: "numeric"
-        }).format(new Date(props.post.createdAt ? props.post.createdAt : props.post.created_at))}</h2>
+        <h2 className="font-extralight">
+          {
+            new Intl.DateTimeFormat("eur", {
+              year: new Date().getFullYear() !== new Date(props.post.createdAt).getFullYear() ? "numeric" : undefined,
+              month: "long",
+              day: "numeric"
+            }).format(new Date(props.post.createdAt))
+          }
+        </h2>
       </div>
     </div>
     {props.post.image ?

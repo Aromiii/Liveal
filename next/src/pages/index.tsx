@@ -18,6 +18,8 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
     const [posts, setPosts] = useState<PostType[]>(ogPosts)
     let nextPage = 2
 
+    console.log(posts)
+
     const {
         fetchNextPage,
         isFetching
@@ -27,11 +29,13 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
             nextPage += 1
             return nextPage
         },
-        queryFn: async ({pageParam = 0}) => {
+        queryFn: async ({pageParam = 1}: {pageParam?: number} = {}) => {
             try {
-                const result = await fetch(`${clientEnv.NEXT_PUBLIC_RECOMMENDER_URL}/?page=${pageParam}`, {
+                const url = clientEnv.NEXT_PUBLIC_RECOMMENDER_URL || ""
+                const result = await fetch(`${url}/?page=${pageParam}`, {
                     credentials: "include"
                 })
+
                 const schema = z.custom<{ data: PostType[] }>()
                 const data = schema.parse(await result.json())
 
@@ -84,7 +88,7 @@ const Home = ({ogPosts, friends}: InferGetServerSidePropsType<typeof getServerSi
                             <ul>
                                 {
                                     // eslint-disable-next-line react/jsx-key
-                                    posts.map((post: PostType, key) => <Post post={post}/>)
+                                    posts.map((post: PostType) => <Post post={post}/>)
                                 }
                             </ul>
                             <div ref={observerRef}
@@ -143,72 +147,29 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     try {
         const session = await getServerSession(context.req, context.res, authOptions);
 
-        const postsSchema = z.array(
-            z.object({
-                id: z.string(),
-                likes: z.number(),
-                content: z.string(),
-                liked: z.boolean(),
-                created_at: z.string(),
-                rating: z.number(),
-                author: z.object({
-                    name: z.string(),
-                    username: z.string(),
-                    image: z.string().url(),
-                    id: z.string(),
-                }),
-                comments: z.array(z.object({
-                    id: z.string(),
-                    post_id: z.string(),
-                    content: z.string(),
-                    created_at: z.string(),
-                    author: z.object({
-                        name: z.string(),
-                        username: z.string(),
-                        image: z.string().url(),
-                        id: z.string(),
-                    })
-                }))
+        const url = serverEnv.RECOMMENDER_URL || ""
+        let result: Response
+        if (context.req.cookies['next-auth.session-token']) {
+            result = await fetch(`${url}/?page=0`, {
+                headers: {
+                    "cookie": `next-auth.session-token=${context.req.cookies['next-auth.session-token']};`
+                },
             })
-        );
-
-        const result = await fetch(`${serverEnv.RECOMMENDER_URL}/?page=0`, {
-            headers: {
-                "cookie": `next-auth.session-token=${context.req.cookies['next-auth.session-token'] || ""};`
-            },
-        })
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const body = await result.json();
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        const posts = postsSchema.parse(body.data)
+        } else {
+            result = await fetch(`${url}/?page=0`)
+        }
 
 
+        const schema = z.custom<{ data: PostType[] }>()
+        const data = schema.parse(await result.json())
         const friends = await getFriends(session?.user.id || "");
-        const formattedPosts: PostType[] = posts.map(post => {
-            return {
-                id: post.id,
-                likes: post.likes,
-                liked: post.liked,
-                content: post.content,
-                createdAt: post.created_at,
-                author: post.author,
-                comments: post.comments.map(comment => {
-                    return {
-                        id: comment.id,
-                        content: comment.content,
-                        author: comment.author,
-                        postId: comment.post_id,
-                        createdAt: comment.created_at,
-                    }
-                })
-            };
-        });
+
+        console.log(data.data)
 
         return {
             props: {
                 friends: friends,
-                ogPosts: formattedPosts,
+                ogPosts: data.data,
             }
         };
     } catch (error) {

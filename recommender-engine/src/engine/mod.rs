@@ -4,8 +4,8 @@ use crate::db::types::{Author, Post, PostWithAllData};
 use rand::thread_rng;
 use rand::seq::SliceRandom;
 
-const PAGE_SIZE: u32 = 10;
-const PERSONAL_POSTS_SIZE: u32 = 5;
+const PAGE_SIZE: u32 = 20;
+const PERSONAL_POSTS_SIZE: u32 = 15;
 const TOP_POSTS_SIZE: u32 = PAGE_SIZE - PERSONAL_POSTS_SIZE;
 
 pub async fn get_generic_posts(top_posts: Vec<Post>, page_number: u32) -> Vec<Post> {
@@ -72,8 +72,8 @@ pub async fn get_customised_posts(pool: &rocket::State<MySqlPool>, top_posts: Ve
                 },
                 id: value.user_id.clone(),
             },
-            created_at: value.created_at,
-            comments: vec![]
+            createdAt: value.created_at,
+            comments: vec![],
         };
 
         for like in &likes {
@@ -83,7 +83,7 @@ pub async fn get_customised_posts(pool: &rocket::State<MySqlPool>, top_posts: Ve
         }
 
         for comment in &comments {
-            if value.id == comment.post_id {
+            if value.id == comment.postId {
                 post_with_all.comments.push(comment.clone());
             }
         }

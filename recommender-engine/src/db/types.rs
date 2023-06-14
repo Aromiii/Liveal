@@ -22,7 +22,7 @@ pub struct PostWithAllData {
     pub(crate) liked: bool,
     pub(crate) rating: Option<f64>,
     pub(crate) author: Author,
-    pub(crate) created_at: Option<String>,
+    pub(crate) createdAt: Option<String>,
     pub(crate) comments: Vec<Comment>
 }
 
@@ -37,9 +37,9 @@ pub struct Like {
 #[derive(Debug, FromRow, Serialize, Deserialize, Clone)]
 pub struct Comment {
     pub(crate) id: String,
-    pub(crate) post_id: String,
+    pub(crate) postId: String,
     pub(crate) content: String,
-    pub(crate) created_at: Option<String>,
+    pub(crate) createdAt: Option<String>,
     pub(crate) author: Author
 }
 

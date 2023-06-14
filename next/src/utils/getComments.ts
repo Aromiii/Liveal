@@ -13,9 +13,10 @@ export async function getComments(posts: { id: string }[]) {
       id: true,
       postId: true,
       content: true,
-      updatedAt: true,
+      createdAt: true,
       author: {
         select: {
+          id: true,
           username: true,
           name: true,
           image: true
@@ -27,7 +28,7 @@ export async function getComments(posts: { id: string }[]) {
   return comments.map(comment => {
     return {
       ...comment,
-      updatedAt: comment.updatedAt.toLocaleString()
+      createdAt: comment.createdAt.toLocaleString()
     };
   });
 }

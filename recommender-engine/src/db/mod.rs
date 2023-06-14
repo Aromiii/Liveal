@@ -46,9 +46,9 @@ pub async fn get_comments(post_ids: &Vec<String>, pool: &MySqlPool) -> Vec<Comme
     let mut comments: Vec<Comment> = vec![];
     for raw in raw_comments {
         comments.push(Comment {
-            post_id: raw.post_id,
+            postId: raw.post_id,
             content: raw.content,
-            created_at: raw.created_at,
+            createdAt: raw.created_at,
             id: raw.id,
             author: Author {
                 id: raw.user_id,
