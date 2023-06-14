@@ -178,8 +178,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         const data = schema.parse(await result.json())
         const friends = await getFriends(session?.user.id || "");
 
-        console.log(data.data)
-
         return {
             props: {
                 friends: friends,

@@ -57,7 +57,7 @@ export default function Navbar({ showBack = false, form = false, children }: {
               <SearchSvg/>
             </button>
           </li>
-          <li className="hidden md:block">
+          <li className={session ? "md:block hidden" : "hidden"}>
             <button onClick={() => void signOut({ redirect: false })}>
               <LogoutSvg/>
             </button>
