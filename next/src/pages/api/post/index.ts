@@ -8,11 +8,6 @@ import {serverEnv} from "../../../env/schema.mjs";
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getServerSession(req, res, authOptions);
 
-  if (!session) {
-    res.status(401).json({ message: "You must be logged in" });
-    return;
-  }
-
   if (req.method == "GET") {
     const url = serverEnv.RECOMMENDER_URL || ""
     const page = req.query["page"] as unknown as number || 0
@@ -24,6 +19,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     })
 
     res.status(200).json(await result.json())
+    return;
+  }
+
+  if (!session) {
+    res.status(401).json({ message: "You must be logged in" });
     return;
   }
 
