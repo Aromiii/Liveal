@@ -14,9 +14,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   if (req.method == "GET") {
-    const result = await fetch(`${serverEnv.RECOMMENDER_URL}/?page=${req.query["page"]}`, {
+    const url = serverEnv.RECOMMENDER_URL || ""
+    const page = req.query["page"] as unknown as number || 0
+    const cookies = req.cookies['next-auth.session-token'] || ""
+    const result = await fetch(`${url}/?page=${page}`, {
       headers: {
-        "cookie": `next-auth.session-token=${req.cookies['next-auth.session-token']};`
+        "cookie": `next-auth.session-token=${cookies};`
       },
     })
 
