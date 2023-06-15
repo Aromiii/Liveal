@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate rocket;
 
+use std::net::IpAddr;
 use rocket::serde::json::Value;
 use rocket::http::{CookieJar, Status};
 use rocket::serde::json::{json};
@@ -42,6 +43,11 @@ async fn rocket() -> _ {
     let config = env::Config::from_env().expect("Failed to load configuration");
 
     rocket::build()
+        .configure(rocket::config::Config {
+            address: "0.0.0.0".parse::<IpAddr>().unwrap() as IpAddr,
+            port: 8000,
+            ..Default::default()
+        })
         .attach(cors_options().to_cors().expect("Failed to attach CORS"))
         .manage(config.clone())
         .manage::<MySqlPool>(db::create_pool(&config.db_url).await)
