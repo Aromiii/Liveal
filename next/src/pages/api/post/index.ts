@@ -3,12 +3,24 @@ import { authOptions } from "../../../server/auth";
 import { prisma } from "../../../server/db";
 import { z } from "zod";
 import type { NextApiRequest, NextApiResponse } from "next";
+import {serverEnv} from "../../../env/schema.mjs";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
     res.status(401).json({ message: "You must be logged in" });
+    return;
+  }
+
+  if (req.method == "GET") {
+    const result = await fetch(`${serverEnv.RECOMMENDER_URL}/?page=${req.query["page"]}`, {
+      headers: {
+        "cookie": `next-auth.session-token=${req.cookies['next-auth.session-token']};`
+      },
+    })
+
+    res.status(200).json(await result.json())
     return;
   }
 
