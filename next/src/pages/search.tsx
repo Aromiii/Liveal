@@ -19,7 +19,7 @@ const Home = ({users, posts}: InferGetServerSidePropsType<typeof getServerSidePr
     return <>
         <Navbar>
             <main className="mx-auto md:w-1/2 w-full">
-                <div className="gap-3 h-fit md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 hidden md:grid mb-4">
+                <div className="gap-3 h-fit grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 grid mb-4">
                     {
                         users.map(user => {
                             return <>
