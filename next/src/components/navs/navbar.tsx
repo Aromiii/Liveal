@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import {signOut, useSession} from "next-auth/react";
 import Image from "next/image";
-import { type ReactNode, useState } from "react";
-import { useRouter } from "next/router";
-import { ArrowBackSvg, GroupSvg, HomeSvg, LogoutSvg, SearchSvg } from "../svg";
+import {type ReactNode, useState} from "react";
+import {useRouter} from "next/router";
+import {ArrowBackSvg, GroupSvg, HomeSvg, LogoutSvg, SearchSvg} from "../svg";
 
 export const showNotification = (text: string) => {
   if (document) {
@@ -27,19 +27,27 @@ export default function Navbar({ showBack = false, form = false, children }: {
   form?: boolean,
   children: ReactNode
 }) {
-  const { data: session } = useSession();
+  const {data: session} = useSession();
   const [showSearch, setShowSearch] = useState(false);
+  const [query, setQuery] = useState("")
   const router = useRouter();
+
+  const handleSearch = (event: { preventDefault: () => void; }) => {
+    event.preventDefault()
+
+    setShowSearch(false)
+    void router.push(`/search?q=${query}`)
+  }
 
   return <div className="min-h-[calc(100vh-2.5rem)] w-full">
     <div className="h-[80px]">
       <nav
-        className="md:fixed top-0 base-color h-[80px] place-items-center flex absolute justify-center w-full right-0 shadow-lg z-50">
+          className="md:fixed top-0 base-color h-[80px] place-items-center flex absolute justify-center w-full right-0 shadow-lg z-50">
         <Link className="md:block hidden mr-auto mx-3" href="/">
-          <Image src="/livealLogoWithText.svg" width={160} height={0} alt="Liveal logo" />
+          <Image src="/livealLogoWithText.svg" width={160} height={0} alt="Liveal logo"/>
         </Link>
         <Link className="md:hidden mr-auto mx-3" href="/">
-          <Image src="/livealLogoWithoutText.svg" alt="Liveal logo" width={60} height={0} />
+          <Image src="/livealLogoWithoutText.svg" alt="Liveal logo" width={60} height={0}/>
         </Link>
         <ul className="mx-3 gap-3 place-items-center flex">
           <li className="hidden md:block">
@@ -73,10 +81,10 @@ export default function Navbar({ showBack = false, form = false, children }: {
     <div id="notification" className="w-[300px] p-2 backdrop-blur-sm fixed top-[110px] bg-red-500 left-1/2 transform -translate-x-1/2 rounded-full bg-opacity-60 text-white text-center" hidden={true}>
     </div>
     <div
-      className="w-full md:w-[60%] md:min-w-[700px] h-[80px] right-0 md:right-[20%] rounded-b-lg base-color fixed md:top-[79px] top-0 z-50 shadow-lg"
+      className="w-full md:w-[60%] md:-w-[700px] h-[80px] right-0 md:right-[20%] rounded-b-lg base-color fixed md:top-[79px] top-0 z-50 shadow-lg"
       hidden={!showSearch}>
-      <form className="m-4">
-        <input className="w-full rounded-lg h-full shadow p-3" placeholder=" Search for anything..." />
+      <form className="m-4" onSubmit={handleSearch}>
+        <input className="w-full rounded-lg h-full shadow p-3" placeholder=" Search posts or users..." onChange={event => setQuery(event.target.value)}/>
       </form>
     </div>
     <button className="absolute" hidden={!showBack} onClick={() => router.back()}>

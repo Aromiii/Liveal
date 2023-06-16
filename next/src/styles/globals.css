@@ -12,7 +12,7 @@
     }
 
     .base-color {
-        @apply bg-white dark:bg-gray-900 dark:text-white
+        @apply bg-white dark:bg-gray-900 dark:text-white text-black
     }
 }
 
@@ -22,6 +22,6 @@
     }
 
     input, textarea {
-        @apply bg-gray-200 dark:bg-gray-500 text-white
+        @apply bg-gray-200 dark:bg-gray-500 dark:text-white text-black
     }
 }
